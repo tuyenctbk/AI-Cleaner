@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Nettoyeur de Stockage IA</string>
+    <string name="title_dashboard">Tableau de bord</string>
+    <string name="title_smart_clean">Nettoyage Intelligent IA</string>
+    <string name="title_duplicates">Photos Similaires</string>
+    <string name="title_swipe_clean">Nettoyage par Glissement</string>
+    <string name="title_compressor">Compresseur Média</string>
+    <string name="title_storage_explorer">Explorateur de Stockage</string>
+    <string name="title_app_cache">Nettoyeur de Cache</string>
+    <string name="title_cleanup_history">Historique de Nettoyage</string>
+    <string name="title_smart_scheduler">Planificateur Intelligent</string>
+    <string name="title_battery">Batterie &amp; Performance</string>
+    <string name="title_cloud_photos">Photos Synchronisées Cloud</string>
+    <string name="title_storage_trends">Tendances du Stockage</string>
+    <string name="title_ai_insights">Conseils Gemini IA</string>
+    <string name="title_settings">Paramètres &amp; Préférences</string>
+    <string name="title_vault_folder">Dossier Coffre-fort</string>
+
+    <string name="btn_select_all">Tout Sélectionner</string>
+    <string name="btn_deselect_all">Tout Déselectionner</string>
+    <string name="btn_confirm_bulk_delete">Confirmer la Suppression Groupée</string>
+    <string name="btn_pause_cleaning">Mettre en Pause le Nettoyage</string>
+    <string name="btn_resume_cleaning">Reprendre le Nettoyage</string>
+    <string name="btn_run_auto_sort">Lancer le Tri Automatique</string>
+    <string name="btn_restore">Rétablir</string>
+    <string name="btn_delete">Supprimer</string>
+    <string name="btn_clear_cache">Vider le Cache</string>
+    <string name="btn_quick_clean">Nettoyage Rapide Sécurisé</string>
+    <string name="btn_back">Retour</string>
+    <string name="btn_compare">Comparer</string>
+    <string name="btn_keep_best">Garder la Meilleure Photo</string>
+
+    <string name="label_smart_expiry">Moteur d\'Expiration Intelligente</string>
+    <string name="label_downloads_expiry">Auto-expiration des Téléchargements</string>
+    <string name="label_days_30">30 Jours</string>
+    <string name="label_days_60">60 Jours</string>
+    <string name="label_days_90">90 Jours</string>
+    <string name="label_off">Désactivé</string>
+    <string name="label_total_space_saved">Espace Total à Économiser</string>
+    <string name="label_vault_secured">Coffre-fort Sécurisé</string>
+    <string name="label_cleaning_paused">Nettoyage en Pause</string>
+    <string name="label_background_active">Nettoyage en Arrière-plan Actif</string>
+
+    
+    <string name="onboarding_skip">Passer</string>
+    <string name="onboarding_next">Suivant</string>
+    <string name="onboarding_get_started">Commencer</string>
+    <string name="onboarding_title_1">Nettoyeur Propulsé par l\'IA</string>
+    <string name="onboarding_desc_1">Analyse automatique Gemini AI et nettoyage du cache en un seul appui.</string>
+    <string name="onboarding_title_2">Nettoyage Galerie par Balayage</string>
+    <string name="onboarding_desc_2">Balayez vers la gauche pour supprimer et à droite pour conserver vos photos.</string>
+    <string name="onboarding_title_3">Coffre Sécurisé et Expiration</string>
+    <string name="onboarding_desc_3">Classez vos fichiers volumineux dans un coffre et définissez l\'expiration des téléchargements.</string>
+
+    
+    <string name="rate_title">Vous aimez AI Storage Cleaner ?</string>
+    <string name="rate_desc">Vos avis nous aident à rendre le nettoyage encore plus rapide et intelligent !</string>
+    <string name="rate_btn_submit">Noter 5 Étoiles sur le Play Store</string>
+    <string name="rate_btn_later">Me Rappeler Plus Tard</string>
+    <string name="rate_btn_no">Non Merci</string>
+    <string name="rate_success_toast">Merci d\'avoir attribué 5 étoiles !</string>
+
+    
+    <string name="share_title">Partagez avec vos Amis !</string>
+    <string name="share_desc">Aidez vos amis à libérer des gigaoctets de stockage grâce à AI Cleaner.</string>
+    <string name="share_btn_share">Partager l\'application via...</string>
+    <string name="share_btn_copy">Copier le Lien de Partage</string>
+    <string name="share_btn_later">Plus Tard</string>
+    <string name="share_text_template">Découvrez AI Storage Cleaner ! J\'ai libéré des gigaoctets d\'espace sur mon téléphone.</string>
+    <string name="share_link_copied">Lien copié dans le presse-papiers !</string>
+
+    
+    <string name="settings_rate_app">Noter sur le Play Store</string>
+    <string name="settings_share_app">Partager avec des Amis</string>
+    <string name="settings_view_onboarding">Voir le Tutoriel d\'Accueil</string>
+    <string name="settings_about_header">Avis et Partage</string>
+</resources>

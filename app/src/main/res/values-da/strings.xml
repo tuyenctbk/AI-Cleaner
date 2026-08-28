@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI Lagerrenser</string>
+    <string name="title_dashboard">Oversigt</string>
+    <string name="title_smart_clean">AI Smart Rengøring</string>
+    <string name="title_duplicates">Lignende Fotos</string>
+    <string name="title_swipe_clean">Swipe Rengøring</string>
+    <string name="title_compressor">Mediekomprimering</string>
+    <string name="title_storage_explorer">Lagerstifinder</string>
+    <string name="title_app_cache">App Cache Renser</string>
+    <string name="title_cleanup_history">Rengøringshistorik</string>
+    <string name="title_smart_scheduler">Smart Planlægger</string>
+    <string name="title_battery">Batteri &amp; Ydeevne</string>
+    <string name="title_cloud_photos">Sky-fotos</string>
+    <string name="title_storage_trends">Lagertrends</string>
+    <string name="title_ai_insights">Gemini AI Indsigt</string>
+    <string name="title_settings">Indstillinger</string>
+    <string name="title_vault_folder">Sikker Boks Mappe</string>
+
+    <string name="btn_select_all">Vælg Alle</string>
+    <string name="btn_deselect_all">Fravælg Alle</string>
+    <string name="btn_confirm_bulk_delete">Bekræft Massesletning</string>
+    <string name="btn_pause_cleaning">Pausér Rengøring</string>
+    <string name="btn_resume_cleaning">Genoptag Rengøring</string>
+    <string name="btn_run_auto_sort">Kør Automatisk Sortering</string>
+    <string name="btn_restore">Gendan</string>
+    <string name="btn_delete">Slet</string>
+    <string name="btn_clear_cache">Ryd Cache</string>
+    <string name="btn_quick_clean">Sikker Hurtig Rengøring</string>
+    <string name="btn_back">Tilbage</string>
+    <string name="btn_compare">Sammenlign</string>
+    <string name="btn_keep_best">Behold Bedste Billede</string>
+
+    <string name="label_smart_expiry">Smart Udløbsregel</string>
+    <string name="label_downloads_expiry">Auto-udløb for Downloads</string>
+    <string name="label_days_30">30 Dage</string>
+    <string name="label_days_60">60 Dage</string>
+    <string name="label_days_90">90 Dage</string>
+    <string name="label_off">Fra</string>
+    <string name="label_total_space_saved">Samlet Plads Der Spars</string>
+    <string name="label_vault_secured">Boks Beskyttet</string>
+    <string name="label_cleaning_paused">Rengøring Sat På Pause</string>
+    <string name="label_background_active">Baggrundsrengøring Aktiv</string>
+<string name="onboarding_skip">Spring over</string><string name="onboarding_next">Næste</string><string name="onboarding_get_started">Kom i gang</string><string name="onboarding_title_1">AI-drevet Lagerrenser</string><string name="onboarding_desc_1">Automatisk Gemini AI-scanning, sletning af skraldefiler og cache-optimering.</string><string name="onboarding_title_2">Stryg-gallerirenser</string><string name="onboarding_desc_2">Stryg til venstre for at slette billeder og til højre for at gemme dine minder.</string><string name="onboarding_title_3">Sikker Boks og Udløb</string><string name="onboarding_desc_3">Sorter automatisk filer til en sikker boks og indstil udløbsregler for downloads.</string><string name="rate_title">Glade for AI Lagerrenser?</string><string name="rate_desc">Din feedback hjælper os med at gøre enhedsrensning endnu hurtigere og smartere!</string><string name="rate_btn_submit">Giv 5 stjerner på Play Store</string><string name="rate_btn_later">Mind mig om det senere</string><string name="rate_btn_no">Nej tak</string><string name="rate_success_toast">Tak for din 5-stjernede anmeldelse!</string><string name="share_title">Del din pladsbesparelse med venner!</string><string name="share_desc">Hjælp dine venner med at frigøre gigabytes af lagerplads på deres telefoner.</string><string name="share_btn_share">Del app via...</string><string name="share_btn_copy">Kopiér delingslink</string><string name="share_btn_later">Måske senere</string><string name="share_text_template">Tjek AI Lagerrenser ud! Jeg har lige sparet gigabytes af plads på min telefon med AI-fotoskanning.</string><string name="share_link_copied">Delingslink kopieret til udklipsholder!</string><string name="settings_rate_app">Anmeld app på Play Store</string><string name="settings_share_app">Del app med venner</string><string name="settings_view_onboarding">Se introduktion</string><string name="settings_about_header">App-feedback og deling</string></resources>

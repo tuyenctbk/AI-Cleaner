@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI स्टोरेज क्लीनर</string>
+    <string name="title_dashboard">डैशबोर्ड</string>
+    <string name="title_smart_clean">AI स्मार्ट क्लीन</string>
+    <string name="title_duplicates">एक जैसी फोटो</string>
+    <string name="title_swipe_clean">स्वाइप क्लीन</string>
+    <string name="title_compressor">मीडिया कंप्रेसर</string>
+    <string name="title_storage_explorer">स्टोरेज विश्लेषक</string>
+    <string name="title_app_cache">ऐप कैश क्लीनर</string>
+    <string name="title_cleanup_history">सफाई इतिहास</string>
+    <string name="title_smart_scheduler">स्मार्ट शेड्यूल</string>
+    <string name="title_battery">बैटरी और परफॉरमेंस</string>
+    <string name="title_cloud_photos">क्लाउड फोटो</string>
+    <string name="title_storage_trends">स्टोरेज रुझान</string>
+    <string name="title_ai_insights">Gemini AI सुझाव</string>
+    <string name="title_settings">सेटिंग्स</string>
+    <string name="title_vault_folder">सुरक्षित तिजोरी</string>
+
+    <string name="btn_select_all">सभी चुनें</string>
+    <string name="btn_deselect_all">सभी हटाएं</string>
+    <string name="btn_confirm_bulk_delete">थोक विलोपन की पुष्टि करें</string>
+    <string name="btn_pause_cleaning">सफाई रोकें</string>
+    <string name="btn_resume_cleaning">सफाई फिर शुरू करें</string>
+    <string name="btn_run_auto_sort">ऑटो-सॉर्ट तिजोरी चलाएं</string>
+    <string name="btn_restore">पुनर्स्थापित करें</string>
+    <string name="btn_delete">हटाएं</string>
+    <string name="btn_clear_cache">कैश साफ करें</string>
+    <string name="btn_quick_clean">सुरक्षित त्वरित सफाई</string>
+    <string name="btn_back">पीछे</string>
+    <string name="btn_compare">तुलना करें</string>
+    <string name="btn_keep_best">सर्वश्रेष्ठ फोटो रखें</string>
+
+    <string name="label_smart_expiry">स्मार्ट समाप्ति नियम</string>
+    <string name="label_downloads_expiry">डाउनलोड स्वतः-समाप्ति</string>
+    <string name="label_days_30">30 दिन</string>
+    <string name="label_days_60">60 दिन</string>
+    <string name="label_days_90">90 दिन</string>
+    <string name="label_off">बंद</string>
+    <string name="label_total_space_saved">बचत योग्य कुल स्थान</string>
+    <string name="label_vault_secured">तिजोरी सुरक्षित</string>
+    <string name="label_cleaning_paused">सफाई प्रक्रिया रोकी गई</string>
+    <string name="label_background_active">बैकग्राउंड सफाई सक्रिय</string>
+<string name="onboarding_skip">छोड़ें</string><string name="onboarding_next">आगे</string><string name="onboarding_get_started">शुरू करें</string><string name="onboarding_title_1">AI स्टोरेज क्लीनर</string><string name="onboarding_desc_1">Gemini AI स्कैनिंग, अनावश्यक फ़ाइलों की सफाई और सिस्टम कैश ऑप्टिमाइजेशन एक टैप में।</string><string name="onboarding_title_2">स्वाइप गैलरी क्लीनर</string><string name="onboarding_desc_2">अवांछित फ़ोटो हटाने के लिए बाएं स्वाइप करें और अच्छी फ़ोटो रखने के लिए दाएं स्वाइप करें।</string><string name="onboarding_title_3">स्मार्ट वॉल्ट और एक्सपायरी</string><string name="onboarding_desc_3">फ़ाइलों को सुरक्षित वॉल्ट में ऑटो-सॉर्ट करें और डाउनलोड के लिए एक्सपायरी नियम सेट करें।</string><string name="rate_title">क्या आपको AI स्टोरेज क्लीनर पसंद आ रहा है?</string><string name="rate_desc">आपकी प्रतिक्रिया हमें ऐप को और बेहतर और तेज़ बनाने में मदद करती है!</string><string name="rate_btn_submit">प्ले स्टोर पर 5 स्टार रेटिंग दें</string><string name="rate_btn_later">बाद में याद दिलाएं</string><string name="rate_btn_no">जी नहीं</string><string name="rate_success_toast">5 स्टार रेटिंग देने के लिए धन्यवाद!</string><string name="share_title">दोस्तों के साथ स्टोरेज की बचत शेयर करें!</string><string name="share_desc">अपने दोस्तों को उनके फोन में जीबी स्टोरेज खाली करने में मदद करें।</string><string name="share_btn_share">ऐप शेयर करें...</string><string name="share_btn_copy">शेयर लिंक कॉपी करें</string><string name="share_btn_later">शायद बाद में</string><string name="share_text_template">AI स्टोरेज क्लीनर देखें! मैंने अभी AI फोटो क्लीनिंग से अपने फोन में GB स्टोरेज बचाई है।</string><string name="share_link_copied">ऐप शेयर लिंक क्लिपबोर्ड पर कॉपी हो गया!</string><string name="settings_rate_app">प्ले स्टोर पर रेटिंग दें</string><string name="settings_share_app">दोस्तों के साथ शेयर करें</string><string name="settings_view_onboarding">ट्यूटोरियल देखें</string><string name="settings_about_header">फीडबैक और शेयरिंग</string></resources>

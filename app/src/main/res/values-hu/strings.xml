@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI Tárhely Tisztító</string>
+    <string name="title_dashboard">Agyközpont</string>
+    <string name="title_smart_clean">AI Okos Tisztítás</string>
+    <string name="title_duplicates">Hasonló Fotók</string>
+    <string name="title_swipe_clean">Húzásos Tisztítás</string>
+    <string name="title_compressor">Média Tömörítő</string>
+    <string name="title_storage_explorer">Tárhely Bögésző</string>
+    <string name="title_app_cache">Alkalmazás Cache Tisztító</string>
+    <string name="title_cleanup_history">Tisztítási Előzmények</string>
+    <string name="title_smart_scheduler">Okos Időzítő</string>
+    <string name="title_battery">Akkumulátor és Teljesítmény</string>
+    <string name="title_cloud_photos">Felhő Fotók</string>
+    <string name="title_storage_trends">Tárhely Trendek</string>
+    <string name="title_ai_insights">Gemini AI Tanácsok</string>
+    <string name="title_settings">Beállítások</string>
+    <string name="title_vault_folder">Széf Mappa</string>
+
+    <string name="btn_select_all">Összes kijelölése</string>
+    <string name="btn_deselect_all">Kijelölések törlése</string>
+    <string name="btn_confirm_bulk_delete">Tömeges törlés megerősítése</string>
+    <string name="btn_pause_cleaning">Tisztítás szüneteltetése</string>
+    <string name="btn_resume_cleaning">Tisztítás folytatása</string>
+    <string name="btn_run_auto_sort">Automatikus rendezés futtatása</string>
+    <string name="btn_restore">Visszaállítás</string>
+    <string name="btn_delete">Törlés</string>
+    <string name="btn_clear_cache">Quick Cache Törlése</string>
+    <string name="btn_quick_clean">Biztonságos Gyors Tisztítás</string>
+    <string name="btn_back">Vissza</string>
+    <string name="btn_compare">Összehasonlítás</string>
+    <string name="btn_keep_best">Legjobb kép megtartása</string>
+
+    <string name="label_smart_expiry">Okos Lejárati Szabályok</string>
+    <string name="label_downloads_expiry">Letöltések Auto-lejárata</string>
+    <string name="label_days_30">30 Nap</string>
+    <string name="label_days_60">60 Nap</string>
+    <string name="label_days_90">90 Nap</string>
+    <string name="label_off">Ki</string>
+    <string name="label_total_space_saved">Összes felszabadítható tárhely</string>
+    <string name="label_vault_secured">Széf Védve</string>
+    <string name="label_cleaning_paused">Tisztítás Szüneteltetve</string>
+    <string name="label_background_active">Háttértisztítás Aktív</string>
+<string name="onboarding_skip">Kihagyás</string><string name="onboarding_next">Tovább</string><string name="onboarding_get_started">Kezdés</string><string name="onboarding_title_1">AI Tárhely Tisztító</string><string name="onboarding_desc_1">Automatikus Gemini AI elemzés, felesleges fájlok törlése és gyorsítótár tisztítás.</string><string name="onboarding_title_2">Húzással Történő Tisztítás</string><string name="onboarding_desc_2">Húzza balra a nem kívánt fotók törléséhez és jobbra a képek megőrzéséhez.</string><string name="onboarding_title_3">Biztonságos Széf és Lejárat</string><string name="onboarding_desc_3">Automatikus fájlrendszerezés széfbe és letöltési lejárat szabályok.</string><string name="rate_title">Tetszik az AI Tárhely Tisztító?</string><string name="rate_desc">Visszajelzése segít nekünk még gyorsabbá tenni a tárhelytisztítást!</string><string name="rate_btn_submit">Értékelje 5 csillaggal a Play Áruházban</string><string name="rate_btn_later">Emlékeztessen később</string><string name="rate_btn_no">Köszönöm, nem</string><string name="rate_success_toast">Köszönjük az 5 csillagos értékelést!</string><string name="share_title">Ossza meg a megtakarított tárhelyet barátaival!</string><string name="share_desc">Segítsen barátainak gigabájtokat felszabadítani a telefonjukon.</string><string name="share_btn_share">Alkalmazás megosztása...</string><string name="share_btn_copy">Hivatkozás másolása</string><string name="share_btn_later">Talán később</string><string name="share_text_template">Próbálja ki az AI Tárhely Tisztítót! Éppen most szabadítottam fel gigabájtokat a telefonomon.</string><string name="share_link_copied">A hivatkozás másolva a vágólapra!</string><string name="settings_rate_app">Értékelés a Play Áruházban</string><string name="settings_share_app">Megosztás barátokkal</string><string name="settings_view_onboarding">Útmutató megtekintése</string><string name="settings_about_header">Visszajelzés és megosztás</string></resources>

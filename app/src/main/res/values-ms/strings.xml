@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Pembersih Storan AI</string>
+    <string name="title_dashboard">Papan Pemuka</string>
+    <string name="title_smart_clean">Pembersihan Pintar AI</string>
+    <string name="title_duplicates">Foto Serupa</string>
+    <string name="title_swipe_clean">Pembersihan Leret</string>
+    <string name="title_compressor">Pemampat Media</string>
+    <string name="title_storage_explorer">Peneroka Storan</string>
+    <string name="title_app_cache">Pembersih Caches Aplikasi</string>
+    <string name="title_cleanup_history">Sejarah Pembersihan</string>
+    <string name="title_smart_scheduler">Jadual Pintar</string>
+    <string name="title_battery">Bateri &amp; Prestasi</string>
+    <string name="title_cloud_photos">Foto Awan</string>
+    <string name="title_storage_trends">Trend Storan</string>
+    <string name="title_ai_insights">Panduan Gemini AI</string>
+    <string name="title_settings">Tetapan</string>
+    <string name="title_vault_folder">Folder Bilik Kebal</string>
+
+    <string name="btn_select_all">Pilih Semua</string>
+    <string name="btn_deselect_all">Nyahpilih Semua</string>
+    <string name="btn_confirm_bulk_delete">Sahkan Padam Pukal</string>
+    <string name="btn_pause_cleaning">Jeda Pembersihan</string>
+    <string name="btn_resume_cleaning">Sambung Pembersihan</string>
+    <string name="btn_run_auto_sort">Jalankan Pengisihan Automatik</string>
+    <string name="btn_restore">Pulihkan</string>
+    <string name="btn_delete">Padam</string>
+    <string name="btn_clear_cache">Kosongkan Cache</string>
+    <string name="btn_quick_clean">Pembersihan Pantas Selamat</string>
+    <string name="btn_back">Kembali</string>
+    <string name="btn_compare">Bandingkan</string>
+    <string name="btn_keep_best">Simpan Foto Terbaik</string>
+
+    <string name="label_smart_expiry">Tamat Tempoh Pintar</string>
+    <string name="label_downloads_expiry">Auto-tamat Muat Turun</string>
+    <string name="label_days_30">30 Hari</string>
+    <string name="label_days_60">60 Hari</string>
+    <string name="label_days_90">90 Hari</string>
+    <string name="label_off">Mati</string>
+    <string name="label_total_space_saved">Jumlah Ruang Dijimatkan</string>
+    <string name="label_vault_secured">Bilik Kebal Dilindungi</string>
+    <string name="label_cleaning_paused">Proses Pembersihan Dijeda</string>
+    <string name="label_background_active">Pembersihan Latar Belakang Aktif</string>
+<string name="onboarding_skip">Langkah</string><string name="onboarding_next">Seterusnya</string><string name="onboarding_get_started">Mula Sekarang</string><string name="onboarding_title_1">Pembersih Storan Berkuasa AI</string><string name="onboarding_desc_1">Imbasan automatik Gemini AI, pembersihan fail sampah dan optimasi cache dalam satu ketikan.</string><string name="onboarding_title_2">Pembersih Galeri Leret</string><string name="onboarding_desc_2">Leret ke kiri untuk memadam foto dan leret ke kanan untuk menyimpan kenangan terbaik.</string><string name="onboarding_title_3">Peti Besi &amp; Tempoh Tamat</string><string name="onboarding_desc_3">Isih fail ke peti besi selamat dan tetapkan peraturan tempoh tamat fail muat turun.</string><string name="rate_title">Suka menggunakan Pembersih Storan AI?</string><string name="rate_desc">Maklum balas anda membantu kami menjadikan pembersihan peranti lebih pantas dan bijak!</string><string name="rate_btn_submit">Nilaikan 5 Bintang di Play Store</string><string name="rate_btn_later">Ingatkan Kemudian</string><string name="rate_btn_no">Tidak, Terima Kasih</string><string name="rate_success_toast">Terima kasih atas penilaian 5 bintang anda!</string><string name="share_title">Kongsi Penjimatan Storan dengan Rakan!</string><string name="share_desc">Bantu rakan anda membebaskan ruang storan pada telefon mereka.</string><string name="share_btn_share">Kongsi Aplikasi melalui...</string><string name="share_btn_copy">Salin Pautan Kongsi</string><string name="share_btn_later">Mungkin Kemudian</string><string name="share_text_template">Cuba Pembersih Storan AI! Saya baru sahaja menjimatkan ruang storan pada telefon saya.</string><string name="share_link_copied">Pautan telah disalin ke papan klip!</string><string name="settings_rate_app">Nilaikan Aplikasi di Play Store</string><string name="settings_share_app">Kongsi Aplikasi dengan Rakan</string><string name="settings_view_onboarding">Lihat Panduan Asas</string><string name="settings_about_header">Maklum Balas &amp; Perkongsian</string></resources>

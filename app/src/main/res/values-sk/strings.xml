@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI Čistič Úložiska</string>
+    <string name="title_dashboard">Prehľad</string>
+    <string name="title_smart_clean">AI Inteligentné Čistenie</string>
+    <string name="title_duplicates">Podobné Fotografie</string>
+    <string name="title_swipe_clean">Čistenie Gestami</string>
+    <string name="title_compressor">Kompresia Médií</string>
+    <string name="title_storage_explorer">Správca Úložiska</string>
+    <string name="title_app_cache">Čistič Mezipamäte</string>
+    <string name="title_cleanup_history">História Čistenia</string>
+    <string name="title_smart_scheduler">Chytrý Plánovač</string>
+    <string name="title_battery">Batéria a Výkon</string>
+    <string name="title_cloud_photos">Fotky na Cloude</string>
+    <string name="title_storage_trends">Trendy Úložiska</string>
+    <string name="title_ai_insights">Gemini AI Tipy</string>
+    <string name="title_settings">Nastavenia</string>
+    <string name="title_vault_folder">Zabezpečený Trezor</string>
+
+    <string name="btn_select_all">Vybrať všetko</string>
+    <string name="btn_deselect_all">Zrušiť výber</string>
+    <string name="btn_confirm_bulk_delete">Potvrdiť hromadné vymazanie</string>
+    <string name="btn_pause_cleaning">Pozastaviť čistenie</string>
+    <string name="btn_resume_cleaning">Obnoviť čistenie</string>
+    <string name="btn_run_auto_sort">Spustiť automatické triedenie</string>
+    <string name="btn_restore">Obnoviť</string>
+    <string name="btn_delete">Vymazať</string>
+    <string name="btn_clear_cache">Vymazať mezipamäť</string>
+    <string name="btn_quick_clean">Bezpečné rýchle čistenie</string>
+    <string name="btn_back">Späť</string>
+    <string name="btn_compare">Porovnať</string>
+    <string name="btn_keep_best">Ponechať najlepší záber</string>
+
+    <string name="label_smart_expiry">Chytrá Expirácia</string>
+    <string name="label_downloads_expiry">Auto-expirácia Stiahnutých</string>
+    <string name="label_days_30">30 Dní</string>
+    <string name="label_days_60">60 Dní</string>
+    <string name="label_days_90">90 Dní</string>
+    <string name="label_off">Vypnuté</string>
+    <string name="label_total_space_saved">Celková ušetrrená kapacita</string>
+    <string name="label_vault_secured">Trezor Chránený</string>
+    <string name="label_cleaning_paused">Čistenie Pozastavené</string>
+    <string name="label_background_active">Čistenie na Pozadí Aktívne</string>
+<string name="onboarding_skip">Preskočiť</string><string name="onboarding_next">Ďalej</string><string name="onboarding_get_started">Začať</string><string name="onboarding_title_1">Čistič Úložiska s AI</string><string name="onboarding_desc_1">Automatické skenovanie Gemini AI, odstránenie nepotrebných súborov a vyrovnávacej pamäte.</string><string name="onboarding_title_2">Čistenie Galérie Gestom</string><string name="onboarding_desc_2">Potiahnutím doľava vymažete fotky, potiahnutím doprava si ich ponecháte.</string><string name="onboarding_title_3">Smart Trezor a Expirácia</string><string name="onboarding_desc_3">Automatické triedenie médií do trezoru a pravidlá pre expiráciu stiahnutých súborov.</string><string name="rate_title">Páči sa vám AI Čistič Úložiska?</string><string name="rate_desc">Vaše hodnotenie nám pomáha aplikáciu neustále vylepšovať!</string><string name="rate_btn_submit">Ohodnotiť 5 hviezdičkami v Play Store</string><string name="rate_btn_later">Pripomenúť neskôr</string><string name="rate_btn_no">Nie, ďakujem</string><string name="rate_success_toast">Ďakujeme za hodnotenie 5 hviezdičkami!</string><string name="share_title">Zdieľajte uššetrené miesto s priateľmi!</string><string name="share_desc">Pomôžte priateľom uvoľniť gigabajty úložiska v ich telefónoch.</string><string name="share_btn_share">Zdieľať aplikáciu cez...</string><string name="share_btn_copy">Kopírovať odkaz</string><string name="share_btn_later">Možno neskôr</string><string name="share_text_template">Vyskúšajte AI Čistič Úložiska! Ušetril som gigabajty miesta na svojom telefóne vďaka AI čisteniu.</string><string name="share_link_copied">Odkaz bol skopírovaný do schránky!</string><string name="settings_rate_app">Ohodnotiť aplikáciu v Play Store</string><string name="settings_share_app">Zdieľať aplikáciu s priateľmi</string><string name="settings_view_onboarding">Zobraziť sprievodcu</string><string name="settings_about_header">Spätná väzba a zdieľanie</string></resources>

@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI ストレージクリーナー</string>
+    <string name="title_dashboard">ダッシュボード</string>
+    <string name="title_smart_clean">AI スマートクリーン</string>
+    <string name="title_duplicates">類似の写真</string>
+    <string name="title_swipe_clean">スワイプクリーン</string>
+    <string name="title_compressor">メディア圧縮</string>
+    <string name="title_storage_explorer">ストレージ エクスプローラー</string>
+    <string name="title_app_cache">アプリキャッシュの削除</string>
+    <string name="title_cleanup_history">クリーン履歴</string>
+    <string name="title_smart_scheduler">スマート スケジューラー</string>
+    <string name="title_battery">バッテリーとパフォーマンス</string>
+    <string name="title_cloud_photos">クラウド同期写真</string>
+    <string name="title_storage_trends">ストレージの傾向</string>
+    <string name="title_ai_insights">Gemini AI の洞察</string>
+    <string name="title_settings">設定と設定項目</string>
+    <string name="title_vault_folder">保管庫フォルダ</string>
+
+    <string name="btn_select_all">すべて選択</string>
+    <string name="btn_deselect_all">すべて選択解除</string>
+    <string name="btn_confirm_bulk_delete">一括削除を確認</string>
+    <string name="btn_pause_cleaning">クリーニングを一時停止</string>
+    <string name="btn_resume_cleaning">クリーニングを再開</string>
+    <string name="btn_run_auto_sort">自動分類エンジンを実行</string>
+    <string name="btn_restore">復元</string>
+    <string name="btn_delete">削除</string>
+    <string name="btn_clear_cache">キャッシュを消去</string>
+    <string name="btn_quick_clean">安全なクイッククリーン</string>
+    <string name="btn_back">戻る</string>
+    <string name="btn_compare">比較</string>
+    <string name="btn_keep_best">ベストショットを保持</string>
+
+    <string name="label_smart_expiry">スマート有効期限エンジン</string>
+    <string name="label_downloads_expiry">ダウンロード自動期限切れ</string>
+    <string name="label_days_30">30 日間</string>
+    <string name="label_days_60">60 日間</string>
+    <string name="label_days_90">90 日間</string>
+    <string name="label_off">オフ</string>
+    <string name="label_total_space_saved">解放予定の合計容量</string>
+    <string name="label_vault_secured">保管庫で保護済み</string>
+    <string name="label_cleaning_paused">クリーニング処理が一時停止中</string>
+    <string name="label_background_active">バックグラウンド クリーニングがアクティブ</string>
+<string name="onboarding_skip">スキップ</string><string name="onboarding_next">次へ</string><string name="onboarding_get_started">始める</string><string name="onboarding_title_1">AI搭載ストレージクリーナー</string><string name="onboarding_desc_1">Gemini AIのスキャン機能で、不要ファイルやアプリキャッシュを一括最適化。</string><string name="onboarding_title_2">スワイプ写真クリーン</string><string name="onboarding_desc_2">左スワイプで不要な写真を削除、右スワイプでお気に入りの写真をスマートに保存。</string><string name="onboarding_title_3">安全な金庫＆自動期限切れ</string><string name="onboarding_desc_3">大切なファイルを金庫フォルダへ自動分類し、古いダウンロードファイルを自動検出。</string><string name="rate_title">AIストレージクリーナーはいかがですか？</string><string name="rate_desc">皆様からの評価・フィードバックがアプリの改善と高速化につながります！</string><string name="rate_btn_submit">Playストアで★5つ評価する</string><string name="rate_btn_later">後でリマインド</string><string name="rate_btn_no">評価しない</string><string name="rate_success_toast">★5評価をありがとうございます！</string><string name="share_title">空き容量の節約を友達と共有！</string><string name="share_desc">友達のスマホの空き容量不足を解決するのに役立てましょう。</string><string name="share_btn_share">アプリを共有...</string><string name="share_btn_copy">共有リンクをコピー</string><string name="share_btn_later">あとで</string><string name="share_text_template">AIストレージクリーナーをチェック！AI写真クリーン機能でスマホの空き容量を大幅に節約できました。</string><string name="share_link_copied">共有リンクをクリップボードにコピーしました！</string><string name="settings_rate_app">Playストアで評価する</string><string name="settings_share_app">友達にアプリを教える</string><string name="settings_view_onboarding">チュートリアルを再表示</string><string name="settings_about_header">アプリの評価と共有</string></resources>

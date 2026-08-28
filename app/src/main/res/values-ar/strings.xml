@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">منظف التخزين بالذكاء الاصطناعي</string>
+    <string name="title_dashboard">لوحة التحكم</string>
+    <string name="title_smart_clean">التنظيف الذكي</string>
+    <string name="title_duplicates">الصور المتشابهة</string>
+    <string name="title_swipe_clean">التنظيف بالسحب</string>
+    <string name="title_compressor">ضغط الوسائط</string>
+    <string name="title_storage_explorer">مستكشف التخزين</string>
+    <string name="title_app_cache">منظف ذاكرة التخزين المؤقت</string>
+    <string name="title_cleanup_history">سجل التنظيف</string>
+    <string name="title_smart_scheduler">الجدولة الذكية</string>
+    <string name="title_battery">البطارية والأداء</string>
+    <string name="title_cloud_photos">الصور السحابية</string>
+    <string name="title_storage_trends">اتجاهات التخزين</string>
+    <string name="title_ai_insights">توصيات الذكاء الاصطناعي</string>
+    <string name="title_settings">الإعدادات</string>
+    <string name="title_vault_folder">المجلد الآمن</string>
+
+    <string name="btn_select_all">تحديد الكل</string>
+    <string name="btn_deselect_all">إلغاء تحديد الكل</string>
+    <string name="btn_confirm_bulk_delete">تأكيد الحذف الجماعي</string>
+    <string name="btn_pause_cleaning">إيقاف مؤقت للتنظيف</string>
+    <string name="btn_resume_cleaning">استئناف التنظيف</string>
+    <string name="btn_run_auto_sort">تشغيل الفرز التلقائي</string>
+    <string name="btn_restore">استعادة</string>
+    <string name="btn_delete">حذف</string>
+    <string name="btn_clear_cache">مسح التخزين المؤقت</string>
+    <string name="btn_quick_clean">تنظيف سريع آمن</string>
+    <string name="btn_back">رجوع</string>
+    <string name="btn_compare">مقارنة</string>
+    <string name="btn_keep_best">الاحتفاظ بالأفضل</string>
+
+    <string name="label_smart_expiry">الانتهاء الذكي</string>
+    <string name="label_downloads_expiry">انتهاء التنزيلات تلقائياً</string>
+    <string name="label_days_30">30 يوماً</string>
+    <string name="label_days_60">60 يوماً</string>
+    <string name="label_days_90">90 يوماً</string>
+    <string name="label_off">إيقاف</string>
+    <string name="label_total_space_saved">إجمالي المساحة التي سيتم توفيرها</string>
+    <string name="label_vault_secured">المجلد محمياً</string>
+    <string name="label_cleaning_paused">التنظيف متوقف مؤقتاً</string>
+    <string name="label_background_active">التنظيف في الخلفية نشط</string>
+<string name="onboarding_skip">تخطي</string><string name="onboarding_next">التالي</string><string name="onboarding_get_started">ابدأ الآن</string><string name="onboarding_title_1">منظف التخزين بالذكاء الاصطناعي</string><string name="onboarding_desc_1">فحص تلقائي بالذكاء الاصطناعي، مسح الملفات غير الضرورية وتفريغ ذاكرة التخزين بنقرة واحدة.</string><string name="onboarding_title_2">تنظيف معرض الصور بالسحب</string><string name="onboarding_desc_2">اسحب لليسار لحذف الصور غير المرغوب فيها واسحب لليمين للاحتفاظ بأجمل الذكريات.</string><string name="onboarding_title_3">الخزنة الذكية وانتهاء الصلاحية</string><string name="onboarding_desc_3">تنظيم تلقائي للملفات في مجلد آمن وتحديد قواعد انتهاء الصلاحية للتنزيلات.</string><string name="rate_title">هل تستمتع بمنظف المساحة الذكي؟</string><string name="rate_desc">تقييمك يساعدنا في جعل تنظيف الجهاز أسرع وأكثر ذكاءً!</string><string name="rate_btn_submit">تقييم 5 نجوم على متجر بلاي</string><string name="rate_btn_later">تذكيري لاحقاً</string><string name="rate_btn_no">شكراً، لا أرغب</string><string name="rate_success_toast">شكراً لتقييمنا بـ 5 نجوم!</string><string name="share_title">شارِك مساحة التخزين المحررة مع أصدقائك!</string><string name="share_desc">ساعد أصدقاءك على تحرير جيجابايت من مساحة التخزين على هواتفهم.</string><string name="share_btn_share">مشاركة التطبيق عبر...</string><string name="share_btn_copy">نسخ رابط المشاركة</string><string name="share_btn_later">ربما لاحقاً</string><string name="share_text_template">جرب تطبيق منظف المساحة الذكي! لقد قمت بتوفير مساحة كبيرة على هاتفي باستخدام تنظيف الصور بالذكاء الاصطناعي.</string><string name="share_link_copied">تم نسخ رابط مشاركة التطبيق إلى الحافظة!</string><string name="settings_rate_app">تقييم التطبيق على متجر بلاي</string><string name="settings_share_app">مشاركة التطبيق مع الأصدقاء</string><string name="settings_view_onboarding">عرض دليل البداية</string><string name="settings_about_header">ملاحظات ومشاركة التطبيق</string></resources>

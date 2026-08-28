@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI Pulitore di Memoria</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_smart_clean">Pulizia Intelligente IA</string>
+    <string name="title_duplicates">Foto Simili</string>
+    <string name="title_swipe_clean">Pulizia Swipe</string>
+    <string name="title_compressor">Compressore File</string>
+    <string name="title_storage_explorer">Esplora Memoria</string>
+    <string name="title_app_cache">Pulizia Cache App</string>
+    <string name="title_cleanup_history">Cronologia Pulizia</string>
+    <string name="title_smart_scheduler">Pianificazione Intelligente</string>
+    <string name="title_battery">Batteria e Prestazioni</string>
+    <string name="title_cloud_photos">Foto Cloud</string>
+    <string name="title_storage_trends">Tendenze Memoria</string>
+    <string name="title_ai_insights">Consigli Gemini IA</string>
+    <string name="title_settings">Impostazioni</string>
+    <string name="title_vault_folder">Cartella Cassaforte</string>
+
+    <string name="btn_select_all">Seleziona Tutto</string>
+    <string name="btn_deselect_all">Deseleziona Tutto</string>
+    <string name="btn_confirm_bulk_delete">Conferma Eliminazione di Massa</string>
+    <string name="btn_pause_cleaning">Sospendi Pulizia</string>
+    <string name="btn_resume_cleaning">Riprendi Pulizia</string>
+    <string name="btn_run_auto_sort">Avvia Smistamento Automatico</string>
+    <string name="btn_restore">Ripristina</string>
+    <string name="btn_delete">Elimina</string>
+    <string name="btn_clear_cache">Svuota Cache</string>
+    <string name="btn_quick_clean">Pulizia Rapida Sicura</string>
+    <string name="btn_back">Indietro</string>
+    <string name="btn_compare">Confronta</string>
+    <string name="btn_keep_best">Conserva Scatto Migliore</string>
+
+    <string name="label_smart_expiry">Scadenza Intelligente</string>
+    <string name="label_downloads_expiry">Scadenza Auto Download</string>
+    <string name="label_days_30">30 Giorni</string>
+    <string name="label_days_60">60 Giorni</string>
+    <string name="label_days_90">90 Giorni</string>
+    <string name="label_off">Disattivato</string>
+    <string name="label_total_space_saved">Spazio Totale Risparmiato</string>
+    <string name="label_vault_secured">Cassaforte Protetta</string>
+    <string name="label_cleaning_paused">Pulizia In Pausa</string>
+    <string name="label_background_active">Pulizia in Background Attiva</string>
+<string name="onboarding_skip">Salta</string><string name="onboarding_next">Avanti</string><string name="onboarding_get_started">Inizia ora</string><string name="onboarding_title_1">Pulizia Memoria guidata da IA</string><string name="onboarding_desc_1">Scansione automatica Gemini AI, eliminazione dei file inutili e ottimizzazione della cache.</string><string name="onboarding_title_2">Pulizia Galleria con Swipe</string><string name="onboarding_desc_2">Scorri a sinistra per eliminare le foto e a destra per conservare i ricordi migliori.</string><string name="onboarding_title_3">Cassaforte Sicura &amp; Scadenza</string><string name="onboarding_desc_3">Ordina automaticamente i file in una cassaforte e imposta regole di scadenza per i download.</string><string name="rate_title">Ti piace Pulizia Memoria AI?</string><string name="rate_desc">Il tuo feedback ci aiuta a rendere la pulizia del dispositivo ancora più veloce!</string><string name="rate_btn_submit">Valuta 5 Stelle sul Play Store</string><string name="rate_btn_later">Ricordamelo più tardi</string><string name="rate_btn_no">No grazie</string><string name="rate_success_toast">Grazie per la valutazione a 5 stelle!</string><string name="share_title">Condividi il risparmio di spazio con gli amici!</string><string name="share_desc">Aiuta i tuoi amici a liberare gigabyte di memoria sui loro telefoni.</string><string name="share_btn_share">Condividi app tramite...</string><string name="share_btn_copy">Copia link di condivisione</string><string name="share_btn_later">Forse più tardi</string><string name="share_text_template">Prova Pulizia Memoria AI! Ho appena risparmiato gigabyte di spazio sul mio telefono.</string><string name="share_link_copied">Link copiato negli appunti!</string><string name="settings_rate_app">Valuta l’app sul Play Store</string><string name="settings_share_app">Condividi app con amici</string><string name="settings_view_onboarding">Visualizza tutorial</string><string name="settings_about_header">Valutazione e Condivisione</string></resources>

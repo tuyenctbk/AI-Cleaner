@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI Opslag Cleaner</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_smart_clean">AI Slimme Reiniging</string>
+    <string name="title_duplicates">Gelijksoortige Foto\'s</string>
+    <string name="title_swipe_clean">Swipe Reiniging</string>
+    <string name="title_compressor">Media Compressor</string>
+    <string name="title_storage_explorer">Opslag Verkenner</string>
+    <string name="title_app_cache">App Cache Cleaner</string>
+    <string name="title_cleanup_history">Schoonmaak Historie</string>
+    <string name="title_smart_scheduler">Slimme Planner</string>
+    <string name="title_battery">Batterij &amp; Prestaties</string>
+    <string name="title_cloud_photos">Cloud Foto\'s</string>
+    <string name="title_storage_trends">Opslag Trends</string>
+    <string name="title_ai_insights">Gemini AI Inzichten</string>
+    <string name="title_settings">Instellingen</string>
+    <string name="title_vault_folder">Kluis Map</string>
+
+    <string name="btn_select_all">Alles selecteren</string>
+    <string name="btn_deselect_all">Alles deselecteren</string>
+    <string name="btn_confirm_bulk_delete">Massaal verwijderen bevestigen</string>
+    <string name="btn_pause_cleaning">Pauzeer reiniging</string>
+    <string name="btn_resume_cleaning">Hervat reiniging</string>
+    <string name="btn_run_auto_sort">Auto-sorteren uitvoeren</string>
+    <string name="btn_restore">Herstellen</string>
+    <string name="btn_delete">Verwijderen</string>
+    <string name="btn_clear_cache">Cache leegmaken</string>
+    <string name="btn_quick_clean">Veilige Snelle Reiniging</string>
+    <string name="btn_back">Terug</string>
+    <string name="btn_compare">Vergelijken</string>
+    <string name="btn_keep_best">Beste foto behouden</string>
+
+    <string name="label_smart_expiry">Slimme Verlooptijd</string>
+    <string name="label_downloads_expiry">Downloads Auto-verlopen</string>
+    <string name="label_days_30">30 Dagen</string>
+    <string name="label_days_60">60 Dagen</string>
+    <string name="label_days_90">90 Dagen</string>
+    <string name="label_off">Uit</string>
+    <string name="label_total_space_saved">Totaal te besparen ruimte</string>
+    <string name="label_vault_secured">Kluis Beveiligd</string>
+    <string name="label_cleaning_paused">Reiniging Gepauzeerd</string>
+    <string name="label_background_active">Achtergrondreiniging Actief</string>
+<string name="onboarding_skip">Overslaan</string><string name="onboarding_next">Volgende</string><string name="onboarding_get_started">Aan de slag</string><string name="onboarding_title_1">AI Opslag Opschonen</string><string name="onboarding_desc_1">Automatische Gemini AI-scan, opschonen van overbodige bestanden en cache-optimalisatie.</string><string name="onboarding_title_2">Galerij Opschonen via Vegen</string><string name="onboarding_desc_2">Veeg naar links om foto’s te verwijderen en naar rechts om herinneringen te bewaren.</string><string name="onboarding_title_3">Veilige Kluis &amp; Vervaldatum</string><string name="onboarding_desc_3">Sorteer bestanden naar een veilige kluis en stel vervalregels in voor downloads.</string><string name="rate_title">Blij met AI Opslag Opschonen?</string><string name="rate_desc">Uw feedback helpt ons om het opschonen nog sneller en slimmer te maken!</string><string name="rate_btn_submit">Beoordeel met 5 sterren in Play Store</string><string name="rate_btn_later">Herinner mij later</string><string name="rate_btn_no">Nee bedankt</string><string name="rate_success_toast">Bedankt voor uw 5-sterrenbeoordeling!</string><string name="share_title">Deel bespaarde opslagruimte met vrienden!</string><string name="share_desc">Help uw vrienden gigabytes aan opslagruimte vrij te maken op hun telefoon.</string><string name="share_btn_share">App delen via...</string><string name="share_btn_copy">Link kopiëren</string><string name="share_btn_later">Misschien later</string><string name="share_text_template">Probeer AI Opslag Opschonen! Ik heb zojuist gigabytes aan opslagruimte bespaard.</string><string name="share_link_copied">Link gekopieerd naar klembord!</string><string name="settings_rate_app">Beoordeel in de Play Store</string><string name="settings_share_app">Deel app met vrienden</string><string name="settings_view_onboarding">Bekijk de handleiding</string><string name="settings_about_header">Feedback en Delen</string></resources>

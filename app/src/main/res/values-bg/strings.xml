@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI Чистач на Памет</string>
+    <string name="title_dashboard">Табло</string>
+    <string name="title_smart_clean">AI Интелигентно Почистване</string>
+    <string name="title_duplicates">Подобни Снимки</string>
+    <string name="title_swipe_clean">Почистване с Плъзгане</string>
+    <string name="title_compressor">Компресиране на Медия</string>
+    <string name="title_storage_explorer">Анализ на Паметта</string>
+    <string name="title_app_cache">Изчистване на Кеша</string>
+    <string name="title_cleanup_history">История на Почистването</string>
+    <string name="title_smart_scheduler">Умен График</string>
+    <string name="title_battery">Батерия и Производителност</string>
+    <string name="title_cloud_photos">Снимки в Облака</string>
+    <string name="title_storage_trends">Трендове на Паметта</string>
+    <string name="title_ai_insights">Gemini AI Съвети</string>
+    <string name="title_settings">Настройки</string>
+    <string name="title_vault_folder">Защитена Сейф Папка</string>
+
+    <string name="btn_select_all">Избери Всички</string>
+    <string name="btn_deselect_all">Отмени Всички</string>
+    <string name="btn_confirm_bulk_delete">Потвърди Масово Изтриване</string>
+    <string name="btn_pause_cleaning">Пауза на Почистването</string>
+    <string name="btn_resume_cleaning">Възобнови Почистването</string>
+    <string name="btn_run_auto_sort">Пусни Автоматично Сортиране</string>
+    <string name="btn_restore">Възстанови</string>
+    <string name="btn_delete">Изтрий</string>
+    <string name="btn_clear_cache">Изчисти Кеша</string>
+    <string name="btn_quick_clean">Безопасно Бързо Почистване</string>
+    <string name="btn_back">Назад</string>
+    <string name="btn_compare">Сравни</string>
+    <string name="btn_keep_best">Запази Най-добрата Снимка</string>
+
+    <string name="label_smart_expiry">Умно Изтичане на Срок</string>
+    <string name="label_downloads_expiry">Авто-изтичане на Изтеглянията</string>
+    <string name="label_days_30">30 Дни</string>
+    <string name="label_days_60">60 Дни</string>
+    <string name="label_days_90">90 Дни</string>
+    <string name="label_off">Изкл</string>
+    <string name="label_total_space_saved">Общо Спестено Място</string>
+    <string name="label_vault_secured">Сейфът е Защитен</string>
+    <string name="label_cleaning_paused">Почистването е на Пауза</string>
+    <string name="label_background_active">Фоновото Почистване е Активно</string>
+<string name="onboarding_skip">Пропусни</string><string name="onboarding_next">Напред</string><string name="onboarding_get_started">Започнете</string><string name="onboarding_title_1">Почистване на памет с AI</string><string name="onboarding_desc_1">Автоматично сканиране с Gemini AI, премахване на излишни файлове и оптимизация на кеша.</string><string name="onboarding_title_2">Почистване на галерия с плъзгане</string><string name="onboarding_desc_2">Плъзнете наляво за изтриване на ненужни снимки и надясно за запазване на най-добрите.</string><string name="onboarding_title_3">Смарт сейф и изтичане на срок</string><string name="onboarding_desc_3">Автоматично сортиране в защитена папка и правила за изтичане на срока на изтеглянията.</string><string name="rate_title">Харесва ли ви Почистване на памет AI?</string><string name="rate_desc">Вашата обратна връзка ни помага да направим приложението по-бързо и по-умно!</string><string name="rate_btn_submit">Оценете с 5 звезди в Play Store</string><string name="rate_btn_later">Напомни ми по-късно</string><string name="rate_btn_no">Не, благодаря</string><string name="rate_success_toast">Благодарим ви за 5-звездната оценка!</string><string name="share_title">Споделете спестеното пространство с приятели!</string><string name="share_desc">Помогнете на приятелите си да освободят гигабайти памет на телефоните си.</string><string name="share_btn_share">Споделяне чрез...</string><string name="share_btn_copy">Копирай връзката</string><string name="share_btn_later">Може би по-късно</string><string name="share_text_template">Вижте Почистване на памет AI! Току-що освободих гигабайти памет на телефона си с AI почистване.</string><string name="share_link_copied">Връзката за споделяне е копирана!</string><string name="settings_rate_app">Оценете приложението в Play Store</string><string name="settings_share_app">Споделете приложението с приятели</string><string name="settings_view_onboarding">Преглед на ръководството</string><string name="settings_about_header">Отзиви и споделяне</string></resources>

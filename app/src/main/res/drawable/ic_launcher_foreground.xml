@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Glowing Storage Gauge Arc (Left & Bottom) -->
+    <path
+        android:pathData="M 54,16 A 38,38 0 1,0 92,54"
+        android:strokeWidth="2.5"
+        android:strokeColor="#80FFFFFF"
+        android:strokeLineCap="round" />
+
+    <!-- Active Optimization Sweep (Right & Top) - Radiant Cyan Arc -->
+    <path
+        android:pathData="M 92,54 A 38,38 0 0,0 54,16"
+        android:strokeWidth="3.5"
+        android:strokeColor="#FF00FFF0"
+        android:strokeLineCap="round" />
+
+    <!-- Central Sleek Mobile Device Frame -->
+    <path
+        android:pathData="M 43,28 h 22 a 5,5 0 0,1 5,5 v 42 a 5,5 0 0,1 -5,5 H 43 a 5,5 0 0,1 -5,-5 V 33 a 5,5 0 0,1 5,-5 Z"
+        android:fillColor="#20000000"
+        android:strokeWidth="2.5"
+        android:strokeColor="#FFFFFF" />
+
+    <!-- Status Bar Divider -->
+    <path
+        android:pathData="M 40,35 h 28"
+        android:strokeWidth="1"
+        android:strokeColor="#40FFFFFF" />
+
+    <!-- Speaker / Camera Notch -->
+    <path
+        android:pathData="M 51,31.5 h 6"
+        android:strokeWidth="1.5"
+        android:strokeColor="#80FFFFFF"
+        android:strokeLineCap="round" />
+
+    <!-- Inner UI Elements: File block 1 -->
+    <path
+        android:pathData="M 44,42 h 14"
+        android:strokeWidth="3.5"
+        android:strokeColor="#80FFFFFF"
+        android:strokeLineCap="round" />
+
+    <!-- Inner UI Elements: File block 2 -->
+    <path
+        android:pathData="M 44,48 h 20"
+        android:strokeWidth="3.5"
+        android:strokeColor="#FF00FFF0"
+        android:strokeLineCap="round" />
+
+    <!-- Inner UI Elements: File block 3 -->
+    <path
+        android:pathData="M 44,54 h 8"
+        android:strokeWidth="3.5"
+        android:strokeColor="#80FFFFFF"
+        android:strokeLineCap="round" />
+
+    <!-- Storage Clean Donut Graphic inside screen -->
+    <path
+        android:pathData="M 54,65 A 4,4 0 1,1 50,65"
+        android:strokeWidth="1.5"
+        android:strokeColor="#FF00FFF0"
+        android:strokeLineCap="round" />
+
+    <!-- Navigation / Home Indicator -->
+    <path
+        android:pathData="M 50,74 h 8"
+        android:strokeWidth="1.5"
+        android:strokeColor="#40FFFFFF"
+        android:strokeLineCap="round" />
+
+    <!-- Large AI Sparkle (Gold / Yellow Accent on upper right) -->
+    <path
+        android:pathData="M 78,20 Q 78,30 88,30 Q 78,30 78,40 Q 78,30 68,30 Q 78,30 78,20 Z"
+        android:fillColor="#FFD700" />
+
+    <!-- Small AI Sparkle (Cyan Accent on bottom left) -->
+    <path
+        android:pathData="M 30,68 Q 30,73 35,73 Q 30,73 30,78 Q 30,73 25,73 Q 30,73 30,68 Z"
+        android:fillColor="#FF00FFF0" />
+
+    <!-- Secondary Tiny Sparkle (Cyan Accent on bottom right) -->
+    <path
+        android:pathData="M 76,64 Q 76,68 80,68 Q 76,68 76,72 Q 76,68 72,68 Q 76,68 76,64 Z"
+        android:fillColor="#FF00FFF0" />
+
+</vector>

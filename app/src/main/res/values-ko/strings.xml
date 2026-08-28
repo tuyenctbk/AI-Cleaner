@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI 저장공간 클리너</string>
+    <string name="title_dashboard">대시보드</string>
+    <string name="title_smart_clean">AI 스마트 정리</string>
+    <string name="title_duplicates">비슷한 사진</string>
+    <string name="title_swipe_clean">스ワイ프 정리</string>
+    <string name="title_compressor">미디어 압축기</string>
+    <string name="title_storage_explorer">저장공간 탐색기</string>
+    <string name="title_app_cache">앱 캐시 정리</string>
+    <string name="title_cleanup_history">정리 기록</string>
+    <string name="title_smart_scheduler">스마트 스케줄러</string>
+    <string name="title_battery">배터리 및 성능</string>
+    <string name="title_cloud_photos">클라우드 동기화 사진</string>
+    <string name="title_storage_trends">저장공간 추이</string>
+    <string name="title_ai_insights">Gemini AI 인사이트</string>
+    <string name="title_settings">설정 및 환경설정</string>
+    <string name="title_vault_folder">보안 금고 폴더</string>
+
+    <string name="btn_select_all">전체 선택</string>
+    <string name="btn_deselect_all">선택 해제</string>
+    <string name="btn_confirm_bulk_delete">일괄 삭제 확인</string>
+    <string name="btn_pause_cleaning">정리 일시정지</string>
+    <string name="btn_resume_cleaning">정리 재개</string>
+    <string name="btn_run_auto_sort">자동 분류 실행</string>
+    <string name="btn_restore">복원</string>
+    <string name="btn_delete">삭제</string>
+    <string name="btn_clear_cache">캐시 삭제</string>
+    <string name="btn_quick_clean">안전 빠른 정리</string>
+    <string name="btn_back">뒤로가기</string>
+    <string name="btn_compare">비교하기</string>
+    <string name="btn_keep_best">최고의 사진 보존</string>
+
+    <string name="label_smart_expiry">스마트 만료 엔진</string>
+    <string name="label_downloads_expiry">다운로드 자동 만료</string>
+    <string name="label_days_30">30일</string>
+    <string name="label_days_60">60일</string>
+    <string name="label_days_90">90일</string>
+    <string name="label_off">꺼짐</string>
+    <string name="label_total_space_saved">절약할 총 용량</string>
+    <string name="label_vault_secured">금고 보호됨</string>
+    <string name="label_cleaning_paused">정리 프로세스 일시정지됨</string>
+    <string name="label_background_active">백그라운드 정리 활성화됨</string>
+<string name="onboarding_skip">건너뛰기</string><string name="onboarding_next">다음</string><string name="onboarding_get_started">시작하기</string><string name="onboarding_title_1">AI 기반 저장공간 정리</string><string name="onboarding_desc_1">Gemini AI 자동 스캔으로 불필요한 파일 삭제 및 캐시를 한 번에 정리하세요.</string><string name="onboarding_title_2">스와이프 갤러리 정리</string><string name="onboarding_desc_2">왼쪽 스와이프로 불필요한 사진을 삭제하고, 오른쪽 스와이프로 소중한 사진을 보관하세요.</string><string name="onboarding_title_3">안전 보관함 &amp; 자동 만료</string><string name="onboarding_desc_3">중요한 미디어를 안전 보관함에 분류하고 다운로드 파일의 만료 규칙을 설정하세요.</string><string name="rate_title">AI 저장공간 정리에 만족하셨나요?</string><string name="rate_desc">소중한 리뷰는 더 빠르고 똑똑한 저장공간 정리 기능을 만드는 데 큰 힘이 됩니다!</string><string name="rate_btn_submit">Play 스토어에서 별점 5점 주기</string><string name="rate_btn_later">나중에 알림</string><string name="rate_btn_no">괜찮습니다</string><string name="rate_success_toast">별점 5점을 주셔서 정말 감사합니다!</string><string name="share_title">절약한 저장공간을 친구들과 공유하세요!</string><string name="share_desc">친구들의 스마트폰 저장공간 부족 문제를 함께 해결해 보세요.</string><string name="share_btn_share">앱 공유하기...</string><string name="share_btn_copy">공유 링크 복사</string><string name="share_btn_later">나중에</string><string name="share_text_template">AI 저장공간 정리 앱을 사용해 보세요! AI 정리 기능으로 스마트폰 용량을 크게 확보했습니다.</string><string name="share_link_copied">공유 링크가 클립보드에 복사되었습니다!</string><string name="settings_rate_app">Play 스토어에서 평가하기</string><string name="settings_share_app">친구에게 앱 공유하기</string><string name="settings_view_onboarding">튜토리얼 다시 보기</string><string name="settings_about_header">피드백 및 앱 공유</string></resources>

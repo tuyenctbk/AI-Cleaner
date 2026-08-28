@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI Καθαριστής Χώρου</string>
+    <string name="title_dashboard">Πίνακας Ελέγχου</string>
+    <string name="title_smart_clean">Έξυπνος Καθαρισμός AI</string>
+    <string name="title_duplicates">Παρόμοιες Φωτογραφίες</string>
+    <string name="title_swipe_clean">Καθαρισμός με Σύρσιμο</string>
+    <string name="title_compressor">Συμπίεση Πολυμέσων</string>
+    <string name="title_storage_explorer">Εξερεύνηση Χώρου</string>
+    <string name="title_app_cache">Καθαρισμός Cache Εφαρμογών</string>
+    <string name="title_cleanup_history">Ιστορικό Καθαρισμού</string>
+    <string name="title_smart_scheduler">Έξυπνος Προγραμματισμός</string>
+    <string name="title_battery">Μπαταρία &amp; Απόδοση</string>
+    <string name="title_cloud_photos">Φωτογραφίες Cloud</string>
+    <string name="title_storage_trends">Τάσεις Χώρου</string>
+    <string name="title_ai_insights">Συμβουλές Gemini AI</string>
+    <string name="title_settings">Ρυθμίσεις</string>
+    <string name="title_vault_folder">Ασφαλές Χαρτοφυλάκιο</string>
+
+    <string name="btn_select_all">Επιλογή Όλων</string>
+    <string name="btn_deselect_all">Αποεπιλογή Όλων</string>
+    <string name="btn_confirm_bulk_delete">Επιβεβαίωση Μαζικής Διαγραφής</string>
+    <string name="btn_pause_cleaning">Παύση Καθαρισμού</string>
+    <string name="btn_resume_cleaning">Συνέχιση Καθαρισμού</string>
+    <string name="btn_run_auto_sort">Εκτέλεση Αυτόματης Ταξινόμησης</string>
+    <string name="btn_restore">Επαναφορά</string>
+    <string name="btn_delete">Διαγραφή</string>
+    <string name="btn_clear_cache">Εκκαθάριση Cache</string>
+    <string name="btn_quick_clean">Ασφαλής Γρήγορος Καθαρισμός</string>
+    <string name="btn_back">Πίσω</string>
+    <string name="btn_compare">Σύγκριση</string>
+    <string name="btn_keep_best">Διατήρηση Καλύτερης Φωτογραφίας</string>
+
+    <string name="label_smart_expiry">Έξυπνη Λήξη</string>
+    <string name="label_downloads_expiry">Αυτόματη Λήξη Λήψεων</string>
+    <string name="label_days_30">30 Ημέρες</string>
+    <string name="label_days_60">60 Ημέρες</string>
+    <string name="label_days_90">90 Ημέρες</string>
+    <string name="label_off">Off</string>
+    <string name="label_total_space_saved">Συνολικός Χώρος προς Εξοικονόμηση</string>
+    <string name="label_vault_secured">Χαρτοφυλάκιο Προστατευμένο</string>
+    <string name="label_cleaning_paused">Διαδικασία Καθαρισμού σε Παύση</string>
+    <string name="label_background_active">Καθαρισμός στο Παρασκήνιο Ενεργός</string>
+<string name="onboarding_skip">Παράλειψη</string><string name="onboarding_next">Επόμενο</string><string name="onboarding_get_started">Ξεκινήστε</string><string name="onboarding_title_1">Καθαριστής Χώρου με AI</string><string name="onboarding_desc_1">Αυτόματη σάρωση Gemini AI, εκκαθάριση άχρηστων αρχείων και βελτιστοποίηση cache.</string><string name="onboarding_title_2">Καθαρισμός Συλλογής με Σύρσιμο</string><string name="onboarding_desc_2">Σύρετε αριστερά για διαγραφή ανεπιθύμητων φωτογραφιών και δεξιά για διατήρηση.</string><string name="onboarding_title_3">Έξυπνο Χρηματοκιβώτιο &amp; Λήξη</string><string name="onboarding_desc_3">Αυτόματη ταξινόμηση αρχείων σε ασφαλές χρηματοκιβώτιο και κανόνες λήξης λήψεων.</string><string name="rate_title">Σας αρέσει ο Καθαριστής Χώρου AI;</string><string name="rate_desc">Η αξιολόγησή σας μας βοηθά να κάνουμε την εφαρμογή ακόμα καλύτερη!</string><string name="rate_btn_submit">Αξιολογήστε με 5 αστέρια στο Play Store</string><string name="rate_btn_later">Υπενθύμιση αργότερα</string><string name="rate_btn_no">Όχι ευχαριστώ</string><string name="rate_success_toast">Σας ευχαριστούμε για την αξιολόγηση 5 αστέρων!</string><string name="share_title">Μοιραστείτε την εξοικονόμηση χώρου!</string><string name="share_desc">Βοηθήστε τους φίλους σας να ελευθερώσουν gigabytes στο τηλέφωνό τους.</string><string name="share_btn_share">Κοινοποίηση εφαρμογής μέσω...</string><string name="share_btn_copy">Αντιγραφή συνδέσμου</string><string name="share_btn_later">Ίσως αργότερα</string><string name="share_text_template">Δοκιμάστε τον Καθαριστή Χώρου AI! Μόλις εξοικονόμησα gigabytes στο τηλέφωνό μου.</string><string name="share_link_copied">Ο σύνδεσμος αντιγράφηκε στο πρόχειρο!</string><string name="settings_rate_app">Αξιολόγηση στο Play Store</string><string name="settings_share_app">Κοινοποίηση σε φίλους</string><string name="settings_view_onboarding">Προβολή οδηγού</string><string name="settings_about_header">Σχόλια &amp; Κοινοποίηση</string></resources>

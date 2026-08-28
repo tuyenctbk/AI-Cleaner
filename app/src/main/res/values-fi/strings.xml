@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI Tallennustilan Puhdistaja</string>
+    <string name="title_dashboard">Kojelauta</string>
+    <string name="title_smart_clean">AI Älykäs Puhdistus</string>
+    <string name="title_duplicates">Samankaltaiset Kuvat</string>
+    <string name="title_swipe_clean">Pyyhkäisypuhdistus</string>
+    <string name="title_compressor">Median Pakkaus</string>
+    <string name="title_storage_explorer">Tallennustilan Selain</string>
+    <string name="title_app_cache">Sovellusten Välimuistin Puhdistaja</string>
+    <string name="title_cleanup_history">Puhdistushistoria</string>
+    <string name="title_smart_scheduler">Älykäs Ajastin</string>
+    <string name="title_battery">Akku &amp; Suorituskyky</string>
+    <string name="title_cloud_photos">Pilvikuvat</string>
+    <string name="title_storage_trends">Tallennustilan Trendit</string>
+    <string name="title_ai_insights">Gemini AI Vinkit</string>
+    <string name="title_settings">Asetukset</string>
+    <string name="title_vault_folder">Suojattu Holvikansio</string>
+
+    <string name="btn_select_all">Valitse Kaikki</string>
+    <string name="btn_deselect_all">Poista Valinnat</string>
+    <string name="btn_confirm_bulk_delete">Vahvista Joukkopoisto</string>
+    <string name="btn_pause_cleaning">Keskeytä Puhdistus</string>
+    <string name="btn_resume_cleaning">Jatka Puhdistusta</string>
+    <string name="btn_run_auto_sort">Suorita Automaattinen Järjestely</string>
+    <string name="btn_restore">Palauta</string>
+    <string name="btn_delete">Poista</string>
+    <string name="btn_clear_cache">Tyhjennä Välimuisti</string>
+    <string name="btn_quick_clean">Turvallinen Pikapuhdistus</string>
+    <string name="btn_back">Takaisin</string>
+    <string name="btn_compare">Vertaa</string>
+    <string name="btn_keep_best">Säilytä Paras Kuva</string>
+
+    <string name="label_smart_expiry">Älykäs Vanhentumissääntö</string>
+    <string name="label_downloads_expiry">Latausten Automaattinen Vanhentuminen</string>
+    <string name="label_days_30">30 Päivää</string>
+    <string name="label_days_60">60 Päivää</string>
+    <string name="label_days_90">90 Päivää</string>
+    <string name="label_off">Pois</string>
+    <string name="label_total_space_saved">Säästettävä Kokonaistila</string>
+    <string name="label_vault_secured">Holvi Suojattu</string>
+    <string name="label_cleaning_paused">Puhdistus Prosessi Keskeytetty</string>
+    <string name="label_background_active">Taustapuhdistus Aktiivinen</string>
+<string name="onboarding_skip">Ohita</string><string name="onboarding_next">Seuraava</string><string name="onboarding_get_started">Aloita</string><string name="onboarding_title_1">Tekoälyllä toimiva Puhdistaja</string><string name="onboarding_desc_1">Automaattinen Gemini AI -skannaus, turhien tiedostojen poisto ja välimuistin optimointi.</string><string name="onboarding_title_2">Pyyhkäisypuhdistus Galleria</string><string name="onboarding_desc_2">Pyyhkäise vasemmalle poistaaksesi kuvat ja oikealle säilyttääksesi ne.</string><string name="onboarding_title_3">Älykäs Holvi ja Vanheneminen</string><string name="onboarding_desc_3">Automaattinen tiedostojen lajittelu turvaholviin ja latausten vanhenemissäännöt.</string><string name="rate_title">Pidätkö AI Tallennustilan Puhdistuksesta?</string><string name="rate_desc">Palautteesi auttaa meitä tekemään laitteen puhdistamisesta entistä nopeampaa!</string><string name="rate_btn_submit">Anna 5 tähteä Play Storessa</string><string name="rate_btn_later">Muistuta myöhemmin</string><string name="rate_btn_no">Ei kiitos</string><string name="rate_success_toast">Kiitos 5 tähden arviostasi!</string><string name="share_title">Jaa säästetty tallennustila ystäville!</string><string name="share_desc">Auta ystäviäsi vapauttamaan gigatavuittain tilaa puhelimistaan.</string><string name="share_btn_share">Jaa sovellus...</string><string name="share_btn_copy">Kopioi linkki</string><string name="share_btn_later">Ehkä myöhemmin</string><string name="share_text_template">Kokeile AI Tallennustilan Puhdistusta! Vapautin juuri gigatavuittain tilaa puhelimestani.</string><string name="share_link_copied">Linkki kopioitu leikepöydälle!</string><string name="settings_rate_app">Arvioi Play Storessa</string><string name="settings_share_app">Jaa sovellus ystäville</string><string name="settings_view_onboarding">Näytä opastus</string><string name="settings_about_header">Palaute ja jakaminen</string></resources>

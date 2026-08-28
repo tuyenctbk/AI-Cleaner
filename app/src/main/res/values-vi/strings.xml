@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI Dọn Dẹp Dung Lượng</string>
+    <string name="title_dashboard">Bảng Điều Khiển</string>
+    <string name="title_smart_clean">Dọn Dẹp Thông Minh AI</string>
+    <string name="title_duplicates">Ảnh Tương Tự</string>
+    <string name="title_swipe_clean">Dọn Dẹp Vuốt</string>
+    <string name="title_compressor">Nén Tệp Mới</string>
+    <string name="title_storage_explorer">Quản Lý Bộ Nhớ</string>
+    <string name="title_app_cache">Dọn Bộ Nhớ Đệm</string>
+    <string name="title_cleanup_history">Lịch Sử Dọn Dẹp</string>
+    <string name="title_smart_scheduler">Lịch Tự Động</string>
+    <string name="title_battery">Pin &amp; Hiệu Năng</string>
+    <string name="title_cloud_photos">Ảnh Đám Mây</string>
+    <string name="title_storage_trends">Xu Hướng Dung Lượng</string>
+    <string name="title_ai_insights">Gợi Ý Gemini AI</string>
+    <string name="title_settings">Cài Đặt</string>
+    <string name="title_vault_folder">Thư Mục Bảo Mật</string>
+
+    <string name="btn_select_all">Chọn Tất Cả</string>
+    <string name="btn_deselect_all">Bỏ Chọn Tất Cả</string>
+    <string name="btn_confirm_bulk_delete">Xác Nhận Xóa Hàng Loạt</string>
+    <string name="btn_pause_cleaning">Tạm Dừng Dọn Dẹp</string>
+    <string name="btn_resume_cleaning">Tiếp Tục Dọn Dẹp</string>
+    <string name="btn_run_auto_sort">Chạy Tự Động Phân Loại</string>
+    <string name="btn_restore">Khôi Phục</string>
+    <string name="btn_delete">Xóa</string>
+    <string name="btn_clear_cache">Xóa Bộ Nhớ Đệm</string>
+    <string name="btn_quick_clean">Dọn Nhanh An Toàn</string>
+    <string name="btn_back">Quay Lại</string>
+    <string name="btn_compare">So Sánh</string>
+    <string name="btn_keep_best">Giữ Ảnh Đẹp Nhất</string>
+
+    <string name="label_smart_expiry">Hạn Tự Động Thông Minh</string>
+    <string name="label_downloads_expiry">Tự Động Hết Hạn Tải Về</string>
+    <string name="label_days_30">30 Ngày</string>
+    <string name="label_days_60">60 Ngày</string>
+    <string name="label_days_90">90 Ngày</string>
+    <string name="label_off">Tắt</string>
+    <string name="label_total_space_saved">Tổng Dung Lượng Sẽ Tiết Kiệm</string>
+    <string name="label_vault_secured">Thư Mục Được Bảo Vệ</string>
+    <string name="label_cleaning_paused">Tiến Trình Đã Tạm Dừng</string>
+    <string name="label_background_active">Dọn Dẹp Chạy An Toàn</string>
+<string name="onboarding_skip">Bỏ qua</string><string name="onboarding_next">Tiếp theo</string><string name="onboarding_get_started">Bắt đầu ngay</string><string name="onboarding_title_1">Dọn Dẹp Bộ Nhớ AI Thông Minh</string><string name="onboarding_desc_1">Quét tự động với Gemini AI, xóa tệp rác và tối ưu hóa bộ nhớ đệm nhanh chóng.</string><string name="onboarding_title_2">Vuốt Dọn Dẹp Thư Viện Ảnh</string><string name="onboarding_desc_2">Vuốt sang trái để xóa ảnh thừa, vuốt sang phải để giữ lại ảnh đẹp.</string><string name="onboarding_title_3">Két An Toàn &amp; Tệp Cũ Expiry</string><string name="onboarding_desc_3">Phân loại ảnh vào két an toàn và thiết lập quy tắc tự động nhắc nhở dọn tệp tải về cũ.</string><string name="rate_title">Bạn thích ứng dụng Dọn Dẹp Bộ Nhớ AI?</string><string name="rate_desc">Đánh giá của bạn sẽ giúp chúng tôi phát triển ứng dụng thông minh hơn!</string><string name="rate_btn_submit">Đánh giá 5 sao trên Play Store</string><string name="rate_btn_later">Nhắc tôi sau</string><string name="rate_btn_no">Không, cảm ơn</string><string name="rate_success_toast">Cảm ơn bạn đã đánh giá 5 sao!</string><string name="share_title">Chia sẻ dung lượng tiết kiệm với bạn bè!</string><string name="share_desc">Giúp bạn bè giải phóng hàng gigabyte bộ nhớ trên điện thoại.</string><string name="share_btn_share">Chia sẻ ứng dụng qua...</string><string name="share_btn_copy">Sao chép liên kết chia sẻ</string><string name="share_btn_later">Để sau</string><string name="share_text_template">Trải nghiệm Dọn Dẹp Bộ Nhớ AI! Tôi vừa tiết kiệm được hàng GB dung lượng trên điện thoại.</string><string name="share_link_copied">Đã sao chép liên kết chia sẻ!</string><string name="settings_rate_app">Đánh giá ứng dụng trên Play Store</string><string name="settings_share_app">Chia sẻ ứng dụng với bạn bè</string><string name="settings_view_onboarding">Xem lại hướng dẫn sử dụng</string><string name="settings_about_header">Đánh giá &amp; Chia sẻ</string></resources>

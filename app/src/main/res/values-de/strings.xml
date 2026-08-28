@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">KI Speicher-Reiniger</string>
+    <string name="title_dashboard">Übersicht</string>
+    <string name="title_smart_clean">KI Intelligente Reinigung</string>
+    <string name="title_duplicates">Ähnliche Fotos</string>
+    <string name="title_swipe_clean">Wisch-Reinigung</string>
+    <string name="title_compressor">Medien-Komprimierung</string>
+    <string name="title_storage_explorer">Speicher-Explorer</string>
+    <string name="title_app_cache">App-Cache Reiniger</string>
+    <string name="title_cleanup_history">Bereinigungsverlauf</string>
+    <string name="title_smart_scheduler">Intelligenter Zeitplan</string>
+    <string name="title_battery">Akku &amp; Leistung</string>
+    <string name="title_cloud_photos">Cloud-Fotos</string>
+    <string name="title_storage_trends">Speicher-Trends</string>
+    <string name="title_ai_insights">Gemini KI Einblicke</string>
+    <string name="title_settings">Einstellungen</string>
+    <string name="title_vault_folder">Tresor-Ordner</string>
+
+    <string name="btn_select_all">Alle auswählen</string>
+    <string name="btn_deselect_all">Alle abwählen</string>
+    <string name="btn_confirm_bulk_delete">Massenlöschung bestätigen</string>
+    <string name="btn_pause_cleaning">Reinigung pausieren</string>
+    <string name="btn_resume_cleaning">Reinigung fortsetzen</string>
+    <string name="btn_run_auto_sort">Auto-Sortierung starten</string>
+    <string name="btn_restore">Wiederherstellen</string>
+    <string name="btn_delete">Löschen</string>
+    <string name="btn_clear_cache">Cache leeren</string>
+    <string name="btn_quick_clean">Sichere Schnellreinigung</string>
+    <string name="btn_back">Zurück</string>
+    <string name="btn_compare">Vergleichen</string>
+    <string name="btn_keep_best">Bestes Foto behalten</string>
+
+    <string name="label_smart_expiry">Intelligenter Ablauf-Motor</string>
+    <string name="label_downloads_expiry">Downloads Auto-Ablauf</string>
+    <string name="label_days_30">30 Tage</string>
+    <string name="label_days_60">60 Tage</string>
+    <string name="label_days_90">90 Tage</string>
+    <string name="label_off">Aus</string>
+    <string name="label_total_space_saved">Eingesparter Speicherplatz</string>
+    <string name="label_vault_secured">Tresor Geschützt</string>
+    <string name="label_cleaning_paused">Reinigung pausiert</string>
+    <string name="label_background_active">Hintergrundreinigung aktiv</string>
+<string name="onboarding_skip">Überspringen</string><string name="onboarding_next">Weiter</string><string name="onboarding_get_started">Jetzt starten</string><string name="onboarding_title_1">KI-gestützter Speicher-Reiniger</string><string name="onboarding_desc_1">Automatische Gemini-KI-Überprüfung, Bereinigung von Datenmüll und Cache-Optimierung.</string><string name="onboarding_title_2">Galerie-Reinigung durch Wischen</string><string name="onboarding_desc_2">Wischen Sie nach links zum Löschen und nach rechts zum Behalten Ihrer Fotos.</string><string name="onboarding_title_3">Sicherer Tresor &amp; Ablaufzeit</string><string name="onboarding_desc_3">Automatische Sortierung von Dateien in einen Tresor und Regeln für Downloads.</string><string name="rate_title">Gefällt Ihnen der KI Speicher Reiniger?</string><string name="rate_desc">Ihr Feedback hilft uns, die Speicherbereinigung noch schneller zu machen!</string><string name="rate_btn_submit">Mit 5 Sternen im Play Store bewerten</string><string name="rate_btn_later">Später erinnern</string><string name="rate_btn_no">Nein danke</string><string name="rate_success_toast">Vielen Dank für Ihre 5-Sterne-Bewertung!</string><string name="share_title">Teilen Sie den Speicher-Erfolg mit Freunden!</string><string name="share_desc">Helfen Sie Ihren Freunden, Gigabytes an Speicherplatz freizugeben.</string><string name="share_btn_share">App teilen über...</string><string name="share_btn_copy">Link kopieren</string><string name="share_btn_later">Vielleicht später</string><string name="share_text_template">Testen Sie den KI Speicher Reiniger! Ich habe gerade Gigabytes an Speicherplatz auf meinem Smartphone gespart.</string><string name="share_link_copied">Link in die Zwischenablage kopiert!</string><string name="settings_rate_app">App im Play Store bewerten</string><string name="settings_share_app">App mit Freunden teilen</string><string name="settings_view_onboarding">Anleitung anzeigen</string><string name="settings_about_header">App-Feedback &amp; Teilen</string></resources>

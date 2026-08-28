@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI Lagringsrensare</string>
+    <string name="title_dashboard">Översikt</string>
+    <string name="title_smart_clean">AI Smart Rensning</string>
+    <string name="title_duplicates">Liknande Foton</string>
+    <string name="title_swipe_clean">Sveprensning</string>
+    <string name="title_compressor">Mediakomprimerare</string>
+    <string name="title_storage_explorer">Lagringsutforskare</string>
+    <string name="title_app_cache">App-Cachrensare</string>
+    <string name="title_cleanup_history">Rensningshistorik</string>
+    <string name="title_smart_scheduler">Smart Schemaläggare</string>
+    <string name="title_battery">Batteri &amp; Prestanda</string>
+    <string name="title_cloud_photos">Molnfoton</string>
+    <string name="title_storage_trends">Lagringstrender</string>
+    <string name="title_ai_insights">Gemini AI Insikter</string>
+    <string name="title_settings">Inställningar</string>
+    <string name="title_vault_folder">Säker Vault-Mapp</string>
+
+    <string name="btn_select_all">Markera Alla</string>
+    <string name="btn_deselect_all">Avmarkera Alla</string>
+    <string name="btn_confirm_bulk_delete">Bekräfta Massradering</string>
+    <string name="btn_pause_cleaning">Pausa Rensning</string>
+    <string name="btn_resume_cleaning">Återuppta Rensning</string>
+    <string name="btn_run_auto_sort">Kör Automatisk Sortering</string>
+    <string name="btn_restore">Återställ</string>
+    <string name="btn_delete">Radera</string>
+    <string name="btn_clear_cache">Rensa Cache</string>
+    <string name="btn_quick_clean">Säker Snabbrensning</string>
+    <string name="btn_back">Tillbaka</string>
+    <string name="btn_compare">Jämför</string>
+    <string name="btn_keep_best">Behåll Bästa Bilden</string>
+
+    <string name="label_smart_expiry">Smart Utgångsregel</string>
+    <string name="label_downloads_expiry">Auto-utgång för Nedladdningar</string>
+    <string name="label_days_30">30 Dagar</string>
+    <string name="label_days_60">60 Dagar</string>
+    <string name="label_days_90">90 Dagar</string>
+    <string name="label_off">Av</string>
+    <string name="label_total_space_saved">Totalt Utrymme Att Spara</string>
+    <string name="label_vault_secured">Vault Skyddad</string>
+    <string name="label_cleaning_paused">Rensning Pausad</string>
+    <string name="label_background_active">Bakgrundsrensning Aktiv</string>
+<string name="onboarding_skip">Hoppa över</string><string name="onboarding_next">Nästa</string><string name="onboarding_get_started">Börja nu</string><string name="onboarding_title_1">AI-driven Lagringsrensare</string><string name="onboarding_desc_1">Automatisk Gemini AI-skanning, radering av skräpfiler och optimering av app-cache.</string><string name="onboarding_title_2">Svep-galleri Rensing</string><string name="onboarding_desc_2">Svep till vänster för att radera foton och till höger för att behålla dina minnen.</string><string name="onboarding_title_3">Säkert Valv och Utgångsdatum</string><string name="onboarding_desc_3">Sortera filer till ett säkert valv och ställ in utgångsregler för nedladdade filer.</string><string name="rate_title">Gillar du AI Lagringsrensare?</string><string name="rate_desc">Din feedback hjälper oss att göra enhetsrensningen ännu snabbare!</string><string name="rate_btn_submit">Betygsätt 5 stjärnor på Play Store</string><string name="rate_btn_later">Påminn mig senare</string><string name="rate_btn_no">Nej tack</string><string name="rate_success_toast">Tack för ditt 5-stjärniga betyg!</string><string name="share_title">Dela din sparade lagring med vänner!</string><string name="share_desc">Hjälp dina vänner att frigöra gigabyte med utrymme på sin telefon.</string><string name="share_btn_share">Dela app via...</string><string name="share_btn_copy">Kopiera länk</string><string name="share_btn_later">Kanske senare</string><string name="share_text_template">Kolla in AI Lagringsrensare! Jag sparade nyss gigabyte med utrymme på min telefon.</string><string name="share_link_copied">Länken har kopierats!</string><string name="settings_rate_app">Betygsätt appen på Play Store</string><string name="settings_share_app">Dela appen med vänner</string><string name="settings_view_onboarding">Visa introduktion</string><string name="settings_about_header">Feedback och delning</string></resources>

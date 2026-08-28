@@ -1,0 +1,6 @@
+{
+  "name": "AI Cleaner",
+  "description": "Smart AI-powered phone cleaner & storage optimizer with duplicate photo removal, compressor, swipe gallery cleaner, and deep storage breakdown — 100% free and no ads.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

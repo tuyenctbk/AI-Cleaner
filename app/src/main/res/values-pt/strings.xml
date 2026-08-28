@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI Limpador de Armazenamento</string>
+    <string name="title_dashboard">Painel Principal</string>
+    <string name="title_smart_clean">Limpeza Inteligente IA</string>
+    <string name="title_duplicates">Fotos Semelhantes</string>
+    <string name="title_swipe_clean">Limpeza por Deslize</string>
+    <string name="title_compressor">Compressor de Mídia</string>
+    <string name="title_storage_explorer">Explorador de Armazenamento</string>
+    <string name="title_app_cache">Limpador de Cache</string>
+    <string name="title_cleanup_history">Histórico de Limpeza</string>
+    <string name="title_smart_scheduler">Agendador Inteligente</string>
+    <string name="title_battery">Bateria e Desempenho</string>
+    <string name="title_cloud_photos">Fotos na Nuvem</string>
+    <string name="title_storage_trends">Tendências de Espaço</string>
+    <string name="title_ai_insights">Dicas Gemini IA</string>
+    <string name="title_settings">Configurações</string>
+    <string name="title_vault_folder">Pasta Cofre Segura</string>
+
+    <string name="btn_select_all">Selecionar Tudo</string>
+    <string name="btn_deselect_all">Desmarcar Tudo</string>
+    <string name="btn_confirm_bulk_delete">Confirmar Exclusão em Massa</string>
+    <string name="btn_pause_cleaning">Pausar Limpeza</string>
+    <string name="btn_resume_cleaning">Retomar Limpeza</string>
+    <string name="btn_run_auto_sort">Organização Automática</string>
+    <string name="btn_restore">Restaurar</string>
+    <string name="btn_delete">Excluir</string>
+    <string name="btn_clear_cache">Limpar Cache</string>
+    <string name="btn_quick_clean">Limpeza Rápida Segura</string>
+    <string name="btn_back">Voltar</string>
+    <string name="btn_compare">Comparar</string>
+    <string name="btn_keep_best">Manter Melhor Foto</string>
+
+    <string name="label_smart_expiry">Expiração Inteligente</string>
+    <string name="label_downloads_expiry">Auto-Expiração de Downloads</string>
+    <string name="label_days_30">30 Dias</string>
+    <string name="label_days_60">60 Dias</string>
+    <string name="label_days_90">90 Dias</string>
+    <string name="label_off">Desligado</string>
+    <string name="label_total_space_saved">Espaço Total a Salvar</string>
+    <string name="label_vault_secured">Cofre Protegido</string>
+    <string name="label_cleaning_paused">Processos Pausados</string>
+    <string name="label_background_active">Limpeza Ativa em Segundo Plano</string>
+<string name="onboarding_skip">Pular</string><string name="onboarding_next">Avançar</string><string name="onboarding_get_started">Começar</string><string name="onboarding_title_1">Limpador de Armazenamento com IA</string><string name="onboarding_desc_1">Varredura automática com Gemini IA, remoção de arquivos desnecessários e otimização de cache.</string><string name="onboarding_title_2">Limpeza de Galeria por Deslize</string><string name="onboarding_desc_2">Deslize para a esquerda para apagar fotos e para a direita para guardar suas memórias.</string><string name="onboarding_title_3">Cofre Seguro &amp; Expiração</string><string name="onboarding_desc_3">Organize arquivos em um cofre seguro e defina regras de expiração de downloads.</string><string name="rate_title">Gostando do Limpador de Armazenamento?</string><string name="rate_desc">Sua avaliação nos ajuda a deixar a limpeza do dispositivo ainda mais rápida!</string><string name="rate_btn_submit">Avaliar com 5 Estrelas na Play Store</string><string name="rate_btn_later">Lembrar mais tarde</string><string name="rate_btn_no">Não, obrigado</string><string name="rate_success_toast">Obrigado por nos avaliar com 5 estrelas!</string><string name="share_title">Compartilhe a economia de espaço com amigos!</string><string name="share_desc">Ajude seus amigos a liberar gigabytes de armazenamento no celular.</string><string name="share_btn_share">Compartilhar aplicativo via...</string><string name="share_btn_copy">Copiar link de compartilhamento</string><string name="share_btn_later">Talvez mais tarde</string><string name="share_text_template">Experimente o Limpador de Armazenamento com IA! Acabei de economizar gigabytes de espaço no meu celular.</string><string name="share_link_copied">Link copiado para a área de transferência!</string><string name="settings_rate_app">Avaliar na Play Store</string><string name="settings_share_app">Compartilhar com Amigos</string><string name="settings_view_onboarding">Ver Tutorial de Início</string><string name="settings_about_header">Avaliação e Compartilhamento</string></resources>

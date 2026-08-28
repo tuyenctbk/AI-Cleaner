@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Curățător Stocare AI</string>
+    <string name="title_dashboard">Panou de Control</string>
+    <string name="title_smart_clean">Curățare Inteligentă AI</string>
+    <string name="title_duplicates">Fotografii Similare</string>
+    <string name="title_swipe_clean">Curățare prin Glisare</string>
+    <string name="title_compressor">Compresor Media</string>
+    <string name="title_storage_explorer">Explorator Stocare</string>
+    <string name="title_app_cache">Curățător Cache Aplicații</string>
+    <string name="title_cleanup_history">Istoric Curățare</string>
+    <string name="title_smart_scheduler">Programator Inteligent</string>
+    <string name="title_battery">Baterie și Performanță</string>
+    <string name="title_cloud_photos">Fotografii Cloud</string>
+    <string name="title_storage_trends">Tendințe Stocare</string>
+    <string name="title_ai_insights">Recomandări Gemini AI</string>
+    <string name="title_settings">Setări</string>
+    <string name="title_vault_folder">Dosar Seif Securizat</string>
+
+    <string name="btn_select_all">Selectează Tot</string>
+    <string name="btn_deselect_all">Deselectează Tot</string>
+    <string name="btn_confirm_bulk_delete">Confirmă Ștergerea Masivă</string>
+    <string name="btn_pause_cleaning">Pauză Curățare</string>
+    <string name="btn_resume_cleaning">Reluare Curățare</string>
+    <string name="btn_run_auto_sort">Rulează Sortarea Automată</string>
+    <string name="btn_restore">Restabilește</string>
+    <string name="btn_delete">Șterge</string>
+    <string name="btn_clear_cache">Curăță Cache</string>
+    <string name="btn_quick_clean">Curățare Rapidă Sigură</string>
+    <string name="btn_back">Înapoi</string>
+    <string name="btn_compare">Compară</string>
+    <string name="btn_keep_best">Păstrează Cea Mai Bună</string>
+
+    <string name="label_smart_expiry">Expirare Inteligentă</string>
+    <string name="label_downloads_expiry">Auto-expirare Descărcări</string>
+    <string name="label_days_30">30 Zile</string>
+    <string name="label_days_60">60 Zile</string>
+    <string name="label_days_90">90 Zile</string>
+    <string name="label_off">Oprit</string>
+    <string name="label_total_space_saved">Spațiu Total Salvat</string>
+    <string name="label_vault_secured">Seif Protejat</string>
+    <string name="label_cleaning_paused">Proces de Curățare Înfundat</string>
+    <string name="label_background_active">Curățare în Fundal Activă</string>
+<string name="onboarding_skip">Omite</string><string name="onboarding_next">Înainte</string><string name="onboarding_get_started">Începe acum</string><string name="onboarding_title_1">Curățare Stocare cu IA</string><string name="onboarding_desc_1">Scanare automată Gemini AI, eliminarea fișierelor inutile și optimizarea cache-ului.</string><string name="onboarding_title_2">Curățare Galerie prin Glisare</string><string name="onboarding_desc_2">Glisați spre stânga pentru a șterge pozele și spre dreapta pentru a le păstra.</string><string name="onboarding_title_3">Seif Securizat și Expirare</string><string name="onboarding_desc_3">Sortați fișierele într-un seif securizat și setați reguli de expirare pentru descărcări.</string><string name="rate_title">Vă place Curățare Stocare AI?</string><string name="rate_desc">Feedback-ul dvs. ne ajută să facem curățarea dispozitivului și mai rapidă!</string><string name="rate_btn_submit">Evaluați cu 5 stele pe Play Store</string><string name="rate_btn_later">Amoartă-mă mai târziu</string><string name="rate_btn_no">Nu, mulțumesc</string><string name="rate_success_toast">Vă mulțumim pentru evaluarea de 5 stele!</string><string name="share_title">Distribuiți spațiul economisit cu prietenii!</string><string name="share_desc">Ajutați-vă prietenii să elibereze gigabiți de stocare pe telefoanele lor.</string><string name="share_btn_share">Distribuiți aplicația prin...</string><string name="share_btn_copy">Copiază link-ul</string><string name="share_btn_later">Poate mai târziu</string><string name="share_text_template">Încearcă Curățare Stocare AI! Tocmai am economisit gigabiți de spațiu pe telefonul meu.</string><string name="share_link_copied">Link-ul a fost copiat în clipboard!</string><string name="settings_rate_app">Evaluați aplicația pe Play Store</string><string name="settings_share_app">Distribuiți cu prietenii</string><string name="settings_view_onboarding">Vezi ghidul de pornire</string><string name="settings_about_header">Feedback și Distribuire</string></resources>

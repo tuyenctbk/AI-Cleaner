@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI Очистка Памяти</string>
+    <string name="title_dashboard">Панель управления</string>
+    <string name="title_smart_clean">Умная Очистка ИИ</string>
+    <string name="title_duplicates">Похожие фото</string>
+    <string name="title_swipe_clean">Очистка Свайпом</string>
+    <string name="title_compressor">Сжатие Медиа</string>
+    <string name="title_storage_explorer">Анализ Памяти</string>
+    <string name="title_app_cache">Очистка Кэша Приложений</string>
+    <string name="title_cleanup_history">История Очисток</string>
+    <string name="title_smart_scheduler">Умное Расписание</string>
+    <string name="title_battery">Батарея и Производительность</string>
+    <string name="title_cloud_photos">Облачные Фото</string>
+    <string name="title_storage_trends">Тренды Использования</string>
+    <string name="title_ai_insights">Советы Gemini ИИ</string>
+    <string name="title_settings">Настройки</string>
+    <string name="title_vault_folder">Защищенное Хранилище</string>
+
+    <string name="btn_select_all">Выбрать все</string>
+    <string name="btn_deselect_all">Снять выделение</string>
+    <string name="btn_confirm_bulk_delete">Подтвердить удаление</string>
+    <string name="btn_pause_cleaning">Приостановить очистку</string>
+    <string name="btn_resume_cleaning">Возобновить очистку</string>
+    <string name="btn_run_auto_sort">Автосортировка в сейф</string>
+    <string name="btn_restore">Восстановить</string>
+    <string name="btn_delete">Удалить</string>
+    <string name="btn_clear_cache">Очистить кэш</string>
+    <string name="btn_quick_clean">Безопасная быстрая очистка</string>
+    <string name="btn_back">Назад</string>
+    <string name="btn_compare">Сравнить</string>
+    <string name="btn_keep_best">Оставить лучший кадр</string>
+
+    <string name="label_smart_expiry">Умное Истечение Срока</string>
+    <string name="label_downloads_expiry">Авто-очистка Загрузок</string>
+    <string name="label_days_30">30 дней</string>
+    <string name="label_days_60">60 дней</string>
+    <string name="label_days_90">90 дней</string>
+    <string name="label_off">Выкл</string>
+    <string name="label_total_space_saved">Всего освободится</string>
+    <string name="label_vault_secured">Сейф защищен</string>
+    <string name="label_cleaning_paused">Процесс очистки на паузе</string>
+    <string name="label_background_active">Фоновая очистка активна</string>
+<string name="onboarding_skip">Пропустить</string><string name="onboarding_next">Далее</string><string name="onboarding_get_started">Начать</string><string name="onboarding_title_1">Очистка памяти с ИИ</string><string name="onboarding_desc_1">Автоматическое сканирование Gemini AI, удаление мусорных файлов и очистка кэша.</string><string name="onboarding_title_2">Свайп-очистка галереи</string><string name="onboarding_desc_2">Смахивайте влево для удаления ненужных фото и вправо для сохранения лучших снимков.</string><string name="onboarding_title_3">Сейф и срок службы</string><string name="onboarding_desc_3">Сортировка файлов в защищенное хранилище и правила очистки папки загрузок.</string><string name="rate_title">Нравится Очистка памяти AI?</string><string name="rate_desc">Ваш отзыв помогает нам делать очистку устройства еще быстрее и умнее!</string><string name="rate_btn_submit">Оценить на 5 звезд в Play Store</string><string name="rate_btn_later">Напомнить позже</string><string name="rate_btn_no">Нет, спасибо</string><string name="rate_success_toast">Спасибо за оценку 5 звезд!</string><string name="share_title">Поделитесь сэкономленной памятью с друзьями!</string><string name="share_desc">Помогите друзьям освободить гигабайты памяти на их смартфонах.</string><string name="share_btn_share">Поделиться приложением через...</string><string name="share_btn_copy">Скопировать ссылку</string><string name="share_btn_later">Возможно позже</string><string name="share_text_template">Попробуйте Очистку памяти AI! Я только что освободил гигабайты места на телефоне.</string><string name="share_link_copied">Ссылка скопирована в буфер обмена!</string><string name="settings_rate_app">Оценить в Play Store</string><string name="settings_share_app">Поделиться с друзьями</string><string name="settings_view_onboarding">Инструкция по началу работы</string><string name="settings_about_header">Отзывы и Поделиться</string></resources>

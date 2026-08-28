@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI Depo Temizleyici</string>
+    <string name="title_dashboard">Kontrol Paneli</string>
+    <string name="title_smart_clean">AI Akıllı Temizlik</string>
+    <string name="title_duplicates">Benzer Fotoğraflar</string>
+    <string name="title_swipe_clean">Kaydırarak Temizle</string>
+    <string name="title_compressor">Medya Sıkıştırıcı</string>
+    <string name="title_storage_explorer">Depolama Gezgini</string>
+    <string name="title_app_cache">Uygulama Önbellek Temizleyici</string>
+    <string name="title_cleanup_history">Temizlik Geçmişi</string>
+    <string name="title_smart_scheduler">Akıllı Zamanlayıcı</string>
+    <string name="title_battery">Pil ve Performans</string>
+    <string name="title_cloud_photos">Bulut Fotoğrafları</string>
+    <string name="title_storage_trends">Depolama Trendleri</string>
+    <string name="title_ai_insights">Gemini AI İpuçları</string>
+    <string name="title_settings">Ayarlar</string>
+    <string name="title_vault_folder">Kasa Klasörü</string>
+
+    <string name="btn_select_all">Tümünü Seç</string>
+    <string name="btn_deselect_all">Tüm Seçimi Kaldır</string>
+    <string name="btn_confirm_bulk_delete">Toplu Silmeyi Onayla</string>
+    <string name="btn_pause_cleaning">Temizliği Duraklat</string>
+    <string name="btn_resume_cleaning">Temizliğe Devam Et</string>
+    <string name="btn_run_auto_sort">Otomatik Sıralamayı Çalıştır</string>
+    <string name="btn_restore">Geri Yükle</string>
+    <string name="btn_delete">Sil</string>
+    <string name="btn_clear_cache">Önbelleği Temizle</string>
+    <string name="btn_quick_clean">Güvenli Hızlı Temizlik</string>
+    <string name="btn_back">Geri</string>
+    <string name="btn_compare">Karşılaştır</string>
+    <string name="btn_keep_best">En İyi Fotoğrafı Tut</string>
+
+    <string name="label_smart_expiry">Akıllı Zaman Aşımı</string>
+    <string name="label_downloads_expiry">İndirilenler Otomatik Silme</string>
+    <string name="label_days_30">30 Gün</string>
+    <string name="label_days_60">60 Gün</string>
+    <string name="label_days_90">90 Gün</string>
+    <string name="label_off">Kapalı</string>
+    <string name="label_total_space_saved">Tasarruf Edilecek Toplam Alan</string>
+    <string name="label_vault_secured">Kasa Güvende</string>
+    <string name="label_cleaning_paused">Temizlik Duraklatıldı</string>
+    <string name="label_background_active">Arka Plan Temizliği Aktif</string>
+<string name="onboarding_skip">Atla</string><string name="onboarding_next">İleri</string><string name="onboarding_get_started">Başlayın</string><string name="onboarding_title_1">Yapay Zeka Destekli Temizleyici</string><string name="onboarding_desc_1">Gemini AI taraması, gereksiz dosya silme ve önbellek optimizasyonu tek dokunuşla.</string><string name="onboarding_title_2">Kaydırarak Galeri Temizleme</string><string name="onboarding_desc_2">İstenmeyen fotoğrafları silmek için sola, anılarınızı saklamak için sağa kaydırın.</string><string name="onboarding_title_3">Güvenli Kasa ve Süre Sonu</string><string name="onboarding_desc_3">Dosyaları güvenli kasaya otomatik ayırın ve indirmeler için süre kuralı koyun.</string><string name="rate_title">AI Depolama Temizleyici’yi sevdiniz mi?</string><string name="rate_desc">Geri bildirimleriniz cihaz temizliğini daha hızlı hale getirmemize yardımcı oluyor!</string><string name="rate_btn_submit">Play Store’da 5 Yıldız Verin</string><string name="rate_btn_later">Daha Sonra Hatırlat</string><string name="rate_btn_no">Hayır, Teşekkürler</string><string name="rate_success_toast">5 yıldızlı değerlendirmeniz için teşekkür ederiz!</string><string name="share_title">Alandan Tasarruf Etmeyi Arkadaşlarınızla Paylaşın!</string><string name="share_desc">Arkadaşlarınızın telefonlarında gigabaytlarca alan açmasına yardımcı olun.</string><string name="share_btn_share">Uygulamayı Paylaş...</string><string name="share_btn_copy">Bağlantıyı Kopyala</string><string name="share_btn_later">Belki Daha Sonra</string><string name="share_text_template">AI Depolama Temizleyici’ye göz atın! Telefonumda gigabaytlarca depolama alanı kazandım.</string><string name="share_link_copied">Paylaşım bağlantısı panoya kopyalandı!</string><string name="settings_rate_app">Play Store’da Değerlendirin</string><string name="settings_share_app">Arkadaşlarla Paylaş</string><string name="settings_view_onboarding">Başlangıç Rehberini Gör</string><string name="settings_about_header">Geri Bildirim ve Paylaşım</string></resources>

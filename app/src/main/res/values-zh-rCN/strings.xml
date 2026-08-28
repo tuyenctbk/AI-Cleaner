@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI 存储清理大师</string>
+    <string name="title_dashboard">仪表板</string>
+    <string name="title_smart_clean">AI 智能清理</string>
+    <string name="title_duplicates">相似照片</string>
+    <string name="title_swipe_clean">滑动整理</string>
+    <string name="title_compressor">媒体压缩器</string>
+    <string name="title_storage_explorer">存储空间分析</string>
+    <string name="title_app_cache">应用缓存清理</string>
+    <string name="title_cleanup_history">清理历史</string>
+    <string name="title_smart_scheduler">智能计划任务</string>
+    <string name="title_battery">电池与性能</string>
+    <string name="title_cloud_photos">云端同步照片</string>
+    <string name="title_storage_trends">存储趋势</string>
+    <string name="title_ai_insights">Gemini AI 智能建议</string>
+    <string name="title_settings">设置与偏好</string>
+    <string name="title_vault_folder">私密保险箱</string>
+
+    <string name="btn_select_all">全选</string>
+    <string name="btn_deselect_all">取消全选</string>
+    <string name="btn_confirm_bulk_delete">确认批量删除</string>
+    <string name="btn_pause_cleaning">暂停清理</string>
+    <string name="btn_resume_cleaning">恢复清理</string>
+    <string name="btn_run_auto_sort">运行自动归档引擎</string>
+    <string name="btn_restore">还原</string>
+    <string name="btn_delete">删除</string>
+    <string name="btn_clear_cache">清理缓存</string>
+    <string name="btn_quick_clean">安全一键快清</string>
+    <string name="btn_back">返回</string>
+    <string name="btn_compare">对比</string>
+    <string name="btn_keep_best">保留最佳照片</string>
+
+    <string name="label_smart_expiry">智能过期引擎</string>
+    <string name="label_downloads_expiry">下载文件夹自动过期</string>
+    <string name="label_days_30">30 天</string>
+    <string name="label_days_60">60 天</string>
+    <string name="label_days_90">90 天</string>
+    <string name="label_off">关闭</string>
+    <string name="label_total_space_saved">预计可释放总空间</string>
+    <string name="label_vault_secured">保险箱加密保护</string>
+    <string name="label_cleaning_paused">清理任务已暂停</string>
+    <string name="label_background_active">后台清理正在运行</string>
+<string name="onboarding_skip">跳过</string><string name="onboarding_next">下一步</string><string name="onboarding_get_started">立即体验</string><string name="onboarding_title_1">AI 智能存储空间清理器</string><string name="onboarding_desc_1">Gemini AI 一键智能扫描，快速清除系统缓存与冗余垃圾文件。</string><string name="onboarding_title_2">滑动相册轻松清理</string><string name="onboarding_desc_2">左滑轻松清理无用废片，右滑快捷保留精彩记忆。</string><string name="onboarding_title_3">加密保险箱与自动过期</string><string name="onboarding_desc_3">自动归档隐私文件至安全保险箱，自定义下载文件过期清理规则。</string><string name="rate_title">喜欢 AI 存储空间清理器吗？</string><string name="rate_desc">您的好评将帮助我们不断提升应用性能与清理体验！</string><string name="rate_btn_submit">在 Play 商店给予 5 星好评</string><string name="rate_btn_later">稍后再说</string><string name="rate_btn_no">暂不评价</string><string name="rate_success_toast">非常感谢您的 5 星好评！</string><string name="share_title">与好友分享省出的空间！</string><string name="share_desc">帮助好友轻松清理手机并释放数 GB 宝贵存储空间。</string><string name="share_btn_share">分享应用至...</string><string name="share_btn_copy">复制分享链接</string><string name="share_btn_later">以后再说</string><string name="share_text_template">快来试试 AI 存储空间清理器！我刚用 AI 照片清理省出了数 GB 手机空间。</string><string name="share_link_copied">应用分享链接已复制到剪贴板！</string><string name="settings_rate_app">在 Play 商店评价应用</string><string name="settings_share_app">将应用分享给好友</string><string name="settings_view_onboarding">查看新手引导</string><string name="settings_about_header">评价与分享</string></resources>

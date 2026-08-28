@@ -1,0 +1,77 @@
+<resources>
+    <string name="app_name">AI Storage Cleaner</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_smart_clean">AI Smart Clean</string>
+    <string name="title_duplicates">Similar Photos</string>
+    <string name="title_swipe_clean">Swipe Clean</string>
+    <string name="title_compressor">Media Compressor</string>
+    <string name="title_storage_explorer">Storage Explorer</string>
+    <string name="title_app_cache">App Cache Cleaner</string>
+    <string name="title_cleanup_history">Clean History</string>
+    <string name="title_smart_scheduler">Smart Scheduler</string>
+    <string name="title_battery">Battery &amp; Performance</string>
+    <string name="title_cloud_photos">Cloud Synced Photos</string>
+    <string name="title_storage_trends">Storage Trends</string>
+    <string name="title_ai_insights">Gemini AI Insights</string>
+    <string name="title_settings">Settings &amp; Preferences</string>
+    <string name="title_vault_folder">Vault Storage Folder</string>
+
+    <string name="btn_select_all">Select All</string>
+    <string name="btn_deselect_all">Deselect All</string>
+    <string name="btn_confirm_bulk_delete">Confirm Bulk Deletion</string>
+    <string name="btn_pause_cleaning">Pause Cleaning</string>
+    <string name="btn_resume_cleaning">Resume Cleaning</string>
+    <string name="btn_run_auto_sort">Run Auto-Sort Engine</string>
+    <string name="btn_restore">Restore</string>
+    <string name="btn_delete">Delete</string>
+    <string name="btn_clear_cache">Clear Cache</string>
+    <string name="btn_quick_clean">Safe Quick Clean</string>
+    <string name="btn_back">Back</string>
+    <string name="btn_compare">Compare</string>
+    <string name="btn_keep_best">Keep Best Shot</string>
+
+    <string name="label_smart_expiry">Smart Expiry Engine</string>
+    <string name="label_downloads_expiry">Downloads Auto-Expiry</string>
+    <string name="label_days_30">30 Days</string>
+    <string name="label_days_60">60 Days</string>
+    <string name="label_days_90">90 Days</string>
+    <string name="label_off">Off</string>
+    <string name="label_total_space_saved">Total Space to be Saved</string>
+    <string name="label_vault_secured">Vault Secured</string>
+    <string name="label_cleaning_paused">Cleaning Processes Paused</string>
+    <string name="label_background_active">Background Cleaning Active</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_get_started">Get Started</string>
+    <string name="onboarding_title_1">AI-Powered Storage Cleaner</string>
+    <string name="onboarding_desc_1">Automated Gemini AI scanning, junk file purge, and system cache optimization in one tap.</string>
+    <string name="onboarding_title_2">Swipe Gallery Cleaner</string>
+    <string name="onboarding_desc_2">Swipe left to trash unwanted photos and swipe right to keep your best memories efficiently.</string>
+    <string name="onboarding_title_3">Smart Vault &amp; Expiry</string>
+    <string name="onboarding_desc_3">Auto-sort heavy media into a safe vault folder and set smart expiry rules for downloads.</string>
+
+    <!-- Rate App -->
+    <string name="rate_title">Enjoying AI Storage Cleaner?</string>
+    <string name="rate_desc">Your feedback helps us make device cleaning even faster and smarter!</string>
+    <string name="rate_btn_submit">Rate 5 Stars on Play Store</string>
+    <string name="rate_btn_later">Remind Me Later</string>
+    <string name="rate_btn_no">No Thanks</string>
+    <string name="rate_success_toast">Thank you for rating us 5 stars!</string>
+
+    <!-- Share App -->
+    <string name="share_title">Share Space Savings with Friends!</string>
+    <string name="share_desc">Help your friends reclaim gigabytes of storage on their phones with AI Cleaner.</string>
+    <string name="share_btn_share">Share App via...</string>
+    <string name="share_btn_copy">Copy Share Link</string>
+    <string name="share_btn_later">Maybe Later</string>
+    <string name="share_text_template">Check out AI Storage Cleaner! I just saved gigabytes of space on my phone using AI photo cleaning &amp; storage optimization.</string>
+    <string name="share_link_copied">App share link copied to clipboard!</string>
+
+    <!-- Settings & Feedback -->
+    <string name="settings_rate_app">Rate App on Play Store</string>
+    <string name="settings_share_app">Share App with Friends</string>
+    <string name="settings_view_onboarding">View Onboarding Tutorial</string>
+    <string name="settings_about_header">App Feedback &amp; Sharing</string>
+</resources>

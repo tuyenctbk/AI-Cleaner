@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI เครื่องมือทำความสะอาดพื้นที่</string>
+    <string name="title_dashboard">แผงควบคุม</string>
+    <string name="title_smart_clean">ทำความสะอาดอัจฉริยะ AI</string>
+    <string name="title_duplicates">รูปภาพที่คล้ายกัน</string>
+    <string name="title_swipe_clean">ปัดเพื่อทำความสะอาด</string>
+    <string name="title_compressor">บีบอัดสื่อ</string>
+    <string name="title_storage_explorer">สำรวจพื้นที่จัดเก็บ</string>
+    <string name="title_app_cache">ล้างแคชแอป</string>
+    <string name="title_cleanup_history">ประวัติการทำความสะอาด</string>
+    <string name="title_smart_scheduler">ตารางเวลาอัจฉริยะ</string>
+    <string name="title_battery">แบตเตอรี่และประสิทธิภาพ</string>
+    <string name="title_cloud_photos">รูปภาพบนคลาวด์</string>
+    <string name="title_storage_trends">แนวโน้มพื้นที่</string>
+    <string name="title_ai_insights">คำแนะนำ Gemini AI</string>
+    <string name="title_settings">การตั้งค่า</string>
+    <string name="title_vault_folder">โฟลเดอร์เซฟตี้</string>
+
+    <string name="btn_select_all">เลือกทั้งหมด</string>
+    <string name="btn_deselect_all">ยกเลิกการเลือกทั้งหมด</string>
+    <string name="btn_confirm_bulk_delete">ยืนยันการลบทั้งหมด</string>
+    <string name="btn_pause_cleaning">หยุดการทำความสะอาดชั่วคราว</string>
+    <string name="btn_resume_cleaning">ทำความสะอาดต่อ</string>
+    <string name="btn_run_auto_sort">เรียกใช้การจัดหมวดหมู่อัตโนมัติ</string>
+    <string name="btn_restore">กู้คืน</string>
+    <string name="btn_delete">ลบ</string>
+    <string name="btn_clear_cache">ล้างแคช</string>
+    <string name="btn_quick_clean">ทำความสะอาดแบบด่วนที่ปลอดภัย</string>
+    <string name="btn_back">ย้อนกลับ</string>
+    <string name="btn_compare">เปรียบเทียบ</string>
+    <string name="btn_keep_best">เก็บรูปที่ดีที่สุด</string>
+
+    <string name="label_smart_expiry">การหมดอายุอัจฉริยะ</string>
+    <string name="label_downloads_expiry">การหมดอายุอัตโนมัติของดาวน์โหลด</string>
+    <string name="label_days_30">30 วัน</string>
+    <string name="label_days_60">60 วัน</string>
+    <string name="label_days_90">90 วัน</string>
+    <string name="label_off">ปิด</string>
+    <string name="label_total_space_saved">พื้นที่รวมที่จะประหยัดได้</string>
+    <string name="label_vault_secured">ตู้เซฟได้รับการคุ้มครอง</string>
+    <string name="label_cleaning_paused">หยุดกระบวนการทำความสะอาดชั่วคราว</string>
+    <string name="label_background_active">การทำความสะอาดเบื้องหลังทำงานอยู่</string>
+<string name="onboarding_skip">ข้าม</string><string name="onboarding_next">ถัดไป</string><string name="onboarding_get_started">เริ่มต้นใช้งาน</string><string name="onboarding_title_1">AI ล้างพื้นที่จัดเก็บ</string><string name="onboarding_desc_1">สแกนอัตโนมัติด้วย Gemini AI ลบไฟล์ขยะ และล้างแคชระบบในแตะเดียว</string><string name="onboarding_title_2">ล้างรูปภาพด้วยการปัด</string><string name="onboarding_desc_2">ปัดซ้ายเพื่อลบรูปที่ไม่ต้องการ และปัดขวาเพื่อเก็บรูปภาพความทรงจำ</string><string name="onboarding_title_3">ตู้เซฟอัจฉริยะและหมดอายุ</string><string name="onboarding_desc_3">จัดเก็บไฟล์ไว้ในตู้เซฟอย่างปลอดภัย พร้อมตั้งเวลากำหนดหมดอายุของไฟล์ดาวน์โหลด</string><string name="rate_title">ชื่นชอบ AI ล้างพื้นที่จัดเก็บ หรือไม่?</string><string name="rate_desc">ความคิดเห็นของคุณช่วยให้เราพัฒนาแอปให้ทำงานได้เร็วและฉลาดยิ่งขึ้น!</string><string name="rate_btn_submit">ให้ 5 ดาวบน Play Store</string><string name="rate_btn_later">เตือนในภายหลัง</string><string name="rate_btn_no">ไว้ทีหลัง</string><string name="rate_success_toast">ขอบคุณสำหรับคะแนน 5 ดาวของคุณ!</string><string name="share_title">แชร์พื้นที่ที่ประหยัดได้ให้เพื่อน!</string><string name="share_desc">ช่วยเพื่อนของคุณคืนพื้นที่จัดเก็บหลาย gigabyte บนโทรศัพท์</string><string name="share_btn_share">แชร์แอปผ่าน...</string><string name="share_btn_copy">คัดลอกลิงก์แชร์</string><string name="share_btn_later">อาจจะภายหลัง</string><string name="share_text_template">ลองใช้ AI ล้างพื้นที่จัดเก็บ! ฉันเพิ่งประหยัดพื้นที่บนโทรศัพท์ได้หลาย GB ด้วยการล้างรูปภาพด้วย AI</string><string name="share_link_copied">คัดลอกลิงก์แชร์ลงคลิปบอร์ดแล้ว!</string><string name="settings_rate_app">ให้คะแนนแอปบน Play Store</string><string name="settings_share_app">แชร์แอปกับเพื่อน</string><string name="settings_view_onboarding">ดูคำแนะนำเริ่มต้น</string><string name="settings_about_header">ข้อเสนอแนะและการแชร์</string></resources>

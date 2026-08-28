@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI מנקה אחסון</string>
+    <string name="title_dashboard">לוח בקרה</string>
+    <string name="title_smart_clean">ניקוי חכם AI</string>
+    <string name="title_duplicates">תמונות דומות</string>
+    <string name="title_swipe_clean">ניקוי בהחלקה</string>
+    <string name="title_compressor">דחיסת מדיה</string>
+    <string name="title_storage_explorer">סייר אחסון</string>
+    <string name="title_app_cache">מנקה מטמון אפליקציות</string>
+    <string name="title_cleanup_history">היסטוריית ניקוי</string>
+    <string name="title_smart_scheduler">תזמון חכם</string>
+    <string name="title_battery">סוללה וביצועים</string>
+    <string name="title_cloud_photos">תמונות ענן</string>
+    <string name="title_storage_trends">מגמות אחסון</string>
+    <string name="title_ai_insights">המלצות Gemini AI</string>
+    <string name="title_settings">הגדרות</string>
+    <string name="title_vault_folder">תיקיית כספת מאובטחת</string>
+
+    <string name="btn_select_all">בחר הכל</string>
+    <string name="btn_deselect_all">בטל בחירה הכל</string>
+    <string name="btn_confirm_bulk_delete">אשר מחיקה מרוכזת</string>
+    <string name="btn_pause_cleaning">השהה ניקוי</string>
+    <string name="btn_resume_cleaning">חדש ניקוי</string>
+    <string name="btn_run_auto_sort">הפעל מיון אוטומטי לכספת</string>
+    <string name="btn_restore">שחזר</string>
+    <string name="btn_delete">מחק</string>
+    <string name="btn_clear_cache">נקה מטמון</string>
+    <string name="btn_quick_clean">ניקוי מהיר ובטוח</string>
+    <string name="btn_back">חזור</string>
+    <string name="btn_compare">השווה</string>
+    <string name="btn_keep_best">שמור את התמונה הטובה ביותר</string>
+
+    <string name="label_smart_expiry">מנגנון תפוגה חכם</string>
+    <string name="label_downloads_expiry">תפוגה אוטומטית להורדות</string>
+    <string name="label_days_30">30 ימים</string>
+    <string name="label_days_60">60 ימים</string>
+    <string name="label_days_90">90 ימים</string>
+    <string name="label_off">כבוי</string>
+    <string name="label_total_space_saved">סך הכל מקום שייחסך</string>
+    <string name="label_vault_secured">הכספת מוגנת</string>
+    <string name="label_cleaning_paused">תהליך הניקוי מושהה</string>
+    <string name="label_background_active">ניקוי ברקע פעיל</string>
+<string name="onboarding_skip">לדלג</string><string name="onboarding_next">הבא</string><string name="onboarding_get_started">להתחיל</string><string name="onboarding_title_1">מנקה אחסון מבוסס AI</string><string name="onboarding_desc_1">סריקה אוטומטית של Gemini AI, ניקוי קבצים מיותרים ואופטימיזציה של המטמון בבלחיצה אחת.</string><string name="onboarding_title_2">ניקוי גלריה בהחלקה</string><string name="onboarding_desc_2">החלק שמאלה כדי למחוק תמונות מיותרות והחלק ימינה כדי לשמור את הזכרונות היפים.</string><string name="onboarding_title_3">כספת חכמה ותפוגה</string><string name="onboarding_desc_3">מיון אוטומטי של קבצים לכספת מאובטחת והגדרת כללי תפוגה להורדות.</string><string name="rate_title">נהנים מ-מנקה אחסון AI?</string><string name="rate_desc">המשוב שלכם עוזר לנו להפוך את ניקוי המכשיר למהיר וחכם יותר!</string><string name="rate_btn_submit">דרגו 5 כוכבים ב-Play Store</string><string name="rate_btn_later">הזכר לי מאוחר יותר</string><string name="rate_btn_no">לא תודה</string><string name="rate_success_toast">תודה רבה על דירוג 5 הכוכבים!</string><string name="share_title">שתפו את חיסכון המקום עם חברים!</string><string name="share_desc">עזרו לחברים לשחרר גיגה-בייטים של אחסון בטלפונים שלהם.</string><string name="share_btn_share">שיתוף האפליקציה באמצעות...</string><string name="share_btn_copy">העתקת קישור שיתוף</string><string name="share_btn_later">אולי מאוחר יותר</string><string name="share_text_template">נסו את מנקה אחסון AI! עכשיו חסכתי גיגה-בייטים רבים בטלפון שלי.</string><string name="share_link_copied">קישור השיתוף הועתק ללוח!</string><string name="settings_rate_app">דירוג האפליקציה ב-Play Store</string><string name="settings_share_app">שיתוף האפליקציה עם חברים</string><string name="settings_view_onboarding">צפייה במדריך</string><string name="settings_about_header">משוב ושיתוף האפליקציה</string></resources>

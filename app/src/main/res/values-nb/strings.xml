@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI Lagringsrenser</string>
+    <string name="title_dashboard">Oversikt</string>
+    <string name="title_smart_clean">AI Smart Rengjøring</string>
+    <string name="title_duplicates">Lignende Bilder</string>
+    <string name="title_swipe_clean">Sveiperensing</string>
+    <string name="title_compressor">Mediekomprimering</string>
+    <string name="title_storage_explorer">Lagringsutforsker</string>
+    <string name="title_app_cache">App-Mellomlagerrenser</string>
+    <string name="title_cleanup_history">Rengjøringshistorikk</string>
+    <string name="title_smart_scheduler">Smart Planlegger</string>
+    <string name="title_battery">Batteri &amp; Ytelse</string>
+    <string name="title_cloud_photos">Skybilder</string>
+    <string name="title_storage_trends">Lagringstrender</string>
+    <string name="title_ai_insights">Gemini AI Innsikt</string>
+    <string name="title_settings">Innstillingen</string>
+    <string name="title_vault_folder">Sikker Hvelvmappe</string>
+
+    <string name="btn_select_all">Velg Alle</string>
+    <string name="btn_deselect_all">Fravelg Alle</string>
+    <string name="btn_confirm_bulk_delete">Bekreft Massesletting</string>
+    <string name="btn_pause_cleaning">Pausér Rengjøring</string>
+    <string name="btn_resume_cleaning">Gjenoppta Rengjøring</string>
+    <string name="btn_run_auto_sort">Kjør Automatisk Sortering</string>
+    <string name="btn_restore">Gjenopprett</string>
+    <string name="btn_delete">Slett</string>
+    <string name="btn_clear_cache">Tøm Mellomlager</string>
+    <string name="btn_quick_clean">Sikker Hurtigrensing</string>
+    <string name="btn_back">Tilbake</string>
+    <string name="btn_compare">Sammenlign</string>
+    <string name="btn_keep_best">Behold Beste Bilde</string>
+
+    <string name="label_smart_expiry">Smart Utløpsregel</string>
+    <string name="label_downloads_expiry">Auto-utløp for Nedlastinger</string>
+    <string name="label_days_30">30 Dager</string>
+    <string name="label_days_60">60 Dager</string>
+    <string name="label_days_90">90 Dager</string>
+    <string name="label_off">Av</string>
+    <string name="label_total_space_saved">Totalt Plass Å Spare</string>
+    <string name="label_vault_secured">Hvelv Beskyttet</string>
+    <string name="label_cleaning_paused">Rengjøring Pausert</string>
+    <string name="label_background_active">Bakgrunnsrensing Aktiv</string>
+<string name="onboarding_skip">Hopp over</string><string name="onboarding_next">Neste</string><string name="onboarding_get_started">Kom i gang</string><string name="onboarding_title_1">AI-drevet Lagringsrenser</string><string name="onboarding_desc_1">Automatisk skanning med Gemini AI, sletting av søppelfiler og buffer-optimalisering.</string><string name="onboarding_title_2">Sveisegalleri-renser</string><string name="onboarding_desc_2">Sveip til venstre for å slette bilder og til høyre for å ta vare på minnene.</string><string name="onboarding_title_3">Sikkert Hvelv og Utløp</string><string name="onboarding_desc_3">Sorter filer automatisk til et sikkert hvelv og angi utløpsregler for nedlastinger.</string><string name="rate_title">Fornøyd med AI Lagringsrenser?</string><string name="rate_desc">Din tilbakemelding hjelper oss med å gjøre enhetsrensingen enda raskere!</string><string name="rate_btn_submit">Gi 5 stjerner på Play Store</string><string name="rate_btn_later">Minn meg på det senere</string><string name="rate_btn_no">Nei takk</string><string name="rate_success_toast">Takk for din 5-stjerners vurdering!</string><string name="share_title">Del plassbesparingen med venner!</string><string name="share_desc">Hjelp vennene dine med å frigjøre gigabyte med lagringsplass på telefonen.</string><string name="share_btn_share">Del appen via...</string><string name="share_btn_copy">Kopier delingslenke</string><string name="share_btn_later">Kanskje senere</string><string name="share_text_template">Sjekk ut AI Lagringsrenser! Jeg har akkurat spart gigabyte med plass på telefonen min.</string><string name="share_link_copied">Delingslenke kopiert til utklippstavlen!</string><string name="settings_rate_app">Vurder appen på Play Store</string><string name="settings_share_app">Del appen med venner</string><string name="settings_view_onboarding">Se introduksjon</string><string name="settings_about_header">Tilbakemelding og deling</string></resources>
