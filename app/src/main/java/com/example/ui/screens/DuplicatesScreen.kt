@@ -25,6 +25,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import com.example.data.model.DuplicateGroup
 import com.example.data.model.MediaItem
 import com.example.data.model.formatFileSize
@@ -38,8 +40,8 @@ import com.example.ui.viewmodel.CleanerUiState
 fun DuplicatesScreen(
     uiState: CleanerUiState,
     onBack: () -> Unit,
-    onToggleItem: (String, Long) -> Unit,
-    onToggleGroup: (String, Boolean) -> Unit,
+    onToggleItem: (groupId: String, itemId: Long) -> Unit,
+    onToggleGroup: (groupId: String, selectAll: Boolean) -> Unit,
     onSelectAllDuplicates: () -> Unit,
     onDeleteSelected: () -> Unit,
     modifier: Modifier = Modifier
@@ -60,8 +62,8 @@ fun DuplicatesScreen(
 
     if (showConfirmMassDeleteDialog) {
         com.example.ui.components.MassDeletionSummaryDialog(
-            title = "Delete $totalSelectedCount Duplicate Photos?",
-            subtitle = "Purge lower-quality duplicate candidate shots",
+            title = stringResource(R.string.duplicates_dialog_title, totalSelectedCount),
+            subtitle = stringResource(R.string.duplicates_dialog_subtitle),
             totalFilesCount = totalSelectedCount,
             projectedSpaceBytes = totalSelectedBytes,
             itemsPreviewList = selectedDuplicateItemsPreview.take(10),
@@ -82,12 +84,12 @@ fun DuplicatesScreen(
                 title = {
                     Column {
                         Text(
-                            text = "Similar & Duplicate Photos",
+                            text = stringResource(R.string.duplicates_title),
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
                             color = PolishTextPrimary
                         )
                         Text(
-                            text = "$totalDuplicatesCount Duplicates • $totalSelectedCount Selected",
+                            text = stringResource(R.string.duplicates_summary, totalDuplicatesCount, totalSelectedCount),
                             style = MaterialTheme.typography.bodySmall,
                             color = PolishTextSecondary
                         )
@@ -97,7 +99,7 @@ fun DuplicatesScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.btn_back),
                             tint = PolishTextPrimary
                         )
                     }
@@ -118,7 +120,7 @@ fun DuplicatesScreen(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "Keep Best",
+                            text = stringResource(R.string.btn_keep_best_shot),
                             fontWeight = FontWeight.Bold,
                             color = PolishPrimary
                         )
@@ -164,7 +166,7 @@ fun DuplicatesScreen(
                                     tint = Color.White
                                 )
                                 Text(
-                                    text = "Delete $totalSelectedCount Photos (Free ${formatFileSize(totalSelectedBytes)})",
+                                    text = stringResource(R.string.duplicates_btn_delete_format, totalSelectedCount, formatFileSize(totalSelectedBytes)),
                                     style = MaterialTheme.typography.titleMedium.copy(
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 15.sp
@@ -191,12 +193,12 @@ fun DuplicatesScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "No Duplicates Found",
+                        text = stringResource(R.string.duplicates_empty_title),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         color = PolishTextPrimary
                     )
                     Text(
-                        text = "Your photo library is neatly organized!",
+                        text = stringResource(R.string.duplicates_empty_subtitle),
                         style = MaterialTheme.typography.bodySmall,
                         color = PolishTextSecondary
                     )
@@ -267,7 +269,7 @@ private fun DuplicateCompareSheet(
             ) {
                 Column {
                     Text(
-                        text = "Side-by-Side Photo Comparison",
+                        text = stringResource(R.string.duplicates_compare_title),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 17.sp),
                         color = MaterialTheme.colorScheme.onBackground
                     )
@@ -278,7 +280,7 @@ private fun DuplicateCompareSheet(
                     )
                 }
                 IconButton(onClick = onDismiss) {
-                    Icon(imageVector = Icons.Default.Close, contentDescription = "Close", tint = MaterialTheme.colorScheme.onBackground)
+                    Icon(imageVector = Icons.Default.Close, contentDescription = stringResource(R.string.btn_cancel), tint = MaterialTheme.colorScheme.onBackground)
                 }
             }
 
@@ -316,7 +318,7 @@ private fun DuplicateCompareSheet(
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Icon(imageVector = Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFD700), modifier = Modifier.size(12.dp))
-                            Text("Best Shot", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Black)
+                            Text(stringResource(R.string.badge_best_shot), color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Black)
                         }
                     }
 

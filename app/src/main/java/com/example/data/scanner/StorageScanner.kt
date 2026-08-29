@@ -153,8 +153,8 @@ class StorageScanner(private val context: Context) {
         listOf(
             JunkCategory(
                 type = JunkType.APP_CACHE,
-                title = "App Cache & Temp Data",
-                description = "Temporary cached media and web files from installed apps",
+                title = "App Cache",
+                description = "Temp app data & cache",
                 sizeBytes = appCacheSize,
                 itemCount = cacheItems.size + 42,
                 items = cacheItems,
@@ -162,8 +162,8 @@ class StorageScanner(private val context: Context) {
             ),
             JunkCategory(
                 type = JunkType.TEMP_FILES,
-                title = "System Temporary Files",
-                description = "Leftover download parts and diagnostic crash logs",
+                title = "System Temp Files",
+                description = "Crash logs & temp files",
                 sizeBytes = 412L * 1024 * 1024,
                 itemCount = 87,
                 items = listOf(
@@ -174,8 +174,8 @@ class StorageScanner(private val context: Context) {
             ),
             JunkCategory(
                 type = JunkType.THUMBNAIL_CACHE,
-                title = "Gallery Thumbnail Cache",
-                description = "Outdated photo & video pre-rendered micro thumbnails",
+                title = "Thumbnail Cache",
+                description = "Gallery preview cache",
                 sizeBytes = 680L * 1024 * 1024,
                 itemCount = 1240,
                 items = listOf(
@@ -185,8 +185,8 @@ class StorageScanner(private val context: Context) {
             ),
             JunkCategory(
                 type = JunkType.EMPTY_FOLDERS,
-                title = "Empty System Folders",
-                description = "Unused empty directories created by uninstalled apps",
+                title = "Empty Folders",
+                description = "Leftover empty directories",
                 sizeBytes = 12L * 1024 * 1024,
                 itemCount = 38,
                 items = listOf(
@@ -197,8 +197,8 @@ class StorageScanner(private val context: Context) {
             ),
             JunkCategory(
                 type = JunkType.APK_PACKAGES,
-                title = "Obsolete APK Installers",
-                description = "Already-installed Android installation package files",
+                title = "Obsolete APKs",
+                description = "Old installer packages",
                 sizeBytes = 248L * 1024 * 1024,
                 itemCount = 3,
                 items = listOf(

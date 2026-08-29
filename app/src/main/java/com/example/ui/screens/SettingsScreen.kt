@@ -25,6 +25,9 @@ import androidx.compose.ui.unit.sp
 import com.example.ui.theme.*
 import com.example.ui.viewmodel.CleanerUiState
 
+import com.example.R
+import androidx.compose.ui.res.stringResource
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
@@ -47,24 +50,17 @@ fun SettingsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
-                        Text(
-                            text = "Settings & Preferences",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Text(
-                            text = "Theme mode, smart expiry rules & system configuration",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    Text(
+                        text = stringResource(R.string.title_settings),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.btn_back),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
@@ -120,12 +116,12 @@ fun SettingsScreen(
                             )
                             Column {
                                 Text(
-                                    text = "Pause All Cleaning Processes",
+                                    text = "Pause Cleaning Tasks",
                                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.onBackground
                                 )
                                 Text(
-                                    text = if (uiState.isCleaningPaused) "Background processes, scans & tasks are currently HALTED." else "Halt all background tasks, auto-scans, and timers with 1 toggle.",
+                                    text = if (uiState.isCleaningPaused) "Background tasks and scans are paused." else "Pause all background tasks and timers.",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -157,7 +153,7 @@ fun SettingsScreen(
                         modifier = Modifier.size(22.dp)
                     )
                     Text(
-                        text = "Downloads Smart Expiry Engine",
+                        text = "Downloads Auto-Expiry",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onBackground
                     )
@@ -182,7 +178,7 @@ fun SettingsScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Text(
-                            text = "Automatically flag inactive files in the Downloads folder for auto-deletion after a defined period of inactivity.",
+                            text = "Auto-flag inactive downloads for cleanup after defined period.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -217,8 +213,8 @@ fun SettingsScreen(
                         ) {
                             Text(
                                 text = if (uiState.smartExpiryDays > 0)
-                                    "Active Rule: Auto-mark Downloads inactive for over ${uiState.smartExpiryDays} days for cleanup."
-                                else "Smart Expiry is disabled.",
+                                    "Downloads older than ${uiState.smartExpiryDays} days flagged for cleanup."
+                                else "Auto-expiry is disabled.",
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                                 color = EmeraldGreen,
                                 modifier = Modifier.padding(10.dp)
@@ -227,6 +223,7 @@ fun SettingsScreen(
                     }
                 }
             }
+
             // Theme Mode Section Header
             item {
                 Row(
@@ -240,7 +237,7 @@ fun SettingsScreen(
                         modifier = Modifier.size(22.dp)
                     )
                     Text(
-                        text = "System-wide Theme Mode",
+                        text = "App Theme",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onBackground
                     )
@@ -268,12 +265,6 @@ fun SettingsScreen(
                             .padding(18.dp),
                         verticalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
-                        Text(
-                            text = "Select your preferred visual appearance. Choosing Light or Dark will override the default system settings.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-
                         // 3 Theme Option Selector Cards
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -282,7 +273,7 @@ fun SettingsScreen(
                             // System Default Option
                             ThemeOptionCard(
                                 title = "System",
-                                subtitle = "Auto follow",
+                                subtitle = "Follow OS",
                                 icon = Icons.Default.BrightnessAuto,
                                 isSelected = currentTheme == AppThemeMode.SYSTEM,
                                 testTag = "theme_option_system",

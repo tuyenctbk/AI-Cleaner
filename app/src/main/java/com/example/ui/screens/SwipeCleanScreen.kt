@@ -17,6 +17,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.R
+import androidx.compose.ui.res.stringResource
 import com.example.data.model.MediaItem
 import com.example.data.model.formatFileSize
 import com.example.ui.components.SwipeCardDeck
@@ -44,8 +46,8 @@ fun SwipeCleanScreen(
 
     if (showConfirmTrashCleanDialog) {
         com.example.ui.components.MassDeletionSummaryDialog(
-            title = "Permanently Delete Trashed Photos?",
-            subtitle = "Purge items marked for deletion during swipe review",
+            title = stringResource(R.string.swipe_dialog_title),
+            subtitle = stringResource(R.string.swipe_dialog_subtitle),
             totalFilesCount = uiState.swipeTrashItems.size,
             projectedSpaceBytes = trashedBytes,
             itemsPreviewList = uiState.swipeTrashItems.map { "${it.title} (${it.formattedSize})" },
@@ -61,7 +63,7 @@ fun SwipeCleanScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Swipe Gallery Cleaner",
+                        text = stringResource(R.string.swipe_clean_title),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -70,7 +72,7 @@ fun SwipeCleanScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.btn_back),
                             tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -83,7 +85,7 @@ fun SwipeCleanScreen(
                         modifier = Modifier.padding(end = 12.dp)
                     ) {
                         Text(
-                            text = "$reviewedCount / $totalInitialItems Reviewed",
+                            text = stringResource(R.string.swipe_reviewed_format, reviewedCount, totalInitialItems),
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
@@ -128,7 +130,7 @@ fun SwipeCleanScreen(
                                     tint = Color.White
                                 )
                                 Text(
-                                    text = "Clean Trashed (${uiState.swipeTrashItems.size} items • ${formatFileSize(trashedBytes)})",
+                                    text = stringResource(R.string.btn_delete_trashed, uiState.swipeTrashItems.size, formatFileSize(trashedBytes)),
                                     style = MaterialTheme.typography.titleMedium.copy(
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 15.sp
@@ -163,12 +165,12 @@ fun SwipeCleanScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Gallery Progress Counter",
+                        text = stringResource(R.string.swipe_progress_label),
                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "${(progressFraction * 100).toInt()}% completed",
+                        text = "${(progressFraction * 100).toInt()}%",
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -194,7 +196,7 @@ fun SwipeCleanScreen(
                 FilterChip(
                     selected = uiState.swipeFilter == SwipeFilter.ALL,
                     onClick = { onFilterChange(SwipeFilter.ALL) },
-                    label = { Text("All Photos") },
+                    label = { Text(stringResource(R.string.swipe_filter_all)) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                         selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -203,7 +205,7 @@ fun SwipeCleanScreen(
                 FilterChip(
                     selected = uiState.swipeFilter == SwipeFilter.BLURRY,
                     onClick = { onFilterChange(SwipeFilter.BLURRY) },
-                    label = { Text("Blurry (${uiState.allMedia.count { it.isBlurry }})") },
+                    label = { Text(stringResource(R.string.swipe_filter_blurry, uiState.allMedia.count { it.isBlurry })) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                         selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -212,7 +214,7 @@ fun SwipeCleanScreen(
                 FilterChip(
                     selected = uiState.swipeFilter == SwipeFilter.SCREENSHOTS,
                     onClick = { onFilterChange(SwipeFilter.SCREENSHOTS) },
-                    label = { Text("Screenshots (${uiState.allMedia.count { it.isScreenshot }})") },
+                    label = { Text(stringResource(R.string.swipe_filter_screenshots, uiState.allMedia.count { it.isScreenshot })) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                         selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -249,7 +251,7 @@ fun SwipeCleanScreen(
                             .background(CoralRed, RoundedCornerShape(3.dp))
                     )
                     Text(
-                        text = "Marked for Delete: ${uiState.swipeTrashItems.size}",
+                        text = stringResource(R.string.btn_delete) + ": ${uiState.swipeTrashItems.size}",
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -264,7 +266,7 @@ fun SwipeCleanScreen(
                             .background(EmeraldGreen, RoundedCornerShape(3.dp))
                     )
                     Text(
-                        text = "Kept: ${uiState.swipeKeepItems.size}",
+                        text = stringResource(R.string.btn_keep) + ": ${uiState.swipeKeepItems.size}",
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

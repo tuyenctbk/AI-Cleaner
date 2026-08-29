@@ -32,6 +32,9 @@ import com.example.ui.components.CommonMediaThumbnail
 import com.example.ui.theme.*
 import com.example.ui.viewmodel.CleanerUiState
 
+import com.example.R
+import androidx.compose.ui.res.stringResource
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CompressorScreen(
@@ -76,12 +79,12 @@ fun CompressorScreen(
                 title = {
                     Column {
                         Text(
-                            text = "Bulk Media Compressor",
+                            text = stringResource(R.string.title_compressor),
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
                             color = MaterialTheme.colorScheme.onBackground
                         )
                         Text(
-                            text = "${selectedItems.size} Selected ($videoSelectedCount Videos, $photoSelectedCount Photos)",
+                            text = "${selectedItems.size} Selected • Save ${formatFileSize(estimatedSavings)}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -91,7 +94,7 @@ fun CompressorScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.btn_back),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }

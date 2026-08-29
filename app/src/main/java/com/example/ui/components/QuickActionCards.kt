@@ -26,6 +26,9 @@ import com.example.data.model.StorageStats
 import com.example.data.model.formatFileSize
 import com.example.ui.theme.*
 
+import com.example.R
+import androidx.compose.ui.res.stringResource
+
 @Composable
 fun QuickActionGrid(
     stats: StorageStats,
@@ -51,7 +54,7 @@ fun QuickActionGrid(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Manual Clean & Tools",
+                text = stringResource(R.string.section_manual_tools),
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
@@ -59,7 +62,7 @@ fun QuickActionGrid(
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "ALL TOOLS FREE",
+                text = stringResource(R.string.label_all_tools_free),
                 style = MaterialTheme.typography.labelSmall.copy(
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 10.sp,
@@ -76,9 +79,9 @@ fun QuickActionGrid(
         ) {
             // Card 1: App Cache Cleaner
             ToolFeatureCard(
-                title = "App Cache",
-                subtitle = "Ranked by cache",
-                badgeText = "Clear Cache",
+                title = stringResource(R.string.card_app_cache),
+                subtitle = stringResource(R.string.card_app_cache_sub),
+                badgeText = stringResource(R.string.btn_clear_cache),
                 badgeColor = ElectricBlue,
                 icon = Icons.Default.Apps,
                 iconTint = ElectricBlue,
@@ -90,9 +93,9 @@ fun QuickActionGrid(
 
             // Card 2: Vault Folder
             ToolFeatureCard(
-                title = "Vault Folder",
-                subtitle = "Auto-sort large files",
-                badgeText = "Secured",
+                title = stringResource(R.string.card_vault),
+                subtitle = stringResource(R.string.card_vault_sub),
+                badgeText = stringResource(R.string.badge_secured),
                 badgeColor = VividViolet,
                 icon = Icons.Default.Lock,
                 iconTint = VividViolet,
@@ -109,9 +112,9 @@ fun QuickActionGrid(
         ) {
             // Card 3: Similar / Duplicate Photos (Featured Accent Card)
             ToolFeatureCard(
-                title = "Similar Photos",
-                subtitle = "${stats.duplicateCount} Duplicates",
-                badgeText = "Keep Best",
+                title = stringResource(R.string.card_similar_photos),
+                subtitle = stringResource(R.string.badge_duplicates_count, stats.duplicateCount),
+                badgeText = stringResource(R.string.btn_keep_best_shot),
                 badgeColor = MaterialTheme.colorScheme.primary,
                 icon = Icons.Default.BurstMode,
                 iconTint = MaterialTheme.colorScheme.primary,
@@ -123,9 +126,9 @@ fun QuickActionGrid(
 
             // Card 4: Swipe Clean Gallery
             ToolFeatureCard(
-                title = "Swipe Clean",
-                subtitle = "Keep or Delete",
-                badgeText = "Fast & Fun",
+                title = stringResource(R.string.card_swipe_clean),
+                subtitle = stringResource(R.string.card_swipe_clean_sub),
+                badgeText = stringResource(R.string.badge_fast_fun),
                 badgeColor = EmeraldGreen,
                 icon = Icons.Default.Swipe,
                 iconTint = EmeraldGreen,
@@ -142,9 +145,9 @@ fun QuickActionGrid(
         ) {
             // Card 5: Photo & Video Compressor
             ToolFeatureCard(
-                title = "Compressor",
-                subtitle = "Save up to 85%",
-                badgeText = "Lossless AI",
+                title = stringResource(R.string.card_compressor),
+                subtitle = stringResource(R.string.card_compressor_sub),
+                badgeText = stringResource(R.string.badge_lossless_ai),
                 badgeColor = WarningAmber,
                 icon = Icons.Default.Compress,
                 iconTint = WarningAmber,
@@ -156,9 +159,9 @@ fun QuickActionGrid(
 
             // Card 6: Deep Storage Breakdown
             ToolFeatureCard(
-                title = "Deep Storage",
-                subtitle = "Search & Filter",
-                badgeText = "${stats.largeFileCount} Large",
+                title = stringResource(R.string.card_deep_storage),
+                subtitle = stringResource(R.string.card_deep_storage_sub),
+                badgeText = stringResource(R.string.badge_large_files_count, stats.largeFileCount),
                 badgeColor = MaterialTheme.colorScheme.secondary,
                 icon = Icons.Default.PieChart,
                 iconTint = MaterialTheme.colorScheme.secondary,
@@ -175,9 +178,9 @@ fun QuickActionGrid(
         ) {
             // Card 7: Battery & Performance Tips
             ToolFeatureCard(
-                title = "Battery & Power",
-                subtitle = "System tips & RAM boost",
-                badgeText = "88% Health",
+                title = stringResource(R.string.card_battery),
+                subtitle = stringResource(R.string.card_battery_sub),
+                badgeText = stringResource(R.string.badge_health_format, 88),
                 badgeColor = EmeraldGreen,
                 icon = Icons.Default.BatteryChargingFull,
                 iconTint = EmeraldGreen,
@@ -189,9 +192,9 @@ fun QuickActionGrid(
 
             // Card 8: Smart Scheduler Quick Link
             ToolFeatureCard(
-                title = "Auto Scan",
-                subtitle = "Weekly background clean",
-                badgeText = "Active",
+                title = stringResource(R.string.card_auto_scan),
+                subtitle = stringResource(R.string.card_auto_scan_sub),
+                badgeText = stringResource(R.string.badge_active),
                 badgeColor = ElectricBlue,
                 icon = Icons.Default.Schedule,
                 iconTint = ElectricBlue,
@@ -371,7 +374,7 @@ fun MediaCategoriesQuickBar(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(
-                            text = "Photos",
+                            text = stringResource(R.string.storage_donut_photos),
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -384,7 +387,7 @@ fun MediaCategoriesQuickBar(
                         )
                     }
                     Text(
-                        text = "$photoCount photos",
+                        text = stringResource(R.string.card_photos_count, photoCount),
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -435,7 +438,7 @@ fun MediaCategoriesQuickBar(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(
-                            text = "Videos",
+                            text = stringResource(R.string.storage_donut_videos),
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -448,7 +451,7 @@ fun MediaCategoriesQuickBar(
                         )
                     }
                     Text(
-                        text = "$videoCount videos",
+                        text = stringResource(R.string.card_videos_count, videoCount),
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

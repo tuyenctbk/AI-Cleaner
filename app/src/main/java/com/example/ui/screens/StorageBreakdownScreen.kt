@@ -32,6 +32,8 @@ import com.example.data.model.formatFileSize
 import com.example.ui.components.CommonMediaThumbnail
 import com.example.ui.components.D3StorageDonutChart
 import com.example.ui.components.DeleteConfirmationDialog
+import com.example.R
+import androidx.compose.ui.res.stringResource
 import com.example.ui.theme.*
 import com.example.ui.viewmodel.CleanerUiState
 
@@ -95,7 +97,7 @@ fun StorageBreakdownScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Deep Storage Breakdown",
+                        text = stringResource(R.string.title_storage_explorer),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
                         color = PolishTextPrimary
                     )
@@ -104,7 +106,7 @@ fun StorageBreakdownScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.btn_back),
                             tint = PolishTextPrimary
                         )
                     }

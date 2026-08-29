@@ -30,6 +30,8 @@ import com.example.data.model.AppCacheItem
 import com.example.data.model.formatFileSize
 import com.example.ui.theme.*
 import com.example.ui.viewmodel.CleanerUiState
+import com.example.R
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +78,7 @@ fun AppCacheScreen(
                 title = {
                     Column {
                         Text(
-                            text = "App Cache Cleaner",
+                            text = stringResource(R.string.title_app_cache),
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
                             color = PolishTextPrimary
                         )
@@ -89,7 +91,7 @@ fun AppCacheScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = PolishTextPrimary)
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.btn_back), tint = PolishTextPrimary)
                     }
                 },
                 actions = {
@@ -175,7 +177,7 @@ fun AppCacheScreen(
                         }
 
                         Text(
-                            text = "Clearing app cache deletes temporary streaming buffers and logs without uninstalling apps or removing user account data.",
+                            text = "Safe cleanup. Account data and app settings will not be affected.",
                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, lineHeight = 17.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -196,7 +198,7 @@ fun AppCacheScreen(
                                 ) {
                                     Icon(imageVector = Icons.Default.DeleteSweep, contentDescription = null, tint = Color.White)
                                     Text(
-                                        text = "Clear All App Caches (${formatFileSize(totalUnclearedCacheBytes)})",
+                                        text = "Clear All (${formatFileSize(totalUnclearedCacheBytes)})",
                                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                         color = Color.White
                                     )

@@ -30,6 +30,9 @@ import com.example.ui.viewmodel.CleanerUiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+import com.example.R
+import androidx.compose.ui.res.stringResource
+
 data class BatteryTipItem(
     val id: String,
     val title: String,
@@ -110,24 +113,17 @@ fun BatteryPerformanceScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
-                        Text(
-                            text = "Battery & Performance",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Non-intrusive power & system optimization",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    Text(
+                        text = stringResource(R.string.title_battery),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.btn_back),
                             tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -190,7 +186,7 @@ fun BatteryPerformanceScreen(
 
                                 Column {
                                     Text(
-                                        text = "Estimated Battery Health",
+                                        text = stringResource(R.string.title_battery),
                                         style = MaterialTheme.typography.labelMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -203,7 +199,7 @@ fun BatteryPerformanceScreen(
                                         color = EmeraldGreen
                                     )
                                     Text(
-                                        text = "~18 hours 40 minutes remaining",
+                                        text = "~18h 40m remaining",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -285,7 +281,7 @@ fun BatteryPerformanceScreen(
                                     strokeWidth = 2.dp
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Flushing Idle RAM Caches...", color = Color.White)
+                                Text("Flushing RAM...", color = Color.White)
                             } else {
                                 Row(
                                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -293,7 +289,7 @@ fun BatteryPerformanceScreen(
                                 ) {
                                     Icon(imageVector = Icons.Default.Speed, contentDescription = null, tint = Color.White)
                                     Text(
-                                        text = "One-Tap Speed & RAM Flush",
+                                        text = stringResource(R.string.btn_ram_boost),
                                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                                         color = Color.White
                                     )
@@ -317,7 +313,7 @@ fun BatteryPerformanceScreen(
                                     Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null, tint = EmeraldGreen)
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "Freed $ramFreedMb MB RAM! Devices & CPU running cool.",
+                                        text = "Freed $ramFreedMb MB RAM!",
                                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                         color = EmeraldGreen
                                     )
@@ -356,8 +352,8 @@ fun BatteryPerformanceScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text("Adaptive Power Saver Mode", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
-                                Text("Automatically throttle background processes when idle", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text("Adaptive Power Saver", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                                Text("Throttle background tasks when idle", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             Switch(
                                 checked = adaptivePowerEnabled,
@@ -377,8 +373,8 @@ fun BatteryPerformanceScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text("Storage Thermal Throttle Guard", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
-                                Text("Alert when high cache causes memory wear & heat", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text("Thermal Throttle Guard", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                                Text("Prevent heat & memory wear", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             Switch(
                                 checked = thermalThrottlePrevented,
@@ -398,8 +394,8 @@ fun BatteryPerformanceScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text("OLED Pitch Black Canvas Optimization", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
-                                Text("Turn off black display subpixels to maximize screen efficiency", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text("OLED Dark Optimization", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                                Text("Turn off black pixels to save battery", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             Switch(
                                 checked = darkThemePowerSave,
@@ -422,12 +418,12 @@ fun BatteryPerformanceScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Battery & Performance Guidelines",
+                        text = "Optimization Tips",
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "${tipsList.size} Recommendations",
+                        text = "${tipsList.size} Tips",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

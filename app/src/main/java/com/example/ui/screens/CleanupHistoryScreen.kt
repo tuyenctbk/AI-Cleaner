@@ -29,6 +29,9 @@ import com.example.ui.viewmodel.CleanerUiState
 import java.text.SimpleDateFormat
 import java.util.*
 
+import com.example.R
+import androidx.compose.ui.res.stringResource
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CleanupHistoryScreen(
@@ -45,7 +48,7 @@ fun CleanupHistoryScreen(
                 title = {
                     Column {
                         Text(
-                            text = "Cleanup History Log",
+                            text = stringResource(R.string.title_cleanup_history),
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
                             color = PolishTextPrimary
                         )
@@ -58,7 +61,7 @@ fun CleanupHistoryScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = PolishTextPrimary)
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.btn_back), tint = PolishTextPrimary)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = PolishSurface)

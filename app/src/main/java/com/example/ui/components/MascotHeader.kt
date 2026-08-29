@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.R
 import com.example.ui.theme.EmeraldGreen
+import androidx.compose.ui.res.stringResource
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.platform.testTag
@@ -54,7 +55,7 @@ fun MascotHeader(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.img_robot_mascot_1787907373770),
-                    contentDescription = "AI Cleaner Mascot",
+                    contentDescription = stringResource(R.string.app_name),
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(CircleShape),
@@ -68,7 +69,7 @@ fun MascotHeader(
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
-                        text = "AI Cleaner",
+                        text = stringResource(R.string.app_name),
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 22.sp,
@@ -104,11 +105,11 @@ fun MascotHeader(
                         modifier = Modifier.size(12.dp)
                     )
                     Text(
-                        text = "100% FREE • AD-FREE • SECURE & PRIVATE",
+                        text = stringResource(R.string.header_private_secure),
                         style = MaterialTheme.typography.bodySmall.copy(
-                            fontSize = 10.sp,
+                            fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
-                            letterSpacing = 0.4.sp
+                            letterSpacing = 0.2.sp
                         ),
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -122,7 +123,7 @@ fun MascotHeader(
         ) {
             Icon(
                 imageVector = Icons.Default.Settings,
-                contentDescription = "Settings",
+                contentDescription = stringResource(R.string.title_settings),
                 tint = MaterialTheme.colorScheme.onBackground
             )
         }

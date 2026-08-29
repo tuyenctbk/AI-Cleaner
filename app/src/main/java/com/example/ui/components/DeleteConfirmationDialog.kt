@@ -23,6 +23,9 @@ import com.example.data.model.MediaItem
 import com.example.data.model.formatFileSize
 import com.example.ui.theme.*
 
+import com.example.R
+import androidx.compose.ui.res.stringResource
+
 @Composable
 fun DeleteConfirmationDialog(
     selectedItems: List<MediaItem>,
@@ -32,8 +35,8 @@ fun DeleteConfirmationDialog(
     val totalFreedBytes = selectedItems.sumOf { it.sizeBytes }
 
     MassDeletionSummaryDialog(
-        title = "Delete Selected Items?",
-        subtitle = "Permanent cleanup action",
+        title = stringResource(R.string.dialog_delete_title),
+        subtitle = stringResource(R.string.dialog_delete_subtitle),
         totalFilesCount = selectedItems.size,
         projectedSpaceBytes = totalFreedBytes,
         itemsPreviewList = selectedItems.map { "${it.title} (${it.formattedSize})" },
@@ -98,7 +101,7 @@ fun MassDeletionSummaryDialog(
                         )
                         Text(
                             text = subtitle,
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                            style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -148,35 +151,22 @@ fun MassDeletionSummaryDialog(
                     }
                 }
 
-                // Items Selected Breakdown Header
+                // Breakdown Items Preview Box
                 if (itemsPreviewList.isNotEmpty()) {
-                    Text(
-                        text = "Files Scheduled for Purge:",
-                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    // List of Selected Items Summary
                     Surface(
-                        shape = RoundedCornerShape(14.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .heightIn(max = 160.dp)
+                            .heightIn(max = 140.dp)
                     ) {
                         LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
+                            contentPadding = PaddingValues(10.dp),
                             verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             items(itemsPreviewList) { itemText ->
                                 Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(MaterialTheme.colorScheme.surface)
-                                        .padding(horizontal = 10.dp, vertical = 8.dp),
+                                    modifier = Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Icon(
@@ -230,7 +220,7 @@ fun MassDeletionSummaryDialog(
                             .height(48.dp),
                         shape = RoundedCornerShape(24.dp)
                     ) {
-                        Text("Cancel", color = MaterialTheme.colorScheme.onSurface)
+                        Text(stringResource(R.string.btn_cancel), color = MaterialTheme.colorScheme.onSurface)
                     }
 
                     Button(
@@ -245,7 +235,7 @@ fun MassDeletionSummaryDialog(
                         shape = RoundedCornerShape(24.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = CoralRed)
                     ) {
-                        Text("Confirm Delete", fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(stringResource(R.string.btn_delete), fontWeight = FontWeight.Bold, color = Color.White)
                     }
                 }
             }

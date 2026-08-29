@@ -33,6 +33,9 @@ import com.example.ui.theme.*
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+import com.example.R
+import androidx.compose.ui.res.stringResource
+
 @Composable
 fun SwipeCardDeck(
     items: List<MediaItem>,
@@ -77,13 +80,13 @@ fun SwipeCardDeck(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "All Caught Up!",
+                    text = stringResource(R.string.swipe_empty_title),
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "No more photos to review in this category.",
+                    text = stringResource(R.string.swipe_empty_desc),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -158,8 +161,8 @@ fun SwipeCardDeck(
                                     }
                                 } else {
                                     coroutineScope.launch {
-                                        offsetX.animateTo(0f, tween(200))
-                                        offsetY.animateTo(0f, tween(200))
+                                        offsetX.animateTo(0f, tween(150))
+                                        offsetY.animateTo(0f, tween(150))
                                     }
                                 }
                             },
@@ -231,7 +234,7 @@ fun SwipeCardDeck(
                                     modifier = Modifier.size(40.dp)
                                 )
                                 Text(
-                                    text = "KEEP",
+                                    text = stringResource(R.string.swipe_stamp_keep),
                                     color = Color.White,
                                     fontWeight = FontWeight.Black,
                                     fontSize = 12.sp
@@ -258,7 +261,7 @@ fun SwipeCardDeck(
                                     modifier = Modifier.size(40.dp)
                                 )
                                 Text(
-                                    text = "DELETE",
+                                    text = stringResource(R.string.swipe_stamp_delete),
                                     color = Color.White,
                                     fontWeight = FontWeight.Black,
                                     fontSize = 12.sp
@@ -303,12 +306,12 @@ fun SwipeCardDeck(
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
+                    contentDescription = stringResource(R.string.btn_delete),
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "Delete",
+                    text = stringResource(R.string.btn_delete),
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp
                 )
@@ -330,7 +333,7 @@ fun SwipeCardDeck(
             ) {
                 Icon(
                     imageVector = Icons.Default.Restore,
-                    contentDescription = "Undo",
+                    contentDescription = stringResource(R.string.btn_restore),
                     tint = if (canUndo) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
                 )
             }
@@ -360,12 +363,12 @@ fun SwipeCardDeck(
             ) {
                 Icon(
                     imageVector = Icons.Default.Check,
-                    contentDescription = "Keep",
+                    contentDescription = stringResource(R.string.btn_keep),
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "Keep",
+                    text = stringResource(R.string.btn_keep),
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp
                 )

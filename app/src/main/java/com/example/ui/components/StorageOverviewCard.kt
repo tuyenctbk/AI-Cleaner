@@ -28,35 +28,39 @@ import androidx.compose.ui.unit.sp
 import com.example.data.model.StorageStats
 import com.example.data.model.formatFileSize
 import com.example.ui.theme.*
+import com.example.R
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun StorageOverviewCard(
     stats: StorageStats,
-    isScanning: Boolean,
-    onSmartCleanClick: () -> Unit,
+    isScanning: Boolean = false,
+    onSmartCleanClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .shadow(4.dp, RoundedCornerShape(32.dp), ambientColor = Color.Black.copy(alpha = 0.04f)),
-        shape = RoundedCornerShape(32.dp),
+            .padding(horizontal = 20.dp, vertical = 6.dp)
+            .shadow(
+                elevation = 6.dp,
+                shape = RoundedCornerShape(28.dp),
+                spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                ambientColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.06f)
+            ),
+        shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        border = CardDefaults.outlinedCardBorder().copy(
-            brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.outline.copy(alpha = 0.6f))
-        )
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(22.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Storage gauge ring and stats
+            // Header Row: Usage Summary + Circular Ring
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -68,7 +72,7 @@ fun StorageOverviewCard(
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
-                        text = "Device Storage",
+                        text = stringResource(R.string.storage_status_title),
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
@@ -77,7 +81,7 @@ fun StorageOverviewCard(
                     )
 
                     Text(
-                        text = "${stats.formattedUsed} used of ${stats.formattedTotal}",
+                        text = stringResource(R.string.stat_used_of_total, stats.formattedUsed, stats.formattedTotal),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -89,7 +93,7 @@ fun StorageOverviewCard(
                         modifier = Modifier.padding(top = 4.dp)
                     ) {
                         Text(
-                            text = "${formatFileSize(stats.freeBytes)} Available",
+                            text = "${formatFileSize(stats.freeBytes)} " + stringResource(R.string.storage_donut_free),
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -134,7 +138,7 @@ fun StorageOverviewCard(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "Used",
+                            text = stringResource(R.string.storage_donut_center_used),
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Medium
@@ -194,10 +198,10 @@ fun StorageOverviewCard(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    StorageLegendItem(color = MaterialTheme.colorScheme.primary, label = "Photos", size = stats.photoBytes)
-                    StorageLegendItem(color = ColorVideos, label = "Videos", size = stats.videoBytes)
-                    StorageLegendItem(color = ColorJunk, label = "Junk", size = stats.junkBytes)
-                    StorageLegendItem(color = MaterialTheme.colorScheme.outline, label = "Free", size = stats.freeBytes)
+                    StorageLegendItem(color = MaterialTheme.colorScheme.primary, label = stringResource(R.string.storage_donut_photos), size = stats.photoBytes)
+                    StorageLegendItem(color = ColorVideos, label = stringResource(R.string.storage_donut_videos), size = stats.videoBytes)
+                    StorageLegendItem(color = ColorJunk, label = stringResource(R.string.storage_donut_junk), size = stats.junkBytes)
+                    StorageLegendItem(color = MaterialTheme.colorScheme.outline, label = stringResource(R.string.storage_donut_free), size = stats.freeBytes)
                 }
             }
 
@@ -212,7 +216,7 @@ fun StorageOverviewCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${stats.photoCount + stats.videoCount} Media Files",
+                    text = stringResource(R.string.stat_media_files, stats.photoCount + stats.videoCount),
                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -221,7 +225,7 @@ fun StorageOverviewCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "${stats.formattedJunk} can be freed",
+                    text = stringResource(R.string.stat_can_be_freed, stats.formattedJunk),
                     style = MaterialTheme.typography.bodySmall.copy(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
@@ -254,7 +258,7 @@ fun StorageOverviewCard(
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
-                        text = if (isScanning) "Analyzing Storage..." else "AI Smart Clean",
+                        text = if (isScanning) stringResource(R.string.smart_clean_scanning) else stringResource(R.string.btn_ai_smart_clean),
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,

@@ -21,6 +21,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import com.example.data.model.formatFileSize
 import com.example.ui.components.MascotHeader
 import com.example.ui.components.QuickActionGrid
@@ -209,12 +211,12 @@ private fun CleanHistoryBanner(
                 }
                 Column {
                     Text(
-                        text = "Lifetime Space Freed",
+                        text = stringResource(R.string.stat_lifetime_space_freed),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "$recordsCount operations • Tap to view log",
+                        text = stringResource(R.string.stat_operations_format, recordsCount),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -265,7 +267,7 @@ private fun HomeScreenWidgetCard(
                 ) {
                     Icon(imageVector = Icons.Default.Widgets, contentDescription = null, tint = ElectricBlue)
                     Text(
-                        text = "Home Screen Widget & Observer",
+                        text = stringResource(R.string.widget_preview_title),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -276,7 +278,7 @@ private fun HomeScreenWidgetCard(
                     color = ElectricBlue.copy(alpha = 0.12f)
                 ) {
                     Text(
-                        text = "Widget Ready",
+                        text = stringResource(R.string.badge_active),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                         color = ElectricBlue,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -305,12 +307,12 @@ private fun HomeScreenWidgetCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Storage Cleaner AI Widget",
+                            text = stringResource(R.string.widget_ai_title),
                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "${stats.usedPercent}% Used",
+                            text = stringResource(R.string.stat_used_percent, stats.usedPercent),
                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                             color = ElectricBlue
                         )
@@ -332,7 +334,7 @@ private fun HomeScreenWidgetCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "${stats.formattedFree} Free of ${stats.formattedTotal}",
+                            text = stringResource(R.string.stat_free_of_total, stats.formattedFree, stats.formattedTotal),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -345,7 +347,7 @@ private fun HomeScreenWidgetCard(
                         ) {
                             Icon(imageVector = Icons.Default.FlashOn, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("One-Tap Scan", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold))
+                            Text(stringResource(R.string.btn_scan), style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold))
                         }
                     }
                 }
@@ -362,7 +364,7 @@ private fun HomeScreenWidgetCard(
             ) {
                 Icon(imageVector = Icons.Default.NotificationsActive, contentDescription = null, tint = CoralRed)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Test <10% Low Storage Local Notification Alert", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold))
+                Text(stringResource(R.string.btn_test_low_storage), style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold))
             }
         }
     }
@@ -419,12 +421,12 @@ private fun GlobalQuickActionCard(
 
                     Column {
                         Text(
-                            text = "Global Safe Quick Clean",
+                            text = stringResource(R.string.btn_safe_quick_clean),
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "1-Tap system temp & cache purge routine",
+                            text = stringResource(R.string.card_quick_clean_desc),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -472,7 +474,7 @@ private fun GlobalQuickActionCard(
                 ) {
                     Icon(imageVector = Icons.Default.CleaningServices, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Execute Safe Quick Clean", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.btn_quick_clean), fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -494,7 +496,7 @@ private fun AiCloudIntelligenceHub(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Text(
-            text = "Smart Storage Features",
+            text = stringResource(R.string.section_smart_storage_features),
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.onSurface
         )
@@ -505,8 +507,8 @@ private fun AiCloudIntelligenceHub(
         ) {
             // Cloud Photos Cleaner
             IntelligenceCard(
-                title = "Cloud Photos",
-                subtitle = "$cloudPhotosCount Backed Up",
+                title = stringResource(R.string.card_cloud_photos),
+                subtitle = stringResource(R.string.badge_backed_up_count, cloudPhotosCount),
                 icon = Icons.Default.CloudDone,
                 color = EmeraldGreen,
                 onClick = onOpenCloudCleaner,
@@ -515,8 +517,8 @@ private fun AiCloudIntelligenceHub(
 
             // Storage Trends
             IntelligenceCard(
-                title = "Storage Trends",
-                subtitle = "30-Day Delta Graph",
+                title = stringResource(R.string.card_storage_trends),
+                subtitle = stringResource(R.string.card_storage_history),
                 icon = Icons.Default.ShowChart,
                 color = ElectricBlue,
                 onClick = onOpenStorageTrends,
@@ -525,8 +527,8 @@ private fun AiCloudIntelligenceHub(
 
             // Gemini AI Insights
             IntelligenceCard(
-                title = "AI Insights",
-                subtitle = "$aiRoutinesCount Routines",
+                title = stringResource(R.string.card_ai_insights),
+                subtitle = stringResource(R.string.badge_routines_count, aiRoutinesCount),
                 icon = Icons.Default.AutoAwesome,
                 color = VividViolet,
                 onClick = onOpenAiInsights,
@@ -641,13 +643,13 @@ private fun PauseCleaningCard(
 
                 Column {
                     Text(
-                        text = if (isPaused) "Cleaning Processes Paused" else "Background Cleaning Active",
+                        text = if (isPaused) stringResource(R.string.label_cleaning_paused) else stringResource(R.string.label_background_active),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold, fontSize = 15.sp),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = if (isPaused) "All background scans, auto-clean, and scheduled timers are on hold."
-                        else "Scans, auto-cleans, and smart schedules are operating normally.",
+                        text = if (isPaused) stringResource(R.string.settings_pause_cleaning_on)
+                        else stringResource(R.string.settings_pause_cleaning_off),
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

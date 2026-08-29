@@ -34,6 +34,9 @@ import com.example.data.model.formatFileSize
 import com.example.ui.theme.*
 import com.example.ui.viewmodel.CleanerUiState
 
+import com.example.R
+import androidx.compose.ui.res.stringResource
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StorageTrendsScreen(
@@ -58,22 +61,15 @@ fun StorageTrendsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
-                        Text(
-                            text = "Storage Trends & Accumulation",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = PolishTextPrimary
-                        )
-                        Text(
-                            text = "30-Day Delta & Rapid Accumulation Analysis",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = PolishTextSecondary
-                        )
-                    }
+                    Text(
+                        text = stringResource(R.string.title_storage_trends),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
+                        color = PolishTextPrimary
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = PolishTextPrimary)
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.btn_back), tint = PolishTextPrimary)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = PolishBackground)

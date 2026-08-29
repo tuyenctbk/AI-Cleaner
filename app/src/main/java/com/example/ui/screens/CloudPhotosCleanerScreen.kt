@@ -29,6 +29,9 @@ import com.example.data.model.formatFileSize
 import com.example.ui.theme.*
 import com.example.ui.viewmodel.CleanerUiState
 
+import com.example.R
+import androidx.compose.ui.res.stringResource
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CloudPhotosCleanerScreen(
@@ -50,22 +53,15 @@ fun CloudPhotosCleanerScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
-                        Text(
-                            text = "Cloud Backup Cleaner",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Safely remove local copies of backed up photos",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    Text(
+                        text = stringResource(R.string.title_cloud_photos),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onSurface)
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.btn_back), tint = MaterialTheme.colorScheme.onSurface)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
@@ -113,7 +109,7 @@ fun CloudPhotosCleanerScreen(
                         ) {
                             Icon(imageVector = Icons.Default.CloudDone, contentDescription = null)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("1-Click Free Up Space", fontWeight = FontWeight.Bold)
+                            Text("Free Up Space", fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -163,13 +159,13 @@ fun CloudPhotosCleanerScreen(
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "100% Verified Cloud Backups",
+                                text = "Verified Cloud Backups",
                                 style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = "These media files have already synced to Google Photos / Cloud Drive. Deleting local copies is 100% non-destructive to your cloud library.",
+                                text = "Safely remove local copies of backed-up photos to save storage.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

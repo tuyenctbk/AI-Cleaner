@@ -20,7 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.R
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -409,11 +411,11 @@ private fun CleanerNavigationRail(
         }
     ) {
         val navItems = listOf(
-            NavigationItemData(MainScreenTab.DASHBOARD, "Clean", Icons.Default.CleaningServices, Icons.Outlined.CleaningServices),
-            NavigationItemData(MainScreenTab.DUPLICATES, "Duplicates", Icons.Default.BurstMode, Icons.Outlined.BurstMode),
-            NavigationItemData(MainScreenTab.SWIPE_CLEAN, "Swipe", Icons.Default.Swipe, Icons.Outlined.Swipe),
-            NavigationItemData(MainScreenTab.BATTERY_PERFORMANCE, "Battery", Icons.Default.BatteryChargingFull, Icons.Outlined.BatterySaver),
-            NavigationItemData(MainScreenTab.STORAGE_EXPLORER, "Storage", Icons.Default.PieChart, Icons.Outlined.PieChart)
+            NavigationItemData(MainScreenTab.DASHBOARD, R.string.nav_clean, Icons.Default.CleaningServices, Icons.Outlined.CleaningServices),
+            NavigationItemData(MainScreenTab.DUPLICATES, R.string.nav_duplicates, Icons.Default.BurstMode, Icons.Outlined.BurstMode),
+            NavigationItemData(MainScreenTab.SWIPE_CLEAN, R.string.nav_swipe, Icons.Default.Swipe, Icons.Outlined.Swipe),
+            NavigationItemData(MainScreenTab.BATTERY_PERFORMANCE, R.string.nav_battery, Icons.Default.BatteryChargingFull, Icons.Outlined.BatterySaver),
+            NavigationItemData(MainScreenTab.STORAGE_EXPLORER, R.string.nav_storage, Icons.Default.PieChart, Icons.Outlined.PieChart)
         )
 
         Column(
@@ -423,16 +425,17 @@ private fun CleanerNavigationRail(
         ) {
             navItems.forEach { item ->
                 val isSelected = currentTab == item.tab
+                val label = stringResource(item.labelRes)
                 NavigationRailItem(
                     selected = isSelected,
                     onClick = { onTabSelected(item.tab) },
                     icon = {
                         Icon(
                             imageVector = if (isSelected) item.selectedIcon else item.unselectedIcon,
-                            contentDescription = item.label
+                            contentDescription = label
                         )
                     },
-                    label = { Text(item.label) },
+                    label = { Text(label) },
                     colors = NavigationRailItemDefaults.colors(
                         indicatorColor = MaterialTheme.colorScheme.primaryContainer,
                         selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -460,25 +463,26 @@ private fun CleanerBottomNavigationBar(
         tonalElevation = 4.dp
     ) {
         val navItems = listOf(
-            NavigationItemData(MainScreenTab.DASHBOARD, "Clean", Icons.Default.CleaningServices, Icons.Outlined.CleaningServices),
-            NavigationItemData(MainScreenTab.DUPLICATES, "Duplicates", Icons.Default.BurstMode, Icons.Outlined.BurstMode),
-            NavigationItemData(MainScreenTab.SWIPE_CLEAN, "Swipe", Icons.Default.Swipe, Icons.Outlined.Swipe),
-            NavigationItemData(MainScreenTab.BATTERY_PERFORMANCE, "Battery", Icons.Default.BatteryChargingFull, Icons.Outlined.BatterySaver),
-            NavigationItemData(MainScreenTab.STORAGE_EXPLORER, "Storage", Icons.Default.PieChart, Icons.Outlined.PieChart)
+            NavigationItemData(MainScreenTab.DASHBOARD, R.string.nav_clean, Icons.Default.CleaningServices, Icons.Outlined.CleaningServices),
+            NavigationItemData(MainScreenTab.DUPLICATES, R.string.nav_duplicates, Icons.Default.BurstMode, Icons.Outlined.BurstMode),
+            NavigationItemData(MainScreenTab.SWIPE_CLEAN, R.string.nav_swipe, Icons.Default.Swipe, Icons.Outlined.Swipe),
+            NavigationItemData(MainScreenTab.BATTERY_PERFORMANCE, R.string.nav_battery, Icons.Default.BatteryChargingFull, Icons.Outlined.BatterySaver),
+            NavigationItemData(MainScreenTab.STORAGE_EXPLORER, R.string.nav_storage, Icons.Default.PieChart, Icons.Outlined.PieChart)
         )
 
         navItems.forEach { item ->
             val isSelected = currentTab == item.tab
+            val label = stringResource(item.labelRes)
             NavigationBarItem(
                 selected = isSelected,
                 onClick = { onTabSelected(item.tab) },
                 icon = {
                     Icon(
                         imageVector = if (isSelected) item.selectedIcon else item.unselectedIcon,
-                        contentDescription = item.label
+                        contentDescription = label
                     )
                 },
-                label = { Text(item.label) },
+                label = { Text(label) },
                 colors = NavigationBarItemDefaults.colors(
                     indicatorColor = MaterialTheme.colorScheme.primaryContainer,
                     selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -493,7 +497,7 @@ private fun CleanerBottomNavigationBar(
 
 private data class NavigationItemData(
     val tab: MainScreenTab,
-    val label: String,
+    @androidx.annotation.StringRes val labelRes: Int,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector
 )

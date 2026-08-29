@@ -30,6 +30,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.remember
 import com.example.ui.components.dpadFocusable
 
+import com.example.R
+import androidx.compose.ui.res.stringResource
+
 @Composable
 fun SimilarPhotosGroupCard(
     group: DuplicateGroup,
@@ -96,7 +99,7 @@ fun SimilarPhotosGroupCard(
                                 tint = MaterialTheme.colorScheme.primary
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Compare", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                            Text(stringResource(R.string.btn_compare), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                         }
                     }
 
@@ -116,7 +119,7 @@ fun SimilarPhotosGroupCard(
                             if (allDuplicatesSelected) {
                                 Icon(
                                     imageVector = Icons.Default.Check,
-                                    contentDescription = "Select Group",
+                                    contentDescription = stringResource(R.string.btn_select_all),
                                     tint = Color.White,
                                     modifier = Modifier.size(16.dp)
                                 )
@@ -171,7 +174,7 @@ fun SimilarPhotosGroupCard(
                                 modifier = Modifier.size(14.dp)
                             )
                             Text(
-                                text = "Best Shot",
+                                text = stringResource(R.string.badge_best_shot),
                                 color = Color.White,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.ExtraBold

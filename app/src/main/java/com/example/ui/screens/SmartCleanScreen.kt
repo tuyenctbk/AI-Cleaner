@@ -26,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import com.example.R
 import com.example.data.model.JunkCategory
 import com.example.data.model.JunkType
@@ -51,7 +52,7 @@ fun SmartCleanScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "AI Smart Clean",
+                        text = stringResource(R.string.title_smart_clean),
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -60,7 +61,7 @@ fun SmartCleanScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.btn_back),
                             tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -105,7 +106,7 @@ fun SmartCleanScreen(
                                     tint = Color.White
                                 )
                                 Text(
-                                    text = "Clean Selected (${formatFileSize(totalSelectedBytes)})",
+                                    text = stringResource(R.string.btn_clean_selected, formatFileSize(totalSelectedBytes)),
                                     style = MaterialTheme.typography.titleMedium.copy(
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 15.sp
@@ -163,12 +164,12 @@ fun SmartCleanScreen(
                         }
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             Text(
-                                text = if (uiState.isScanning) "AI Analyzing Storage..." else "Ready to Free Up Space",
+                                text = if (uiState.isScanning) stringResource(R.string.smart_clean_scanning) else stringResource(R.string.smart_clean_ready),
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 16.sp),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = if (uiState.isScanning) uiState.scanStepText else "Found ${formatFileSize(uiState.junkCategories.sumOf { it.sizeBytes })} of removable junk files",
+                                text = if (uiState.isScanning) uiState.scanStepText else stringResource(R.string.smart_clean_found_desc, formatFileSize(uiState.junkCategories.sumOf { it.sizeBytes })),
                                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

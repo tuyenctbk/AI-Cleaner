@@ -24,6 +24,9 @@ import com.example.data.model.TipCategory
 import com.example.ui.theme.*
 import com.example.ui.viewmodel.MainScreenTab
 
+import com.example.R
+import androidx.compose.ui.res.stringResource
+
 @Composable
 fun CleanupTipsSection(
     tips: List<CleanupTip>,
@@ -57,7 +60,7 @@ fun CleanupTipsSection(
                     modifier = Modifier.size(20.dp)
                 )
                 Text(
-                    text = "Personalized Cleanup Tips",
+                    text = stringResource(R.string.title_cleanup_tips),
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
                         fontSize = 17.sp

@@ -76,7 +76,7 @@ fun VaultScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.btn_back),
                             tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -216,7 +216,7 @@ fun VaultScreen(
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = "Moves large, unused files out of main gallery to keep storage uncluttered.",
+                                    text = "Move sensitive or large files to protected storage.",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -237,7 +237,7 @@ fun VaultScreen(
                         ) {
                             Icon(imageVector = Icons.Default.AutoAwesome, contentDescription = null, tint = Color.White)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Run Auto-Sort Engine to Vault", fontWeight = FontWeight.Bold, color = Color.White)
+                            Text("Auto-Sort to Vault", fontWeight = FontWeight.Bold, color = Color.White)
                         }
                     }
                 }

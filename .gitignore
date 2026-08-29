@@ -21,6 +21,7 @@ buildOutputCleanup/
 # Kotlin & KSP
 .kotlin/
 *.kotlin_module
+kspCaches/
 
 # Android Studio / IntelliJ IDEA
 *.iml
@@ -36,18 +37,23 @@ out/
 .externalNativeBuild/
 .cxx/
 
-# Secrets & Environment configuration
-# (Contains API keys, keystore passwords, SDK locations)
+# Secrets & Sensitive Credentials
+# (Contains signing keys, passwords, API secrets, private keystores)
 local.properties
 *.local.properties
+common_release_key.jks
+*.jks
+*.keystore
+*.p12
+*.key
+*.pem
+*.pepk
+debug.keystore
+secrets.properties
 .env
 .env.*
 !.env.example
-!local.defaults.properties
-
-# Keystores & Signing (Keep commented or customize as needed)
-debug.keystore
-*.pepk
+local.defaults.properties
 
 # OS specific files
 .DS_Store
@@ -57,6 +63,10 @@ debug.keystore
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Memory Dumps & Diagnostics
+*.hprof
+*.log
 
 # VS Code & other editors
 .vscode/
