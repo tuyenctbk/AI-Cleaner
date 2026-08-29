@@ -139,6 +139,7 @@ fun MainApp(viewModel: CleanerViewModel = viewModel()) {
             }
         } else {
             Scaffold(
+                contentWindowInsets = WindowInsets(0, 0, 0, 0),
                 bottomBar = {
                     // Show bottom navigation bar on main tabs ONLY for mobile
                     if (!useNavRail && uiState.currentTab in listOf(
@@ -250,7 +251,8 @@ fun MainContentArea(
                         uiState = uiState,
                         onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
                         onToggleCategory = { viewModel.toggleJunkCategory(it) },
-                        onExecuteClean = { viewModel.executeSmartClean() }
+                        onExecuteClean = { viewModel.executeSmartClean() },
+                        modifier = Modifier.padding(innerPadding)
                     )
                 }
                 MainScreenTab.DUPLICATES -> {
@@ -453,8 +455,7 @@ private fun CleanerBottomNavigationBar(
 ) {
     NavigationBar(
         modifier = modifier
-            .testTag("cleaner_bottom_navigation_bar")
-            .windowInsetsPadding(WindowInsets.navigationBars),
+            .testTag("cleaner_bottom_navigation_bar"),
         containerColor = MaterialTheme.colorScheme.surface,
         tonalElevation = 4.dp
     ) {

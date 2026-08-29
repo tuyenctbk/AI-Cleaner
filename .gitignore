@@ -1,18 +1,65 @@
+# =========================================================================
+# Android & Gradle .gitignore
+# =========================================================================
+
+# Built application files & outputs
+*.apk
+*.aab
+*.aar
+*.ap_
+*.dex
+*.class
+/build/
+**/build/
+/captures/
+
+# Gradle
+.gradle/
+buildOutputCleanup/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Kotlin & KSP
+.kotlin/
+*.kotlin_module
+
+# Android Studio / IntelliJ IDEA
 *.iml
-.gradle
-.kotlin
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+*.ipr
+*.iws
+.idea/
+!.idea/codeStyles/
+!.idea/misc.xml
+!.idea/vcs.xml
+out/
+
+# Android NDK / CMake / C++
+.externalNativeBuild/
+.cxx/
+
+# Secrets & Environment configuration
+# (Contains API keys, keystore passwords, SDK locations)
 local.properties
+*.local.properties
 .env
+.env.*
+!.env.example
+!local.defaults.properties
+
+# Keystores & Signing (Keep commented or customize as needed)
 debug.keystore
+*.pepk
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# VS Code & other editors
+.vscode/
+*.swp
+*~
+*.bak
