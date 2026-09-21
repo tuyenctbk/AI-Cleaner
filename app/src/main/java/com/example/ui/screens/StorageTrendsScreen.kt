@@ -75,8 +75,10 @@ fun StorageTrendsScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = PolishBackground)
             )
         },
-        containerColor = PolishBackground,
+        containerColor = MaterialTheme.colorScheme.background,
         modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -153,19 +155,19 @@ fun StorageTrendsScreen(
                             )
                         }
 
-                        Divider(color = PolishOutline.copy(alpha = 0.3f))
+                        HorizontalDivider(color = PolishOutline.copy(alpha = 0.3f))
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Column {
-                                Text("Top Growth Driver", style = MaterialTheme.typography.labelSmall, color = PolishTextSecondary)
+                                Text(stringResource(R.string.trends_top_growth_driver), style = MaterialTheme.typography.labelSmall, color = PolishTextSecondary)
                                 Text(summary.topGrowthCategory, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold), color = PolishTextPrimary)
                             }
 
                             Column(horizontalAlignment = Alignment.End) {
-                                Text("Peak Accumulation", style = MaterialTheme.typography.labelSmall, color = PolishTextSecondary)
+                                Text(stringResource(R.string.trends_peak_accumulation), style = MaterialTheme.typography.labelSmall, color = PolishTextSecondary)
                                 Text(summary.highestBurstDay, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold), color = CoralRed)
                             }
                         }

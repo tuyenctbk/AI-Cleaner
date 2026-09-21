@@ -11,6 +11,8 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -47,8 +49,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewModel: CleanerViewModel = viewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            var showSplash by remember { mutableStateOf(true) }
+
             AICleanerTheme(themeMode = uiState.themeMode) {
-                MainApp(viewModel = viewModel)
+                if (showSplash) {
+                    com.example.ui.screens.SplashScreen(
+                        onSplashFinished = { showSplash = false }
+                    )
+                } else {
+                    MainApp(viewModel = viewModel)
+                }
             }
         }
     }
@@ -69,34 +79,47 @@ fun MainApp(viewModel: CleanerViewModel = viewModel()) {
     val useNavRail = isWideScreen || isTv
 
     // Runtime Permission Launcher for media scanning
+    // Bug 1 fix: Separate media permission check from POST_NOTIFICATIONS.
+    // permissionGranted is only true when at least one real media permission is granted.
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        val isGranted = permissions.values.any { it }
-        viewModel.setPermissionGranted(isGranted)
+        val mediaPermissions = listOf(
+            Manifest.permission.READ_MEDIA_IMAGES,
+            Manifest.permission.READ_MEDIA_VIDEO,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+        // A media permission was granted if any media-specific key is true.
+        val isMediaGranted = permissions.entries.any { (key, granted) ->
+            granted && key in mediaPermissions
+        }
+        viewModel.setPermissionGranted(isMediaGranted)
     }
 
+    // Track whether we have shown the rationale screen
+    var showPermissionRationale by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
-        val permissionsToRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arrayOf(
+        val mediaPermissionsToCheck = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            listOf(
                 Manifest.permission.READ_MEDIA_IMAGES,
-                Manifest.permission.READ_MEDIA_VIDEO,
-                Manifest.permission.POST_NOTIFICATIONS
+                Manifest.permission.READ_MEDIA_VIDEO
             )
         } else {
-            arrayOf(
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            )
+            listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
 
-        val hasPermission = permissionsToRequest.any {
+        // Check if the user already granted at least one media permission in a previous session.
+        val hasMediaPermission = mediaPermissionsToCheck.any {
             ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
         }
 
-        if (hasPermission) {
+        if (hasMediaPermission) {
+            // Already granted — proceed directly without showing rationale again.
             viewModel.setPermissionGranted(true)
         } else {
-            permissionLauncher.launch(permissionsToRequest)
+            // First launch — show the in-app rationale screen before the OS dialog.
+            showPermissionRationale = true
         }
 
         // Handle intent extras from Widget or Local Notification
@@ -129,12 +152,22 @@ fun MainApp(viewModel: CleanerViewModel = viewModel()) {
                 MainScreenTab.STORAGE_EXPLORER
             )
         ) {
-            Row(modifier = Modifier.fillMaxSize()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
                 CleanerNavigationRail(
                     currentTab = uiState.currentTab,
-                    onTabSelected = { viewModel.navigateTo(it) }
+                    onTabSelected = { viewModel.navigateTo(it) },
+                    modifier = Modifier.fillMaxHeight()
                 )
-                Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(MaterialTheme.colorScheme.background)
+                ) {
                     MainContentArea(
                         uiState = uiState,
                         viewModel = viewModel,
@@ -208,6 +241,29 @@ fun MainApp(viewModel: CleanerViewModel = viewModel()) {
                 onCompleteOnboarding = { viewModel.completeOnboarding() }
             )
         }
+
+        // Permission Rationale Overlay — shown before OS dialog on first launch (after onboarding)
+        if (showPermissionRationale && !uiState.showOnboarding) {
+            com.example.ui.components.PermissionRationaleScreen(
+                onGrantPermissions = {
+                    showPermissionRationale = false
+                    val permissionsToRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        arrayOf(
+                            Manifest.permission.READ_MEDIA_IMAGES,
+                            Manifest.permission.READ_MEDIA_VIDEO,
+                            Manifest.permission.POST_NOTIFICATIONS
+                        )
+                    } else {
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    }
+                    permissionLauncher.launch(permissionsToRequest)
+                },
+                onSkip = {
+                    showPermissionRationale = false
+                    viewModel.setPermissionGranted(false)
+                }
+            )
+        }
     }
 }
 
@@ -223,10 +279,11 @@ fun MainContentArea(
     Box(
         modifier = modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .then(
                 if (isWideScreen || isTv) {
                     Modifier
-                        .widthIn(max = 1000.dp)
+                        .widthIn(max = 1200.dp)
                         .wrapContentWidth(Alignment.CenterHorizontally)
                 } else {
                     Modifier
@@ -236,9 +293,12 @@ fun MainContentArea(
         AnimatedContent(
             targetState = uiState.currentTab,
             transitionSpec = {
-                fadeIn() togetherWith fadeOut()
+                fadeIn(animationSpec = tween(150)) togetherWith fadeOut(animationSpec = tween(150))
             },
-            label = "ScreenTransition"
+            label = "ScreenTransition",
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
         ) { tab ->
             when (tab) {
                 MainScreenTab.DASHBOARD -> {
@@ -386,7 +446,9 @@ fun MainContentArea(
                         onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
                         onAutoSort = { viewModel.autoSortToVault() },
                         onRestoreSelected = { viewModel.removeFromVault(it) },
-                        onDeleteSelected = { viewModel.deleteLargeFiles(it) },
+                        // Bug 8 fix: Use deleteVaultItems() which correctly deducts
+                        // from photoBytes or videoBytes based on MIME type.
+                        onDeleteSelected = { viewModel.deleteVaultItems(it) },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -403,10 +465,10 @@ private fun CleanerNavigationRail(
 ) {
     NavigationRail(
         modifier = modifier
-            .testTag("cleaner_navigation_rail")
-            .windowInsetsPadding(WindowInsets.systemBars),
+            .testTag("cleaner_navigation_rail"),
         containerColor = MaterialTheme.colorScheme.surface,
         header = {
+            Spacer(Modifier.height(16.dp))
             Icon(
                 imageVector = Icons.Default.CleaningServices,
                 contentDescription = null,

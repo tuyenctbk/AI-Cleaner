@@ -72,7 +72,7 @@ class GeminiCleanerService {
                 }
 
                 val request = Request.Builder()
-                    .url("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=$apiKey")
+                    .url("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey")
                     .post(requestJson.toString().toRequestBody("application/json".toMediaType()))
                     .build()
 

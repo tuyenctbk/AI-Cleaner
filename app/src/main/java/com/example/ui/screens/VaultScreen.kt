@@ -131,11 +131,11 @@ fun VaultScreen(
                                 .height(50.dp)
                                 .testTag("vault_restore_button"),
                             shape = RoundedCornerShape(25.dp),
-                            border = ButtonDefaults.outlinedButtonBorder.copy(brush = SolidColor(MaterialTheme.colorScheme.primary))
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                         ) {
                             Icon(imageVector = Icons.Default.Unarchive, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Restore (${selectedItemsList.size})", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                            Text(stringResource(R.string.btn_restore_count, selectedItemsList.size), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                         }
 
                         Button(
@@ -153,7 +153,7 @@ fun VaultScreen(
                         ) {
                             Icon(imageVector = Icons.Default.DeleteForever, contentDescription = null, tint = Color.White)
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Delete (${formatFileSize(selectedBytes)})", fontWeight = FontWeight.Bold, color = Color.White)
+                            Text(stringResource(R.string.btn_delete_size, formatFileSize(selectedBytes)), fontWeight = FontWeight.Bold, color = Color.White)
                         }
                     }
                 }
@@ -161,6 +161,8 @@ fun VaultScreen(
         },
         containerColor = MaterialTheme.colorScheme.background,
         modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -237,7 +239,7 @@ fun VaultScreen(
                         ) {
                             Icon(imageVector = Icons.Default.AutoAwesome, contentDescription = null, tint = Color.White)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Auto-Sort to Vault", fontWeight = FontWeight.Bold, color = Color.White)
+                            Text(stringResource(R.string.btn_auto_sort_to_vault), fontWeight = FontWeight.Bold, color = Color.White)
                         }
                     }
                 }

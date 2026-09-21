@@ -70,6 +70,8 @@ fun SettingsScreen(
         },
         containerColor = MaterialTheme.colorScheme.background,
         modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

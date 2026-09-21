@@ -36,12 +36,10 @@ fun StorageOverviewCard(
     stats: StorageStats,
     isScanning: Boolean = false,
     onSmartCleanClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 6.dp)
 ) {
     Card(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 6.dp)
             .shadow(
                 elevation = 6.dp,
                 shape = RoundedCornerShape(28.dp),

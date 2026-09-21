@@ -110,6 +110,7 @@ fun BatteryPerformanceScreen(
     }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -132,6 +133,8 @@ fun BatteryPerformanceScreen(
             )
         },
         modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -281,7 +284,7 @@ fun BatteryPerformanceScreen(
                                     strokeWidth = 2.dp
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Flushing RAM...", color = Color.White)
+                                Text(stringResource(R.string.flushing_ram), color = Color.White)
                             } else {
                                 Row(
                                     horizontalArrangement = Arrangement.spacedBy(8.dp),

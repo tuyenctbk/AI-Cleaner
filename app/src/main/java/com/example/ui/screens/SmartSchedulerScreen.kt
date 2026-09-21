@@ -49,6 +49,7 @@ fun SmartSchedulerScreen(
     val thresholds = remember { listOf(200, 500, 1000, 2000) } // in MB
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -67,6 +68,8 @@ fun SmartSchedulerScreen(
             )
         },
         modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

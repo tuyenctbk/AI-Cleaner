@@ -48,6 +48,7 @@ fun SmartCleanScreen(
     val totalSelectedBytes = selectedCategories.sumOf { it.sizeBytes }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -120,6 +121,8 @@ fun SmartCleanScreen(
             }
         },
         modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

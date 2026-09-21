@@ -44,6 +44,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 
 import androidx.compose.material.icons.filled.PauseCircle
 import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.ui.platform.LocalConfiguration
 
 @Composable
 fun HomeScreen(
@@ -57,10 +58,12 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current
+    val isWideScreen = LocalConfiguration.current.screenWidthDp >= 600
 
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .statusBarsPadding()
             .testTag("home_screen_lazy_column"),
         contentPadding = PaddingValues(top = 8.dp, bottom = 96.dp),
@@ -71,35 +74,71 @@ fun HomeScreen(
             MascotHeader(onOpenSettings = { onNavigate(MainScreenTab.SETTINGS) })
         }
 
-        // Pause Cleaning Control Card
-        item {
-            PauseCleaningCard(
-                isPaused = uiState.isCleaningPaused,
-                onTogglePause = onTogglePauseCleaning
-            )
+        // Pause Cleaning Alert Banner (shown only if background cleaning is paused)
+        if (uiState.isCleaningPaused) {
+            item {
+                PauseCleaningCard(
+                    isPaused = true,
+                    onTogglePause = onTogglePauseCleaning
+                )
+            }
         }
 
-        // Main Storage Overview Card with AI Smart Clean Button
-        item {
-            StorageOverviewCard(
-                stats = uiState.storageStats,
-                isScanning = uiState.isScanning,
-                onSmartCleanClick = onSmartClean
-            )
-        }
-
-        // Global Quick Action Card (Pre-defined Safe Quick Clean routine)
-        item {
-            GlobalQuickActionCard(
-                isExecuting = uiState.isExecutingGlobalQuickClean,
-                progress = uiState.globalQuickCleanProgress,
-                stepText = uiState.globalQuickCleanStepText,
-                junkBytes = uiState.storageStats.junkBytes,
-                onQuickCleanClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onGlobalQuickClean()
+        if (isWideScreen) {
+            // Adaptive 2-column layout for Tablet: Storage Overview and Global Quick Action side-by-side
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Box(modifier = Modifier.weight(1f)) {
+                        StorageOverviewCard(
+                            stats = uiState.storageStats,
+                            isScanning = uiState.isScanning,
+                            onSmartCleanClick = onSmartClean,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                    Box(modifier = Modifier.weight(1f)) {
+                        GlobalQuickActionCard(
+                            isExecuting = uiState.isExecutingGlobalQuickClean,
+                            progress = uiState.globalQuickCleanProgress,
+                            stepText = uiState.globalQuickCleanStepText,
+                            junkBytes = uiState.storageStats.junkBytes,
+                            onQuickCleanClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                onGlobalQuickClean()
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
-            )
+            }
+        } else {
+            // Main Storage Overview Card with AI Smart Clean Button
+            item {
+                StorageOverviewCard(
+                    stats = uiState.storageStats,
+                    isScanning = uiState.isScanning,
+                    onSmartCleanClick = onSmartClean
+                )
+            }
+
+            // Global Quick Action Card (Pre-defined Safe Quick Clean routine)
+            item {
+                GlobalQuickActionCard(
+                    isExecuting = uiState.isExecutingGlobalQuickClean,
+                    progress = uiState.globalQuickCleanProgress,
+                    stepText = uiState.globalQuickCleanStepText,
+                    junkBytes = uiState.storageStats.junkBytes,
+                    onQuickCleanClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onGlobalQuickClean()
+                    }
+                )
+            }
         }
 
         // AI & Cloud Intelligence Hub
@@ -376,12 +415,11 @@ private fun GlobalQuickActionCard(
     progress: Float,
     stepText: String,
     junkBytes: Long,
-    onQuickCleanClick: () -> Unit
+    onQuickCleanClick: () -> Unit,
+    modifier: Modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+        modifier = modifier
             .testTag("global_quick_action_card"),
         shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),

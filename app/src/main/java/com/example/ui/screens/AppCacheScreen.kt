@@ -60,8 +60,8 @@ fun AppCacheScreen(
 
     if (showConfirmClearAllCacheDialog) {
         com.example.ui.components.MassDeletionSummaryDialog(
-            title = "Clear All App Caches?",
-            subtitle = "Purge temporary cached data across all applications",
+            title = stringResource(R.string.dialog_clear_all_cache_title),
+            subtitle = stringResource(R.string.dialog_clear_all_cache_sub),
             totalFilesCount = unclearedApps.size,
             projectedSpaceBytes = totalUnclearedCacheBytes,
             itemsPreviewList = unclearedApps.map { "${it.appName} Cache (${it.formattedCacheSize})" },
@@ -73,6 +73,7 @@ fun AppCacheScreen(
     }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -83,7 +84,7 @@ fun AppCacheScreen(
                             color = PolishTextPrimary
                         )
                         Text(
-                            text = "Ranked by cache size",
+                            text = stringResource(R.string.ranked_by_cache_size),
                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
                             color = PolishTextSecondary
                         )
@@ -111,6 +112,8 @@ fun AppCacheScreen(
             )
         },
         modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -146,7 +149,7 @@ fun AppCacheScreen(
                         ) {
                             Column {
                                 Text(
-                                    text = "Total Reclaimable Cache",
+                                    text = stringResource(R.string.total_reclaimable_cache),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -236,7 +239,7 @@ fun AppCacheScreen(
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
-                    placeholder = { Text("Search apps or package name...") },
+                    placeholder = { Text(stringResource(R.string.search_apps_hint)) },
                     leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = null) },
                     modifier = Modifier
                         .fillMaxWidth()

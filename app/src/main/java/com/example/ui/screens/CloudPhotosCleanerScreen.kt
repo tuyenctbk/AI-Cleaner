@@ -117,6 +117,8 @@ fun CloudPhotosCleanerScreen(
         },
         containerColor = MaterialTheme.colorScheme.background,
         modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -259,11 +261,11 @@ fun CloudPhotosCleanerScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(imageVector = Icons.Default.CloudDone, contentDescription = null, tint = EmeraldGreen)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Purge Local Copy?")
+                    Text(stringResource(R.string.purge_local_copy_title))
                 }
             },
             text = {
-                Text("This will delete ${selectedPhotos.size} local photo file(s) (${formatFileSize(selectedBytes)}) from your device storage. Your original cloud copy on Google Photos remains 100% safe.")
+                Text(stringResource(R.string.cloud_photos_delete_notice, selectedPhotos.size, formatFileSize(selectedBytes)))
             },
             confirmButton = {
                 Button(
@@ -273,12 +275,12 @@ fun CloudPhotosCleanerScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen)
                 ) {
-                    Text("Confirm 1-Click Delete")
+                    Text(stringResource(R.string.confirm_1click_delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showConfirmDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.btn_cancel))
                 }
             }
         )

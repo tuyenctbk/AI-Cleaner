@@ -432,6 +432,11 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
                 AiRoutineAction.DELETE_SCREENSHOTS -> {
                     val freed = routine.potentialSavingsBytes
                     val currentStats = _uiState.value.storageStats
+                    val record = CleanRecord(
+                        freedBytes = freed,
+                        itemsCount = 1,
+                        description = "AI Routine: Screenshot Purge (${formatFileSize(freed)})"
+                    )
                     _uiState.update { state ->
                         state.copy(
                             storageStats = currentStats.copy(
@@ -439,15 +444,22 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
                                 freeBytes = currentStats.freeBytes + freed,
                                 photoBytes = (currentStats.photoBytes - freed).coerceAtLeast(0L)
                             ),
+                            cleanHistory = listOf(record) + state.cleanHistory,
                             lastFreedBytes = freed,
                             lastCleanTitle = "AI Screenshot Purge Completed!",
                             showCleanSuccessDialog = true
                         )
                     }
+                    onCleaningOperationCompleted(freed, 1)
                 }
                 AiRoutineAction.CLEAR_WHATSAPP_CACHE -> {
                     val freed = routine.potentialSavingsBytes
                     val currentStats = _uiState.value.storageStats
+                    val record = CleanRecord(
+                        freedBytes = freed,
+                        itemsCount = 1,
+                        description = "AI Routine: WhatsApp Cache Purge (${formatFileSize(freed)})"
+                    )
                     _uiState.update { state ->
                         state.copy(
                             storageStats = currentStats.copy(
@@ -455,11 +467,13 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
                                 freeBytes = currentStats.freeBytes + freed,
                                 appBytes = (currentStats.appBytes - freed).coerceAtLeast(0L)
                             ),
+                            cleanHistory = listOf(record) + state.cleanHistory,
                             lastFreedBytes = freed,
                             lastCleanTitle = "AI WhatsApp Cache Cleared!",
                             showCleanSuccessDialog = true
                         )
                     }
+                    onCleaningOperationCompleted(freed, 1)
                 }
             }
         }
@@ -608,6 +622,7 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
                     showCleanSuccessDialog = true
                 )
             }
+            onCleaningOperationCompleted(freedBytes, 1)
         }
     }
 
@@ -644,6 +659,7 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
                     showCleanSuccessDialog = true
                 )
             }
+            onCleaningOperationCompleted(totalFreed, count)
         }
     }
 
@@ -713,6 +729,7 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
     fun executeSmartClean() {
         viewModelScope.launch {
             val selected = _uiState.value.junkCategories.filter { it.isSelected }
+            if (selected.isEmpty()) return@launch
             val totalFreed = selected.sumOf { it.sizeBytes }
             val totalCount = selected.sumOf { it.itemCount }
 
@@ -805,6 +822,8 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
                 }
             }
 
+            if (totalItems == 0) return@launch
+
             val currentStats = _uiState.value.storageStats
             val newStats = currentStats.copy(
                 usedBytes = (currentStats.usedBytes - totalFreed).coerceAtLeast(0L),
@@ -891,6 +910,10 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
     fun executeSwipeTrashCleanup() {
         viewModelScope.launch {
             val trashed = _uiState.value.swipeTrashItems
+            // Bug 5 fix: Guard against empty trash to avoid 0-byte history records
+            // and falsely incrementing the clean counter.
+            if (trashed.isEmpty()) return@launch
+
             val totalFreed = trashed.sumOf { it.sizeBytes }
             val count = trashed.size
 
@@ -949,6 +972,10 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             _uiState.update { it.copy(isCompressing = true, compressionProgress = 0f) }
             val selected = _uiState.value.compressibleItems.filter { it.isSelected }
+            if (selected.isEmpty()) {
+                _uiState.update { it.copy(isCompressing = false) }
+                return@launch
+            }
             var saved = 0L
 
             for (i in selected.indices) {
@@ -982,11 +1009,14 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
                     showCleanSuccessDialog = true
                 )
             }
+            // Bug 3 fix: Trigger clean counter, Rate & Share dialogs after compression.
+            onCleaningOperationCompleted(saved, selected.size)
         }
     }
 
     fun deleteLargeFiles(items: List<MediaItem>) {
         viewModelScope.launch {
+            if (items.isEmpty()) return@launch
             val totalFreed = items.sumOf { it.sizeBytes }
             val count = items.size
             val itemIds = items.map { it.id }.toSet()
@@ -1014,6 +1044,51 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
                     showCleanSuccessDialog = true
                 )
             }
+            // Bug 4 fix: Track deletion in clean counter so Rate/Share dialogs fire.
+            onCleaningOperationCompleted(totalFreed, count)
+        }
+    }
+
+    /**
+     * Bug 8 fix: Dedicated vault item deletion that correctly updates the storage stat
+     * category (photoBytes vs videoBytes) based on each item's MIME type instead of
+     * blindly deducting everything from videoBytes.
+     */
+    fun deleteVaultItems(items: List<MediaItem>) {
+        viewModelScope.launch {
+            if (items.isEmpty()) return@launch
+            val totalFreed = items.sumOf { it.sizeBytes }
+            val count = items.size
+            val itemIds = items.map { it.id }.toSet()
+
+            val photoFreed = items.filter { it.mimeType.startsWith("image/") }.sumOf { it.sizeBytes }
+            val videoFreed = items.filter { it.mimeType.startsWith("video/") }.sumOf { it.sizeBytes }
+
+            val currentStats = _uiState.value.storageStats
+            val newStats = currentStats.copy(
+                usedBytes = (currentStats.usedBytes - totalFreed).coerceAtLeast(0L),
+                freeBytes = currentStats.freeBytes + totalFreed,
+                photoBytes = (currentStats.photoBytes - photoFreed).coerceAtLeast(0L),
+                videoBytes = (currentStats.videoBytes - videoFreed).coerceAtLeast(0L)
+            )
+
+            val record = CleanRecord(
+                freedBytes = totalFreed,
+                itemsCount = count,
+                description = "Deleted $count vault items (${formatFileSize(totalFreed)})"
+            )
+
+            _uiState.update { state ->
+                state.copy(
+                    vaultItems = state.vaultItems.filter { it.id !in itemIds },
+                    storageStats = newStats,
+                    cleanHistory = listOf(record) + state.cleanHistory,
+                    lastFreedBytes = totalFreed,
+                    lastCleanTitle = "Vault Items Deleted!",
+                    showCleanSuccessDialog = true
+                )
+            }
+            onCleaningOperationCompleted(totalFreed, count)
         }
     }
 
@@ -1031,6 +1106,7 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
 
     fun moveToVault(items: List<MediaItem>) {
         viewModelScope.launch {
+            if (items.isEmpty()) return@launch
             val itemIds = items.map { it.id }.toSet()
             _uiState.update { state ->
                 val newVaultItems = (state.vaultItems + items).distinctBy { it.id }
@@ -1051,6 +1127,7 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
 
     fun removeFromVault(items: List<MediaItem>) {
         viewModelScope.launch {
+            if (items.isEmpty()) return@launch
             val itemIds = items.map { it.id }.toSet()
             _uiState.update { state ->
                 val remainingVault = state.vaultItems.filter { it.id !in itemIds }

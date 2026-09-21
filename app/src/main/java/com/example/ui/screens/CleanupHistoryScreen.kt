@@ -43,6 +43,7 @@ fun CleanupHistoryScreen(
     val totalRecords = uiState.cleanHistory.size
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -68,6 +69,8 @@ fun CleanupHistoryScreen(
             )
         },
         modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -137,7 +140,7 @@ fun CleanupHistoryScreen(
                             }
                         }
 
-                        Divider(color = PolishOutline.copy(alpha = 0.3f))
+                        HorizontalDivider(color = PolishOutline.copy(alpha = 0.3f))
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -212,8 +215,8 @@ fun CleanupHistoryScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Icon(imageVector = Icons.Default.History, contentDescription = null, tint = PolishTextSecondary, modifier = Modifier.size(40.dp))
-                            Text("No Cleanup History Yet", style = MaterialTheme.typography.titleSmall, color = PolishTextPrimary)
-                            Text("Perform your first smart clean to start tracking recovered gigabytes.", style = MaterialTheme.typography.bodySmall, color = PolishTextSecondary)
+                            Text(stringResource(R.string.history_empty_title), style = MaterialTheme.typography.titleSmall, color = PolishTextPrimary)
+                            Text(stringResource(R.string.history_empty_desc), style = MaterialTheme.typography.bodySmall, color = PolishTextSecondary)
                         }
                     }
                 }

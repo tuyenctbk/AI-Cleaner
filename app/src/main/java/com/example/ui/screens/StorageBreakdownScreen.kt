@@ -93,6 +93,7 @@ fun StorageBreakdownScreen(
     val selectedBytes = selectedItemsList.sumOf { it.sizeBytes }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -209,6 +210,8 @@ fun StorageBreakdownScreen(
             }
         },
         modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -332,7 +335,7 @@ fun StorageBreakdownScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("file_search_input"),
-                        placeholder = { Text("Search files by name or extension...", color = PolishTextSecondary) },
+                        placeholder = { Text(stringResource(R.string.search_files_hint), color = PolishTextSecondary) },
                         leadingIcon = {
                             Icon(imageVector = Icons.Default.Search, contentDescription = "Search", tint = PolishTextSecondary)
                         },

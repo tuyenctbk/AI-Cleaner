@@ -18,7 +18,7 @@ data class MediaItem(
     val isLarge: Boolean = false,
     val isBestShot: Boolean = false,
     val sampleImageIndex: Int = 0, // Fallback visual index if local file doesn't have thumbnail
-    var isSelected: Boolean = false
+    val isSelected: Boolean = false
 ) {
     val formattedSize: String
         get() = formatFileSize(sizeBytes)
@@ -81,7 +81,7 @@ data class JunkCategory(
     val sizeBytes: Long,
     val itemCount: Int,
     val items: List<JunkFileItem>,
-    var isSelected: Boolean = true
+    val isSelected: Boolean = true
 ) {
     val formattedSize: String
         get() = formatFileSize(sizeBytes)
@@ -134,10 +134,10 @@ enum class CompressionQuality(val label: String, val factor: Float, val savingPe
 data class CompressibleMedia(
     val id: Long,
     val mediaItem: MediaItem,
-    var quality: CompressionQuality = CompressionQuality.MEDIUM,
-    var isSelected: Boolean = true,
-    var isProcessed: Boolean = false,
-    var compressedSizeBytes: Long = 0
+    val quality: CompressionQuality = CompressionQuality.MEDIUM,
+    val isSelected: Boolean = true,
+    val isProcessed: Boolean = false,
+    val compressedSizeBytes: Long = 0
 ) {
     val estimatedSavingsBytes: Long
         get() = (mediaItem.sizeBytes * (1f - quality.factor)).toLong()
@@ -211,7 +211,7 @@ data class CloudPhotoItem(
     val cloudProvider: String = "Google Photos",
     val cloudBackupDate: String = "Backed Up • Safe to Delete",
     val sampleImageIndex: Int = 0,
-    var isSelected: Boolean = true
+    val isSelected: Boolean = true
 ) {
     val formattedSize: String
         get() = formatFileSize(sizeBytes)
@@ -264,7 +264,7 @@ data class AiInsightRoutine(
     val actionType: AiRoutineAction = AiRoutineAction.SAFE_QUICK_CLEAN,
     val explanation: String,
     val itemCount: Int = 1,
-    var isExecuted: Boolean = false
+    val isExecuted: Boolean = false
 ) {
     val formattedSavings: String
         get() = formatFileSize(potentialSavingsBytes)
@@ -278,10 +278,10 @@ fun formatFileSize(bytes: Long): String {
     val tb = gb / 1024.0
 
     return when {
-        tb >= 1.0 -> String.format("%.2f TB", tb)
-        gb >= 1.0 -> String.format("%.2f GB", gb)
-        mb >= 1.0 -> String.format("%.1f MB", mb)
-        kb >= 1.0 -> String.format("%.1f KB", kb)
+        tb >= 1.0 -> String.format(java.util.Locale.US, "%.2f TB", tb)
+        gb >= 1.0 -> String.format(java.util.Locale.US, "%.2f GB", gb)
+        mb >= 1.0 -> String.format(java.util.Locale.US, "%.1f MB", mb)
+        kb >= 1.0 -> String.format(java.util.Locale.US, "%.1f KB", kb)
         else -> "$bytes B"
     }
 }

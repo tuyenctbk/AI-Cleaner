@@ -210,6 +210,8 @@ fun CompressorScreen(
         },
         containerColor = MaterialTheme.colorScheme.background,
         modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) { innerPadding ->
         Column(
             modifier = Modifier

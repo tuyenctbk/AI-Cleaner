@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -72,11 +73,123 @@ fun QuickActionGrid(
             )
         }
 
-        // 3x2 Grid of Main Feature Cards
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
+        val isWide = LocalConfiguration.current.screenWidthDp >= 600
+
+        if (isWide) {
+            // Adaptive 4-column Layout for Tablets / Wide Screens
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                ToolFeatureCard(
+                    title = stringResource(R.string.card_app_cache),
+                    subtitle = stringResource(R.string.card_app_cache_sub),
+                    badgeText = stringResource(R.string.btn_clear_cache),
+                    badgeColor = ElectricBlue,
+                    icon = Icons.Default.Apps,
+                    iconTint = ElectricBlue,
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                    onClick = onOpenAppCache,
+                    modifier = Modifier.weight(1f).testTag("app_cache_feature_card")
+                )
+                ToolFeatureCard(
+                    title = stringResource(R.string.card_vault),
+                    subtitle = stringResource(R.string.card_vault_sub),
+                    badgeText = stringResource(R.string.badge_secured),
+                    badgeColor = VividViolet,
+                    icon = Icons.Default.Lock,
+                    iconTint = VividViolet,
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                    onClick = onOpenVault,
+                    modifier = Modifier.weight(1f).testTag("vault_feature_card")
+                )
+                ToolFeatureCard(
+                    title = stringResource(R.string.card_similar_photos),
+                    subtitle = stringResource(R.string.badge_duplicates_count, stats.duplicateCount),
+                    badgeText = stringResource(R.string.btn_keep_best_shot),
+                    badgeColor = MaterialTheme.colorScheme.primary,
+                    icon = Icons.Default.BurstMode,
+                    iconTint = MaterialTheme.colorScheme.primary,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    borderColor = MaterialTheme.colorScheme.outlineVariant,
+                    onClick = onOpenDuplicates,
+                    modifier = Modifier.weight(1f).testTag("duplicates_feature_card")
+                )
+                ToolFeatureCard(
+                    title = stringResource(R.string.card_swipe_clean),
+                    subtitle = stringResource(R.string.card_swipe_clean_sub),
+                    badgeText = stringResource(R.string.badge_fast_fun),
+                    badgeColor = EmeraldGreen,
+                    icon = Icons.Default.Swipe,
+                    iconTint = EmeraldGreen,
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                    onClick = onOpenSwipeClean,
+                    modifier = Modifier.weight(1f).testTag("swipe_feature_card")
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                ToolFeatureCard(
+                    title = stringResource(R.string.card_compressor),
+                    subtitle = stringResource(R.string.card_compressor_sub),
+                    badgeText = stringResource(R.string.badge_lossless_ai),
+                    badgeColor = WarningAmber,
+                    icon = Icons.Default.Compress,
+                    iconTint = WarningAmber,
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                    onClick = onOpenCompressor,
+                    modifier = Modifier.weight(1f).testTag("compressor_feature_card")
+                )
+                ToolFeatureCard(
+                    title = stringResource(R.string.card_deep_storage),
+                    subtitle = stringResource(R.string.card_deep_storage_sub),
+                    badgeText = stringResource(R.string.badge_large_files_count, stats.largeFileCount),
+                    badgeColor = MaterialTheme.colorScheme.secondary,
+                    icon = Icons.Default.PieChart,
+                    iconTint = MaterialTheme.colorScheme.secondary,
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                    onClick = onOpenStorageExplorer,
+                    modifier = Modifier.weight(1f).testTag("storage_explorer_card")
+                )
+                ToolFeatureCard(
+                    title = stringResource(R.string.card_battery),
+                    subtitle = stringResource(R.string.card_battery_sub),
+                    badgeText = stringResource(R.string.badge_health_format, 88),
+                    badgeColor = EmeraldGreen,
+                    icon = Icons.Default.BatteryChargingFull,
+                    iconTint = EmeraldGreen,
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                    onClick = onOpenBatteryPerformance,
+                    modifier = Modifier.weight(1f).testTag("battery_performance_card")
+                )
+                ToolFeatureCard(
+                    title = stringResource(R.string.card_auto_scan),
+                    subtitle = stringResource(R.string.card_auto_scan_sub),
+                    badgeText = stringResource(R.string.badge_active),
+                    badgeColor = ElectricBlue,
+                    icon = Icons.Default.Schedule,
+                    iconTint = ElectricBlue,
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                    onClick = onOpenSmartScheduler,
+                    modifier = Modifier.weight(1f).testTag("auto_scan_card")
+                )
+            }
+        } else {
+            // Standard 2-column Grid for Phones
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
             // Card 1: App Cache Cleaner
             ToolFeatureCard(
                 title = stringResource(R.string.card_app_cache),
@@ -203,6 +316,7 @@ fun QuickActionGrid(
                 onClick = onOpenSmartScheduler,
                 modifier = Modifier.weight(1f).testTag("auto_scan_card")
             )
+        }
         }
 
         // Banner: Media Categories Quick Bar

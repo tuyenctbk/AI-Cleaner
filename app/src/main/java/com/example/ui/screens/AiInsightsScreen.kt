@@ -92,8 +92,10 @@ fun AiInsightsScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = PolishBackground)
             )
         },
-        containerColor = PolishBackground,
+        containerColor = MaterialTheme.colorScheme.background,
         modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -140,7 +142,7 @@ fun AiInsightsScreen(
                                 .fillMaxWidth()
                                 .testTag("ai_query_input"),
                             placeholder = {
-                                Text("e.g. Batch delete old screenshots or clean WhatsApp media...", color = PolishTextSecondary)
+                                Text(stringResource(R.string.ai_insight_query_placeholder), color = PolishTextSecondary)
                             },
                             shape = RoundedCornerShape(14.dp),
                             colors = OutlinedTextFieldDefaults.colors(
@@ -163,11 +165,11 @@ fun AiInsightsScreen(
                             if (uiState.isGeneratingAiInsights) {
                                 CircularProgressIndicator(color = Color.White, modifier = Modifier.size(18.dp))
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Analyzing File Usage Patterns...")
+                                Text(stringResource(R.string.ai_insight_analyzing))
                             } else {
                                 Icon(imageVector = Icons.Default.AutoAwesome, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Generate Custom AI Routine", fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.ai_insight_btn_generate), fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -277,7 +279,7 @@ private fun AiRoutineCardItem(
                 color = PolishTextSecondary
             )
 
-            Divider(color = PolishOutline.copy(alpha = 0.3f))
+            HorizontalDivider(color = PolishOutline.copy(alpha = 0.3f))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -285,7 +287,7 @@ private fun AiRoutineCardItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text("Potential Savings", style = MaterialTheme.typography.labelSmall, color = PolishTextSecondary)
+                    Text(stringResource(R.string.ai_insight_potential_savings), style = MaterialTheme.typography.labelSmall, color = PolishTextSecondary)
                     Text(
                         text = routine.formattedSavings,
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
@@ -302,7 +304,7 @@ private fun AiRoutineCardItem(
                     ) {
                         Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = EmeraldGreen)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Routine Executed", color = EmeraldGreen, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.ai_insight_executed), color = EmeraldGreen, fontWeight = FontWeight.Bold)
                     }
                 } else {
                     Button(
@@ -313,7 +315,7 @@ private fun AiRoutineCardItem(
                     ) {
                         Icon(imageVector = Icons.Default.PlayArrow, contentDescription = null)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Execute Routine", fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.ai_insight_btn_execute), fontWeight = FontWeight.Bold)
                     }
                 }
             }

@@ -79,6 +79,7 @@ fun DuplicatesScreen(
     }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -180,6 +181,8 @@ fun DuplicatesScreen(
             }
         },
         modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) { innerPadding ->
         if (uiState.duplicateGroups.isEmpty()) {
             Box(
@@ -383,7 +386,7 @@ private fun DuplicateCompareSheet(
                         if (candidateItem.isSelected) {
                             Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
                         } else {
-                            Text("KEEP", color = Color.White, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.btn_keep_tag), color = Color.White, fontSize = 8.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -457,7 +460,7 @@ private fun DuplicateCompareSheet(
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
-                    Text("Confirm Selection", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.btn_confirm_selection), fontWeight = FontWeight.Bold)
                 }
             }
         }

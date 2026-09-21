@@ -2,16 +2,20 @@
 # Android & Gradle .gitignore
 # =========================================================================
 
-# Built application files & outputs
+# Built application files & bundle outputs
 *.apk
 *.aab
 *.aar
 *.ap_
 *.dex
 *.class
+*.apks
+*.idsig
 /build/
 **/build/
 /captures/
+release/
+bundle/
 
 # Gradle
 .gradle/
@@ -55,6 +59,29 @@ secrets.properties
 !.env.example
 local.defaults.properties
 
+# Python & Scripting Tools
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+.pytest_cache/
+
+# Testing & Roborazzi outputs
+**/roborazzi/
+**/recordings/
+**/screenshots/
+
+# CI / Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
 # OS specific files
 .DS_Store
 .DS_Store?
@@ -68,8 +95,11 @@ Thumbs.db
 *.hprof
 *.log
 
-# VS Code & other editors
+# Editors & Tools
 .vscode/
+.fleet/
 *.swp
 *~
 *.bak
+*.orig
+*.rej
