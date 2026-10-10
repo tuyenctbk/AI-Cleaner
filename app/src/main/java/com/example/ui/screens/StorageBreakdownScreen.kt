@@ -37,6 +37,13 @@ import androidx.compose.ui.res.stringResource
 import com.example.ui.theme.*
 import com.example.ui.viewmodel.CleanerUiState
 
+enum class StorageDateFilter(val stringRes: Int) {
+    ALL_TIME(R.string.storage_filter_all_time),
+    LAST_7_DAYS(R.string.storage_filter_last_7_days),
+    LAST_30_DAYS(R.string.storage_filter_last_30_days),
+    OLDER_6_MONTHS(R.string.storage_filter_older_6_months)
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StorageBreakdownScreen(
@@ -50,7 +57,7 @@ fun StorageBreakdownScreen(
 
     var searchQuery by remember { mutableStateOf("") }
     var selectedExtensionFilter by remember { mutableStateOf("All") }
-    var selectedDateFilter by remember { mutableStateOf("All Time") }
+    var selectedDateFilter by remember { mutableStateOf(StorageDateFilter.ALL_TIME) }
 
     val rawLargeFiles = uiState.allMedia.filter { it.isLarge || it.sizeBytes > 10 * 1024 * 1024 }
 
@@ -76,10 +83,10 @@ fun StorageBreakdownScreen(
 
             // Date created/modified filter
             val matchesDate = when (selectedDateFilter) {
-                "Last 7 Days" -> (now - media.dateModified) <= (7 * dayMs)
-                "Last 30 Days" -> (now - media.dateModified) <= (30 * dayMs)
-                "Older than 6 Months" -> (now - media.dateModified) >= (180 * dayMs)
-                else -> true
+                StorageDateFilter.LAST_7_DAYS -> (now - media.dateModified) <= (7 * dayMs)
+                StorageDateFilter.LAST_30_DAYS -> (now - media.dateModified) <= (30 * dayMs)
+                StorageDateFilter.OLDER_6_MONTHS -> (now - media.dateModified) >= (180 * dayMs)
+                StorageDateFilter.ALL_TIME -> true
             }
 
             matchesSearch && matchesExtension && matchesDate
@@ -158,12 +165,16 @@ fun StorageBreakdownScreen(
                                     )
                                     Column {
                                         Text(
-                                            text = "Selected ${selectedItemsList.size} Files" + if (searchQuery.isNotEmpty()) " in Search" else "",
+                                            text = if (searchQuery.isNotEmpty()) {
+                                                stringResource(R.string.storage_selected_files_search_fmt, selectedItemsList.size)
+                                            } else {
+                                                stringResource(R.string.storage_selected_files_fmt, selectedItemsList.size)
+                                            },
                                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                                             color = PolishTextPrimary
                                         )
                                         Text(
-                                            text = "Total Space to be Saved: ${formatFileSize(selectedBytes)}",
+                                            text = stringResource(R.string.storage_total_saved_fmt, formatFileSize(selectedBytes)),
                                             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
                                             color = EmeraldGreen
                                         )
@@ -173,7 +184,7 @@ fun StorageBreakdownScreen(
                                 TextButton(
                                     onClick = { selectedItemIds = emptySet() }
                                 ) {
-                                    Text("Clear", color = PolishPrimary, fontWeight = FontWeight.Bold)
+                                    Text(stringResource(R.string.btn_clear), color = PolishPrimary, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
@@ -198,7 +209,7 @@ fun StorageBreakdownScreen(
                                 ) {
                                     Icon(imageVector = Icons.Default.DeleteForever, contentDescription = null, tint = Color.White)
                                     Text(
-                                        text = "Confirm Bulk Deletion (${formatFileSize(selectedBytes)})",
+                                        text = stringResource(R.string.btn_confirm_bulk_deletion_fmt, formatFileSize(selectedBytes)),
                                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                         color = Color.White
                                     )
@@ -263,12 +274,12 @@ fun StorageBreakdownScreen(
                         ) {
                             Column {
                                 Text(
-                                    text = "Device Storage Status",
+                                    text = stringResource(R.string.storage_status_title),
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 16.sp),
                                     color = PolishTextPrimary
                                 )
                                 Text(
-                                    text = "${stats.formattedUsed} used of ${stats.formattedTotal}",
+                                    text = stringResource(R.string.stat_used_of_total, stats.formattedUsed, stats.formattedTotal),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = PolishTextSecondary
                                 )
@@ -283,11 +294,11 @@ fun StorageBreakdownScreen(
                         }
 
                         // Storage Category Breakdown Rows
-                        CategoryProgressItem("Photos", stats.photoBytes, stats.totalBytes, ColorPhotos, Icons.Default.Image)
-                        CategoryProgressItem("Videos", stats.videoBytes, stats.totalBytes, ColorVideos, Icons.Default.Videocam)
-                        CategoryProgressItem("Apps & Data", stats.appBytes, stats.totalBytes, ColorApps, Icons.Default.Apps)
-                        CategoryProgressItem("Documents", stats.docBytes, stats.totalBytes, ColorDocs, Icons.Default.Description)
-                        CategoryProgressItem("System & Cache", stats.systemBytes + stats.junkBytes, stats.totalBytes, ColorSystem, Icons.Default.Settings)
+                        CategoryProgressItem(stringResource(R.string.category_photos), stats.photoBytes, stats.totalBytes, ColorPhotos, Icons.Default.Image)
+                        CategoryProgressItem(stringResource(R.string.category_videos), stats.videoBytes, stats.totalBytes, ColorVideos, Icons.Default.Videocam)
+                        CategoryProgressItem(stringResource(R.string.storage_cat_apps), stats.appBytes, stats.totalBytes, ColorApps, Icons.Default.Apps)
+                        CategoryProgressItem(stringResource(R.string.storage_cat_docs), stats.docBytes, stats.totalBytes, ColorDocs, Icons.Default.Description)
+                        CategoryProgressItem(stringResource(R.string.storage_cat_system_cache), stats.systemBytes + stats.junkBytes, stats.totalBytes, ColorSystem, Icons.Default.Settings)
                     }
                 }
             }
@@ -306,7 +317,7 @@ fun StorageBreakdownScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Large Files Management",
+                            text = stringResource(R.string.storage_large_files_title),
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 16.sp),
                             color = PolishTextPrimary
                         )
@@ -321,7 +332,11 @@ fun StorageBreakdownScreen(
                             }
                         ) {
                             Text(
-                                text = if (selectedItemIds.size == filteredLargeFiles.size) "Deselect All" else "Select All (${filteredLargeFiles.size})",
+                                text = if (selectedItemIds.size == filteredLargeFiles.size) {
+                                    stringResource(R.string.btn_deselect_all)
+                                } else {
+                                    stringResource(R.string.storage_select_all_count_fmt, filteredLargeFiles.size)
+                                },
                                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                 color = PolishPrimary
                             )
@@ -337,12 +352,12 @@ fun StorageBreakdownScreen(
                             .testTag("file_search_input"),
                         placeholder = { Text(stringResource(R.string.search_files_hint), color = PolishTextSecondary) },
                         leadingIcon = {
-                            Icon(imageVector = Icons.Default.Search, contentDescription = "Search", tint = PolishTextSecondary)
+                            Icon(imageVector = Icons.Default.Search, contentDescription = null, tint = PolishTextSecondary)
                         },
                         trailingIcon = {
                             if (searchQuery.isNotEmpty()) {
                                 IconButton(onClick = { searchQuery = "" }) {
-                                    Icon(imageVector = Icons.Default.Close, contentDescription = "Clear search", tint = PolishTextSecondary)
+                                    Icon(imageVector = Icons.Default.Close, contentDescription = stringResource(R.string.btn_clear), tint = PolishTextSecondary)
                                 }
                             }
                         },
@@ -371,7 +386,7 @@ fun StorageBreakdownScreen(
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     selectedExtensionFilter = ext
                                 },
-                                label = { Text(ext) },
+                                label = { Text(if (ext == "All") stringResource(R.string.storage_filter_all) else ext) },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = PolishPrimary,
                                     selectedLabelColor = Color.White,
@@ -388,8 +403,7 @@ fun StorageBreakdownScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        val dateList = listOf("All Time", "Last 7 Days", "Last 30 Days", "Older than 6 Months")
-                        items(dateList) { dateFilter ->
+                        items(StorageDateFilter.entries) { dateFilter ->
                             val isSelected = selectedDateFilter == dateFilter
                             FilterChip(
                                 selected = isSelected,
@@ -397,7 +411,7 @@ fun StorageBreakdownScreen(
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     selectedDateFilter = dateFilter
                                 },
-                                label = { Text(dateFilter) },
+                                label = { Text(stringResource(dateFilter.stringRes)) },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = ElectricBlue,
                                     selectedLabelColor = Color.White,
@@ -431,12 +445,12 @@ fun StorageBreakdownScreen(
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    text = "No files match your search criteria",
+                                    text = stringResource(R.string.storage_no_matching_files),
                                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                                     color = PolishTextPrimary
                                 )
                                 Text(
-                                    text = "Try clearing search keywords or selecting a different file extension filter.",
+                                    text = stringResource(R.string.storage_no_matching_files_desc),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = PolishTextSecondary
                                 )
@@ -469,6 +483,7 @@ fun StorageBreakdownScreen(
             DeleteConfirmationDialog(
                 selectedItems = selectedItemsList,
                 onConfirmDelete = {
+                    showDeleteConfirmDialog = false
                     onDeleteLargeFiles(selectedItemsList)
                     selectedItemIds = emptySet()
                 },
@@ -621,12 +636,12 @@ private fun FolderHeatmapSection(
             ) {
                 Column {
                     Text(
-                        text = "Subdirectory Storage Heatmap",
+                        text = stringResource(R.string.storage_heatmap_title),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 16.sp),
                         color = PolishTextPrimary
                     )
                     Text(
-                        text = "Color-coded intensity scale by folder size footprint",
+                        text = stringResource(R.string.storage_heatmap_subtitle),
                         style = MaterialTheme.typography.bodySmall,
                         color = PolishTextSecondary
                     )
@@ -644,7 +659,7 @@ private fun FolderHeatmapSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Intensity:",
+                    text = stringResource(R.string.storage_heatmap_intensity),
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                     color = PolishTextSecondary
                 )
@@ -702,7 +717,7 @@ private fun FolderHeatmapSection(
                                                 .background(tileColor)
                                         )
                                         Text(
-                                            text = "${(intensity * 100).toInt()}% Intensity",
+                                            text = stringResource(R.string.storage_heatmap_intensity_fmt, (intensity * 100).toInt()),
                                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp, fontWeight = FontWeight.Bold),
                                             color = tileColor
                                         )
@@ -716,7 +731,7 @@ private fun FolderHeatmapSection(
                                             maxLines = 1
                                         )
                                         Text(
-                                            text = "${folder.formattedSize} • ${folder.fileCount} files",
+                                            text = stringResource(R.string.storage_heatmap_folder_summary_fmt, folder.formattedSize, folder.fileCount),
                                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp, fontWeight = FontWeight.Bold),
                                             color = tileColor
                                         )

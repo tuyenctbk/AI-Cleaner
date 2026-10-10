@@ -47,7 +47,7 @@ fun AiInsightsScreen(
 
     selectedRoutineForExecution?.let { routine ->
         com.example.ui.components.MassDeletionSummaryDialog(
-            title = "Execute AI Routine?",
+            title = stringResource(R.string.ai_insight_routine_dialog_title),
             subtitle = routine.title,
             totalFilesCount = routine.itemCount,
             projectedSpaceBytes = routine.potentialSavingsBytes,
@@ -76,7 +76,7 @@ fun AiInsightsScreen(
                             color = VividViolet.copy(alpha = 0.2f)
                         ) {
                             Text(
-                                text = "Gemini",
+                                text = stringResource(R.string.brand_gemini),
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                                 color = VividViolet,
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
@@ -126,7 +126,7 @@ fun AiInsightsScreen(
                         ) {
                             Icon(imageVector = Icons.Default.AutoAwesome, contentDescription = null, tint = VividViolet)
                             Text(
-                                text = "Ask Gemini AI Cleaner",
+                                text = stringResource(R.string.ai_ask_gemini_cleaner),
                                 style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                                 color = PolishTextPrimary
                             )
@@ -184,13 +184,13 @@ fun AiInsightsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Suggested Custom Routines",
+                        text = stringResource(R.string.ai_suggested_routines_title),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         color = PolishTextPrimary
                     )
 
                     Text(
-                        text = "${uiState.aiRoutines.size} Available",
+                        text = stringResource(R.string.ai_routines_available_fmt, uiState.aiRoutines.size),
                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                         color = VividViolet
                     )
@@ -260,7 +260,7 @@ private fun AiRoutineCardItem(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "${routine.confidenceScore}% Confidence",
+                        text = stringResource(R.string.ai_confidence_fmt, routine.confidenceScore),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                         color = EmeraldGreen
                     )

@@ -123,12 +123,12 @@ fun SmartSchedulerScreen(
 
                             Column {
                                 Text(
-                                    text = "Automated Weekly Scan",
+                                    text = stringResource(R.string.scheduler_weekly_scan),
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = if (settings.isEnabled) "Runs every ${settings.dayOfWeek} at ${settings.scanTime}" else "Scheduler is paused",
+                                    text = if (settings.isEnabled) stringResource(R.string.scheduler_weekly_scan_on, settings.dayOfWeek, settings.scanTime) else stringResource(R.string.scheduler_weekly_scan_off),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -167,7 +167,7 @@ fun SmartSchedulerScreen(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 Icon(imageVector = Icons.Default.Schedule, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
-                                Text("Scheduled Scan Day", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
+                                Text(stringResource(R.string.scheduler_day_title), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
                             }
 
                             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -209,7 +209,7 @@ fun SmartSchedulerScreen(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 Icon(imageVector = Icons.Default.Alarm, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
-                                Text("Preferred Execution Time", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
+                                Text(stringResource(R.string.scheduler_time_title), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
                             }
 
                             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -251,8 +251,8 @@ fun SmartSchedulerScreen(
                             ) {
                                 Icon(imageVector = Icons.Default.NotificationsActive, contentDescription = null, tint = WarningAmber, modifier = Modifier.size(20.dp))
                                 Column {
-                                    Text("Notification Threshold Policy", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
-                                    Text("Notify only when significant cleanup space is identified", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text(stringResource(R.string.scheduler_threshold_title), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
+                                    Text(stringResource(R.string.scheduler_threshold_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             }
 
@@ -265,7 +265,7 @@ fun SmartSchedulerScreen(
                                     FilterChip(
                                         selected = isSelected,
                                         onClick = { onUpdateSettings(settings.copy(thresholdMb = mb)) },
-                                        label = { Text(">$mb MB") },
+                                        label = { Text(stringResource(R.string.scheduler_threshold_mb_fmt, mb)) },
                                         modifier = Modifier.weight(1f),
                                         colors = FilterChipDefaults.filterChipColors(
                                             selectedContainerColor = WarningAmber,
@@ -294,21 +294,21 @@ fun SmartSchedulerScreen(
                                 .padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Text("Automated Scan Scope", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
+                            Text(stringResource(R.string.scheduler_scope_title), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
 
                             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                                 Checkbox(checked = settings.scanJunk, onCheckedChange = { onUpdateSettings(settings.copy(scanJunk = it)) })
-                                Text("App Cache & Residual Junk Files", style = MaterialTheme.typography.bodyMedium)
+                                Text(stringResource(R.string.scheduler_scope_cache), style = MaterialTheme.typography.bodyMedium)
                             }
 
                             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                                 Checkbox(checked = settings.scanDuplicates, onCheckedChange = { onUpdateSettings(settings.copy(scanDuplicates = it)) })
-                                Text("Similar & Duplicate Photos", style = MaterialTheme.typography.bodyMedium)
+                                Text(stringResource(R.string.scheduler_scope_similar), style = MaterialTheme.typography.bodyMedium)
                             }
 
                             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                                 Checkbox(checked = settings.scanLargeFiles, onCheckedChange = { onUpdateSettings(settings.copy(scanLargeFiles = it)) })
-                                Text("Large Uncompressed Videos (>100MB)", style = MaterialTheme.typography.bodyMedium)
+                                Text(stringResource(R.string.scheduler_scope_large_videos), style = MaterialTheme.typography.bodyMedium)
                             }
                         }
                     }
@@ -330,7 +330,7 @@ fun SmartSchedulerScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(imageVector = Icons.Default.PlayArrow, contentDescription = null, tint = Color.White)
-                            Text("Test Run Automated Scan Now", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = Color.White)
+                            Text(stringResource(R.string.btn_test_run_scan), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = Color.White)
                         }
                     }
                 }

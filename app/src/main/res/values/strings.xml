@@ -397,4 +397,221 @@
 
     <!-- Swipe Clean Extra -->
     <string name="swipe_switch_category">Switch Category</string>
+
+    <!-- Battery Screen Refinements -->
+    <string name="battery_health_excellent">Excellent</string>
+    <string name="battery_health_good">Good</string>
+    <string name="battery_health_fair">Fair</string>
+    <string name="battery_health_low">Low Power</string>
+    <string name="battery_charging_to_full">Charging to 100%</string>
+    <string name="battery_est_remaining_fmt">~%1$dh %2$dm remaining</string>
+    <string name="battery_ram_usage_fmt">RAM Usage (%1$d%%)</string>
+    <string name="battery_storage_health">Storage Health</string>
+    <string name="battery_ram_freed_fmt">Freed %1$d MB RAM!</string>
+    <string name="battery_thermal_guard">Thermal Throttle Guard</string>
+    <string name="battery_prevent_heat_desc">Prevent heat &amp; memory wear</string>
+    <string name="battery_oled_opt">OLED Dark Optimization</string>
+    <string name="battery_turn_off_pixels_desc">Turn off black pixels to save battery</string>
+    <string name="battery_opt_tips_title">Optimization Tips</string>
+    <string name="battery_tips_count_fmt">%1$d Tips</string>
+    <string name="battery_tip_refresh_title">Adaptive Screen Refresh Rate &amp; Timeout</string>
+    <string name="battery_tip_refresh_sub">Cap unused background frame rates &amp; set screen timeout to 30s</string>
+    <string name="battery_tip_refresh_impact">+1.5 hrs battery/day</string>
+    <string name="battery_tip_refresh_action">Tune Display Power</string>
+    <string name="battery_tip_refresh_desc">High 120Hz refresh rates and long 5-minute display timeouts drain up to 25% of total battery cycles. Lowering timeout when idle extends screen-on time significantly.</string>
+    <string name="battery_tip_apps_title">Background Streaming App Power Saver</string>
+    <string name="battery_tip_apps_sub">Place unused media &amp; social apps into deep background sleep</string>
+    <string name="battery_tip_apps_impact">+2.1 hrs battery/day</string>
+    <string name="battery_tip_apps_action">Clean Background Caches</string>
+    <string name="battery_tip_apps_desc">Apps like video streams and social feeds run background sync processes that prevent the CPU from entering low-power sleep states, accelerating battery drain.</string>
+    <string name="battery_tip_thermal_title">Storage Thermal &amp; Flash Wear Prevention</string>
+    <string name="battery_tip_thermal_sub">Clearing heavy uncompressed video cache reduces CPU/NAND heat</string>
+    <string name="battery_tip_thermal_impact">Prevents Throttle</string>
+    <string name="battery_tip_thermal_action">Inspect App Cache</string>
+    <string name="battery_tip_thermal_desc">When flash storage is over 90% full, the Android OS struggles with page swaps, causing CPU thermal spikes, battery drain, and UI stuttering during heavy multitasking.</string>
+    <string name="battery_tip_dark_title">OLED Dark Surface Power Savings</string>
+    <string name="battery_tip_dark_sub">True pitch-black surfaces turn off individual OLED pixels</string>
+    <string name="battery_tip_dark_impact">+18% OLED Savings</string>
+    <string name="battery_tip_dark_action">Enable Dark Canvas</string>
+    <string name="battery_tip_dark_desc">OLED and AMOLED screens draw zero power for pure black pixels. Using pitch-black themes at high brightness reduces display battery consumption by up to 30%.</string>
+
+    <!-- Compressor Screen Refinements -->
+    <string name="compressor_selected_summary_fmt">%1$d Selected • Save %2$s</string>
+    <string name="compressor_progress_title">Compressing 4K Videos &amp; High-Res Photos...</string>
+    <string name="compressor_progress_desc">Applying advanced codec optimization with lossless perceptual quality...</string>
+    <string name="compressor_btn_compress_fmt">Batch Compress &amp; Free %1$s</string>
+    <string name="compressor_original_fmt">Original (%1$s)</string>
+    <string name="compressor_compressed_fmt">Compressed (%1$s)</string>
+    <string name="compressor_badge_video_fmt">4K / HD Video • %1$s</string>
+    <string name="compressor_badge_image_fmt">High-Res Image • %1$s</string>
+    <string name="compressor_estimated_output">Estimated Output</string>
+    <string name="compressor_original_size">Original Size</string>
+    <string name="compressor_space_saved">Space Saved</string>
+    <string name="compressor_saving_pct_fmt">-%1$d%% Size</string>
+    <string name="compressor_quality_high">High Quality</string>
+    <string name="compressor_quality_medium">Balanced</string>
+    <string name="compressor_quality_max_savings">Max Space Saver</string>
+    <string name="badge_4k_hd">4K/HD</string>
+    <string name="badge_raw">RAW</string>
+
+    <!-- Cloud Photos Screen Refinements -->
+    <string name="cloud_photos_selected_count_fmt">Selected: %1$d of %2$d</string>
+    <string name="cloud_photos_free_bytes_fmt">Free %1$s</string>
+    <string name="cloud_photos_verified_title">Verified Cloud Backups</string>
+    <string name="cloud_photos_verified_desc">Safely remove local copies of backed-up photos to save storage.</string>
+    <string name="cloud_photos_backed_up_count_fmt">Backed Up Media (%1$d)</string>
+    <string name="cloud_photos_provider_date_fmt">%1$s • %2$s</string>
+
+    <!-- Vault Screen Refinements -->
+    <string name="vault_item_path_fmt">%1$s • Vault Path: /storage/emulated/0/Vault/</string>
+
+    <!-- Storage Breakdown / Explorer Screen Refinements -->
+    <string name="storage_selected_files_fmt">Selected %1$d Files</string>
+    <string name="storage_selected_files_search_fmt">Selected %1$d Files in Search</string>
+    <string name="storage_select_all_count_fmt">Select All (%1$d)</string>
+    <string name="storage_cat_system_cache">System &amp; Cache</string>
+    <string name="storage_no_matching_files">No files match your search criteria</string>
+    <string name="storage_no_matching_files_desc">Try clearing search keywords or selecting a different file extension filter.</string>
+    <string name="storage_heatmap_title">Subdirectory Storage Heatmap</string>
+    <string name="storage_heatmap_subtitle">Color-coded intensity scale by folder size footprint</string>
+    <string name="storage_heatmap_intensity">Intensity:</string>
+    <string name="storage_heatmap_intensity_fmt">%1$d%% Intensity</string>
+    <string name="storage_heatmap_folder_summary_fmt">%1$s • %2$d files</string>
+    <string name="storage_total_saved_fmt">Total Space to be Saved: %1$s</string>
+    <string name="btn_confirm_bulk_deletion_fmt">Confirm Bulk Deletion (%1$s)</string>
+
+    <!-- AI Insights Screen Refinements -->
+    <string name="ai_ask_gemini_cleaner">Ask Gemini AI Cleaner</string>
+    <string name="ai_suggested_routines_title">Suggested Custom Routines</string>
+    <string name="ai_routines_available_fmt">%1$d Available</string>
+    <string name="ai_confidence_fmt">%1$d%% Confidence</string>
+
+    <!-- App Cache Screen Refinements -->
+    <string name="app_cache_count_fmt">%1$d Apps</string>
+    <string name="app_cache_safe_cleanup_desc">Safe cleanup. Account data and app settings will not be affected.</string>
+    <string name="app_cache_clear_all_fmt">Clear All (%1$s)</string>
+    <string name="app_cache_all_clean_title">All App Caches are Clean &amp; Optimized!</string>
+    <string name="app_cache_ranked_title">Apps Ranked by Cache</string>
+    <string name="app_cache_showing_apps_fmt">Showing %1$d apps</string>
+    <string name="app_cache_size_fmt">%1$s • App Size: %2$s</string>
+    <string name="app_cache_cleared">Cache Cleared</string>
+    <string name="app_cache_val_fmt">Cache: %1$s</string>
+
+    <!-- Duplicates Screen Refinements -->
+    <string name="badge_duplicate_candidate">Duplicate Candidate</string>
+    <string name="duplicates_comparing_candidate_fmt">Comparing Candidate %1$d of %2$d</string>
+    <string name="duplicates_metadata_breakdown">Metadata &amp; Quality Breakdown</string>
+    <string name="metadata_file_name">File Name</string>
+    <string name="metadata_file_size">File Size</string>
+    <string name="metadata_resolution">Resolution</string>
+    <string name="metadata_clarity_rating">Clarity Rating</string>
+    <string name="metadata_storage_path">Storage Path</string>
+    <string name="clarity_slight_motion">82% (Slight Motion)</string>
+    <string name="clarity_crisp_focus">98% Crisp Focus</string>
+    <string name="clarity_blurry">74% Blurry</string>
+    <string name="clarity_sharp">88% Sharp</string>
+
+    <!-- Smart Clean Screen Refinements -->
+    <string name="smart_clean_empty_title">Device Storage is Clean &amp; Fast</string>
+    <string name="smart_clean_empty_desc">No junk, obsolete APKs, or cache files detected. Re-scan anytime to check for new temporary files.</string>
+    <string name="btn_scan_again">Scan Storage Again</string>
+    <string name="junk_type_app_cache">App Cache</string>
+    <string name="junk_type_app_cache_desc">Temporary application cached assets and buffers</string>
+    <string name="junk_type_temp_files">Temporary Files</string>
+    <string name="junk_type_temp_files_desc">Transient processing files and staging buffers</string>
+    <string name="junk_type_empty_folders">Empty Directories</string>
+    <string name="junk_type_empty_folders_desc">Obsolete folders left behind by uninstalled apps</string>
+    <string name="junk_type_thumbnail_cache">Gallery Thumbnail Cache</string>
+    <string name="junk_type_thumbnail_cache_desc">Cached photo and video micro-previews</string>
+    <string name="junk_type_residual_files">Residual App Data</string>
+    <string name="junk_type_residual_files_desc">Orphaned files from previously removed apps</string>
+    <string name="junk_type_old_logs">System Log Files</string>
+    <string name="junk_type_old_logs_desc">Crash diagnostics and expired error logs</string>
+    <string name="junk_type_apk_packages">Obsolete APK Installers</string>
+    <string name="junk_type_apk_packages_desc">Already installed Android package installation files</string>
+
+    <!-- Scheduler Screen Refinements -->
+    <string name="scheduler_scope_large_videos">Large Uncompressed Videos (&gt;100MB)</string>
+    <string name="btn_test_run_scan">Test Run Automated Scan Now</string>
+
+    <!-- Settings Screen Refinements -->
+    <string name="settings_notif_section_title">Storage &amp; System Notifications</string>
+    <string name="settings_low_storage_alert_title">Low Storage Emergency Alert</string>
+    <string name="settings_low_storage_alert_desc">Notifies when available internal storage drops below 10%</string>
+    <string name="settings_rate_app_sub">Rate 5 stars on Google Play to support development</string>
+    <string name="settings_share_app_sub">Invite friends to clean storage and free space</string>
+    <string name="settings_onboarding_sub">Replay product walkthrough and feature highlights</string>
+    <string name="settings_privacy_guaranteed">100% On-Device Privacy Guaranteed</string>
+    <string name="settings_footer_fmt">AI Cleaner v%1$s • Zero Personal Data Collection</string>
+    <string name="settings_active_theme_fmt">Active Theme: %1$s</string>
+    <string name="settings_expiry_active_fmt">Downloads older than %1$d days flagged for cleanup.</string>
+    <string name="settings_expiry_disabled">Auto-expiry is disabled.</string>
+    <string name="theme_mode_system_dynamic">System Default (Dynamic)</string>
+    <string name="theme_mode_light">Forced Light Mode</string>
+    <string name="theme_mode_dark">Forced Dark Mode</string>
+    <string name="btn_test_alert">Test Alert</string>
+
+    <!-- Cleanup History Screen Refinements -->
+    <string name="history_impact_subtitle">Long-term AI Cleaner impact</string>
+    <string name="history_recovered_space">Total Recovered Space</string>
+    <string name="history_total_operations">Total Operations</string>
+    <string name="history_avg_per_session">Avg per Session</string>
+    <string name="history_recent_activity">Recent Cleanup Activity</string>
+    <string name="history_records_logged_fmt">%1$d Logged</string>
+    <string name="history_item_removed_fmt">%1$s • %2$d items removed</string>
+
+    <!-- Components Refinements -->
+    <string name="clean_success_tagline">Storage Optimized • Phone Running Faster</string>
+    <string name="clean_success_free_forever">100% Free • No Subscription • Zero Ads Forever</string>
+    <string name="dialog_projected_space">Projected Space to Recover</string>
+    <string name="dialog_total_files_fmt">%1$d Files</string>
+    <string name="dialog_delete_notice_fmt">Total %1$d files (%2$s) will be permanently deleted from storage.</string>
+    <string name="scanning_engine_title">AI Storage Engine Scanning</string>
+    <string name="scanning_engine_subtitle">Deep Junk Identification</string>
+    <string name="badge_blur">BLUR</string>
+    <string name="badge_screenshot">SCREENSHOT</string>
+    <string name="similar_group_summary_fmt">%1$d Photos • %2$d Selected • %3$s</string>
+    <string name="tip_save_format">Save ~%1$s</string>
+    <string name="cleanup_tips_count_fmt">%1$d Insights</string>
+    <string name="badge_smart_ai">SMART AI</string>
+    <string name="label_high_res">High Res</string>
+    <string name="scanning_engine_step_default">Analyzing cache, temp files &amp; media...</string>
+    <string name="tip_duplicates_title">Duplicate &amp; Similar Photos Found</string>
+    <string name="tip_duplicates_desc">%1$d duplicate photos detected taking up %2$s. Review and keep only the best shots.</string>
+    <string name="tip_duplicates_action">Review Duplicates</string>
+    <string name="tip_heavy_media_title">Large Video &amp; Media Files</string>
+    <string name="tip_heavy_media_desc">%1$d large media files occupying %2$s. Compress or move to vault to reclaim storage.</string>
+    <string name="tip_heavy_media_action">Compress Media</string>
+    <string name="tip_cloud_synced_title">Local Cloud-Backed Copies</string>
+    <string name="tip_cloud_synced_desc">%1$d photos backed up to cloud drive occupy %2$s locally.</string>
+    <string name="tip_cloud_synced_action">Clean Cloud Copies</string>
+    <string name="tip_app_cache_title">App Cache Accumulation</string>
+    <string name="tip_app_cache_desc">%1$d apps have accumulated %2$s of temporary cache data.</string>
+    <string name="tip_app_cache_action">Inspect App Cache</string>
+    <string name="tip_blurry_screenshots_title">Blurry Shots &amp; Old Screenshots</string>
+    <string name="tip_blurry_screenshots_desc">%1$d blurry photos and screenshots taking up %2$s. Quick swipe to clean.</string>
+    <string name="tip_blurry_screenshots_action">Swipe to Clean</string>
+    <string name="trends_accumulation_delta_fmt">Accumulation Delta (%1$d Days)</string>
+    <string name="trends_growth_trend_graph">Daily Growth Trend Graph</string>
+    <string name="trends_accumulation_delta_label">Daily Storage Accumulation Delta</string>
+    <string name="trends_bursts_detected">Rapid Accumulation Bursts Detected</string>
+    <string name="trends_burst_event_fmt">%1$s Burst Event</string>
+    <string name="trends_abnormal_accumulation">Abnormal accumulation detected.</string>
+    <string name="card_quick_clean_freed_fmt">Freed ~%1$s</string>
+    <string name="battery_storage_free_fmt">%1$s Free</string>
+    <string name="brand_gemini">Gemini</string>
+    <string name="ai_insight_routine_dialog_title">Execute AI Routine?</string>
+    <string name="scheduler_threshold_mb_fmt">&gt;%1$d MB</string>
+    <string name="smart_clean_all_cleared">All junk and temporary caches are cleared. 0 B recoverable.</string>
+    <string name="status_device_optimized">Device Fully Optimized</string>
+    <string name="notification_channel_storage_alerts">Storage Capacity Alerts</string>
+    <string name="notification_channel_storage_desc">Notifications sent when available device storage drops below 10%</string>
+    <string name="notification_low_storage_title">Low Storage Warning: %1$d%% Free Space!</string>
+    <string name="notification_low_storage_text">Available storage is critically low (%1$s left). Tap to run an AI deep clean.</string>
+    <string name="notification_low_storage_big_text">Available storage has dropped below 10%% (%1$s left of %2$s). Tap here to launch a deep clean and recover gigabytes instantly.</string>
+    <string name="scan_step_app_cache">Scanning App System Cache...</string>
+    <string name="scan_step_temp_files">Detecting Temporary Download Files...</string>
+    <string name="scan_step_empty_dirs">Locating Empty Directory Leftovers...</string>
+    <string name="scan_step_thumb_cache">Analyzing Thumbnail Image Cache...</string>
+    <string name="scan_step_apk_packages">Checking Obsolete APK Packages...</string>
 </resources>

@@ -58,7 +58,7 @@ fun CleanSuccessDialog(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.img_cleaning_trash_1787907390869),
-                        contentDescription = "Celebration",
+                        contentDescription = null,
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(CircleShape),
@@ -113,7 +113,7 @@ fun CleanSuccessDialog(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "Storage Optimized • Phone Running Faster",
+                            text = stringResource(R.string.clean_success_tagline),
                             style = MaterialTheme.typography.labelMedium.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = EmeraldGreen
@@ -124,7 +124,7 @@ fun CleanSuccessDialog(
 
                 // 100% Free & No Ads Guarantee note
                 Text(
-                    text = "100% Free • No Subscription • Zero Ads Forever",
+                    text = stringResource(R.string.clean_success_free_forever),
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium

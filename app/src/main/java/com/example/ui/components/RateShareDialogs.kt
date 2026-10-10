@@ -113,7 +113,7 @@ fun RateAppDialog(
                         ) {
                             Icon(
                                 imageVector = if (isFilled) Icons.Default.Star else Icons.Outlined.Star,
-                                contentDescription = "Star $starIndex",
+                                contentDescription = null,
                                 tint = starColor,
                                 modifier = Modifier.size(32.dp)
                             )

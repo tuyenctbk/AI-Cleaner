@@ -123,7 +123,7 @@ fun SplashScreen(
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.img_app_icon_v2_1787908708290),
-                            contentDescription = "AI Cleaner Icon",
+                            contentDescription = stringResource(R.string.app_name),
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(RoundedCornerShape(34.dp))

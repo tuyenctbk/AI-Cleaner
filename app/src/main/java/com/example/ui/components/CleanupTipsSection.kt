@@ -74,7 +74,7 @@ fun CleanupTipsSection(
                 color = MaterialTheme.colorScheme.primaryContainer
             ) {
                 Text(
-                    text = "${tips.size} Insights",
+                    text = stringResource(R.string.cleanup_tips_count_fmt, tips.size),
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -158,7 +158,7 @@ private fun TipCard(
                         color = EmeraldGreen.copy(alpha = 0.12f)
                     ) {
                         Text(
-                            text = "Save ~${tip.formattedSavings}",
+                            text = stringResource(R.string.tip_save_format, tip.formattedSavings),
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                             color = EmeraldGreen,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -172,17 +172,43 @@ private fun TipCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Dismiss Tip",
+                        contentDescription = stringResource(R.string.btn_dismiss),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp)
                     )
                 }
             }
 
+            // Localized Title, Description, and Action
+            val localizedTitle = when (tip.id) {
+                "tip_duplicates" -> stringResource(R.string.tip_duplicates_title)
+                "tip_heavy_media" -> stringResource(R.string.tip_heavy_media_title)
+                "tip_cloud_synced" -> stringResource(R.string.tip_cloud_synced_title)
+                "tip_app_cache" -> stringResource(R.string.tip_app_cache_title)
+                "tip_blurry_screenshots" -> stringResource(R.string.tip_blurry_screenshots_title)
+                else -> tip.title
+            }
+            val localizedDescription = when (tip.id) {
+                "tip_duplicates" -> stringResource(R.string.tip_duplicates_desc, tip.itemCount, tip.formattedSavings)
+                "tip_heavy_media" -> stringResource(R.string.tip_heavy_media_desc, tip.itemCount, tip.formattedSavings)
+                "tip_cloud_synced" -> stringResource(R.string.tip_cloud_synced_desc, tip.itemCount, tip.formattedSavings)
+                "tip_app_cache" -> stringResource(R.string.tip_app_cache_desc, tip.itemCount, tip.formattedSavings)
+                "tip_blurry_screenshots" -> stringResource(R.string.tip_blurry_screenshots_desc, tip.itemCount, tip.formattedSavings)
+                else -> tip.description
+            }
+            val localizedAction = when (tip.id) {
+                "tip_duplicates" -> stringResource(R.string.tip_duplicates_action)
+                "tip_heavy_media" -> stringResource(R.string.tip_heavy_media_action)
+                "tip_cloud_synced" -> stringResource(R.string.tip_cloud_synced_action)
+                "tip_app_cache" -> stringResource(R.string.tip_app_cache_action)
+                "tip_blurry_screenshots" -> stringResource(R.string.tip_blurry_screenshots_action)
+                else -> tip.actionLabel
+            }
+
             // Title and Description Body
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
-                    text = tip.title,
+                    text = localizedTitle,
                     style = MaterialTheme.typography.titleSmall.copy(
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp
@@ -191,7 +217,7 @@ private fun TipCard(
                     maxLines = 1
                 )
                 Text(
-                    text = tip.description,
+                    text = localizedDescription,
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp, lineHeight = 16.sp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 3
@@ -209,7 +235,7 @@ private fun TipCard(
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Text(
-                    text = tip.actionLabel,
+                    text = localizedAction,
                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                     color = Color.White
                 )

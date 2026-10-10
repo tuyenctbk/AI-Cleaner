@@ -84,12 +84,12 @@ fun CloudPhotosCleanerScreen(
                     ) {
                         Column {
                             Text(
-                                text = "Selected: ${selectedPhotos.size} of ${photos.size}",
+                                text = stringResource(R.string.cloud_photos_selected_count_fmt, selectedPhotos.size, photos.size),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = "Free ${formatFileSize(selectedBytes)}",
+                                text = stringResource(R.string.cloud_photos_free_bytes_fmt, formatFileSize(selectedBytes)),
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                 color = EmeraldGreen
                             )
@@ -109,7 +109,7 @@ fun CloudPhotosCleanerScreen(
                         ) {
                             Icon(imageVector = Icons.Default.CloudDone, contentDescription = null)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Free Up Space", fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.btn_free_up_space), fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -161,13 +161,13 @@ fun CloudPhotosCleanerScreen(
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Verified Cloud Backups",
+                                text = stringResource(R.string.cloud_photos_verified_title),
                                 style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = "Safely remove local copies of backed-up photos to save storage.",
+                                text = stringResource(R.string.cloud_photos_verified_desc),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -184,7 +184,7 @@ fun CloudPhotosCleanerScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Backed Up Media (${photos.size})",
+                        text = stringResource(R.string.cloud_photos_backed_up_count_fmt, photos.size),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -197,7 +197,7 @@ fun CloudPhotosCleanerScreen(
                         }
                     ) {
                         Text(
-                            text = if (selectedPhotos.size == photos.size) "Deselect All" else "Select All",
+                            text = stringResource(if (selectedPhotos.size == photos.size) R.string.btn_deselect_all else R.string.btn_select_all),
                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -225,13 +225,13 @@ fun CloudPhotosCleanerScreen(
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = "All Cloud Synced Media Cleaned!",
+                                text = stringResource(R.string.cloud_photos_empty_title),
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = "There are no redundant local copies of backed up photos stored on your device.",
+                                text = stringResource(R.string.cloud_photos_empty_desc),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -350,7 +350,7 @@ private fun CloudPhotoRowItem(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "${photo.cloudProvider} • ${photo.cloudBackupDate}",
+                        text = stringResource(R.string.cloud_photos_provider_date_fmt, photo.cloudProvider, photo.cloudBackupDate),
                         style = MaterialTheme.typography.labelSmall,
                         color = EmeraldGreen
                     )

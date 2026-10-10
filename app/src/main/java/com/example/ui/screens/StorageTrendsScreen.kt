@@ -142,7 +142,7 @@ fun StorageTrendsScreen(
                             ) {
                                 Icon(imageVector = Icons.Default.TrendingUp, contentDescription = null, tint = ElectricBlue)
                                 Text(
-                                    text = "Accumulation Delta ($selectedTimeframeDays Days)",
+                                    text = stringResource(R.string.trends_accumulation_delta_fmt, selectedTimeframeDays),
                                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                                     color = PolishTextPrimary
                                 )
@@ -191,7 +191,7 @@ fun StorageTrendsScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Text(
-                            text = "Daily Growth Trend Graph",
+                            text = stringResource(R.string.trends_growth_trend_graph),
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                             color = PolishTextPrimary
                         )
@@ -214,7 +214,7 @@ fun StorageTrendsScreen(
                                 color = PolishTextSecondary
                             )
                             Text(
-                                text = "Daily Storage Accumulation Delta",
+                                text = stringResource(R.string.trends_accumulation_delta_label),
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                                 color = ElectricBlue
                             )
@@ -237,7 +237,7 @@ fun StorageTrendsScreen(
                     ) {
                         Icon(imageVector = Icons.Default.Warning, contentDescription = null, tint = CoralRed)
                         Text(
-                            text = "Rapid Accumulation Bursts Detected",
+                            text = stringResource(R.string.trends_bursts_detected),
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                             color = PolishTextPrimary
                         )
@@ -262,9 +262,9 @@ fun StorageTrendsScreen(
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(42.dp)
-                                    .clip(CircleShape)
-                                    .background(CoralRed.copy(alpha = 0.15f)),
+                                .size(42.dp)
+                                .clip(CircleShape)
+                                .background(CoralRed.copy(alpha = 0.15f)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(imageVector = Icons.Default.FlashOn, contentDescription = null, tint = CoralRed)
@@ -272,12 +272,12 @@ fun StorageTrendsScreen(
 
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = burstPoint.dayLabel + " Burst Event",
+                                    text = stringResource(R.string.trends_burst_event_fmt, burstPoint.dayLabel),
                                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                                     color = PolishTextPrimary
                                 )
                                 Text(
-                                    text = burstPoint.burstDescription ?: "Abnormal accumulation detected.",
+                                    text = burstPoint.burstDescription ?: stringResource(R.string.trends_abnormal_accumulation),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = PolishTextSecondary
                                 )

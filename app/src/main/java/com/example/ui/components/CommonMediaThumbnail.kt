@@ -24,6 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.R
+import androidx.compose.ui.res.stringResource
 import com.example.data.model.MediaItem
 
 private val sampleGradients = listOf(
@@ -69,14 +71,14 @@ fun CommonMediaThumbnail(
                 if (mediaItem.isLarge) {
                     Icon(
                         imageVector = Icons.Default.Videocam,
-                        contentDescription = "Video",
+                        contentDescription = null,
                         tint = Color.White.copy(alpha = 0.85f),
                         modifier = Modifier.padding(12.dp)
                     )
                 } else {
                     Icon(
                         imageVector = Icons.Default.PhotoCamera,
-                        contentDescription = "Photo",
+                        contentDescription = null,
                         tint = Color.White.copy(alpha = 0.85f),
                         modifier = Modifier.padding(12.dp)
                     )
@@ -85,7 +87,7 @@ fun CommonMediaThumbnail(
                 // Small badge
                 if (mediaItem.isBlurry) {
                     Text(
-                        text = "BLUR",
+                        text = stringResource(R.string.badge_blur),
                         color = Color.White,
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
@@ -97,7 +99,7 @@ fun CommonMediaThumbnail(
                     )
                 } else if (mediaItem.isScreenshot) {
                     Text(
-                        text = "SCREENSHOT",
+                        text = stringResource(R.string.badge_screenshot),
                         color = Color.White,
                         fontSize = 8.sp,
                         fontWeight = FontWeight.Bold,

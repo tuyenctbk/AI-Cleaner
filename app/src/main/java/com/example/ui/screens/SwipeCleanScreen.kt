@@ -52,6 +52,7 @@ fun SwipeCleanScreen(
             projectedSpaceBytes = trashedBytes,
             itemsPreviewList = uiState.swipeTrashItems.map { "${it.title} (${it.formattedSize})" },
             onConfirmDelete = {
+                showConfirmTrashCleanDialog = false
                 onExecuteTrashClean()
             },
             onDismiss = { showConfirmTrashCleanDialog = false }

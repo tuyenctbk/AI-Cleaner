@@ -11,6 +11,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.example.MainActivity
+import com.example.R
 import com.example.data.model.formatFileSize
 
 object StorageNotificationManager {
@@ -19,8 +20,8 @@ object StorageNotificationManager {
 
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Storage Capacity Alerts"
-            val descriptionText = "Notifications sent when available device storage drops below 10%"
+            val name = context.getString(R.string.notification_channel_storage_alerts)
+            val descriptionText = context.getString(R.string.notification_channel_storage_desc)
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                 description = descriptionText
@@ -63,11 +64,11 @@ object StorageNotificationManager {
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.stat_sys_warning)
-            .setContentTitle("Low Storage Warning: ${freePercentage}% Free Space!")
-            .setContentText("Available storage is critically low (${formatFileSize(freeBytes)} left). Tap to run an AI deep clean.")
+            .setContentTitle(context.getString(R.string.notification_low_storage_title, freePercentage))
+            .setContentText(context.getString(R.string.notification_low_storage_text, formatFileSize(freeBytes)))
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText("Available storage has dropped below 10% (${formatFileSize(freeBytes)} left of ${formatFileSize(totalBytes)}). Tap here to launch a deep clean and recover gigabytes instantly.")
+                    .bigText(context.getString(R.string.notification_low_storage_big_text, formatFileSize(freeBytes), formatFileSize(totalBytes)))
             )
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_ALARM)

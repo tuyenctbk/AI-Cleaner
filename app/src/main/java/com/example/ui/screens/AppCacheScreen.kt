@@ -66,6 +66,7 @@ fun AppCacheScreen(
             projectedSpaceBytes = totalUnclearedCacheBytes,
             itemsPreviewList = unclearedApps.map { "${it.appName} Cache (${it.formattedCacheSize})" },
             onConfirmDelete = {
+                showConfirmClearAllCacheDialog = false
                 onClearAllAppCaches()
             },
             onDismiss = { showConfirmClearAllCacheDialog = false }
@@ -101,7 +102,7 @@ fun AppCacheScreen(
                         color = PolishPrimaryContainer
                     ) {
                         Text(
-                            text = "${uiState.appCacheItems.size} Apps",
+                            text = stringResource(R.string.app_cache_count_fmt, uiState.appCacheItems.size),
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
@@ -180,7 +181,7 @@ fun AppCacheScreen(
                         }
 
                         Text(
-                            text = "Safe cleanup. Account data and app settings will not be affected.",
+                            text = stringResource(R.string.app_cache_safe_cleanup_desc),
                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp, lineHeight = 17.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -201,7 +202,7 @@ fun AppCacheScreen(
                                 ) {
                                     Icon(imageVector = Icons.Default.DeleteSweep, contentDescription = null, tint = Color.White)
                                     Text(
-                                        text = "Clear All (${formatFileSize(totalUnclearedCacheBytes)})",
+                                        text = stringResource(R.string.app_cache_clear_all_fmt, formatFileSize(totalUnclearedCacheBytes)),
                                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                         color = Color.White
                                     )
@@ -223,7 +224,7 @@ fun AppCacheScreen(
                                     Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null, tint = EmeraldGreen)
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "All App Caches are Clean & Optimized!",
+                                        text = stringResource(R.string.app_cache_all_clean_title),
                                         style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                                         color = EmeraldGreen
                                     )
@@ -265,7 +266,7 @@ fun AppCacheScreen(
                         FilterChip(
                             selected = selectedCategory == category,
                             onClick = { selectedCategory = category },
-                            label = { Text(category) },
+                            label = { Text(if (category == "All") stringResource(R.string.storage_filter_all) else category) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                                 selectedLabelColor = MaterialTheme.colorScheme.primary
@@ -283,12 +284,12 @@ fun AppCacheScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Apps Ranked by Cache",
+                        text = stringResource(R.string.app_cache_ranked_title),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "Showing ${filteredApps.size} apps",
+                        text = stringResource(R.string.app_cache_showing_apps_fmt, filteredApps.size),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -358,7 +359,7 @@ private fun AppCacheRowCard(
                         maxLines = 1
                     )
                     Text(
-                        text = "${app.category} • App Size: ${app.formattedAppSize}",
+                        text = stringResource(R.string.app_cache_size_fmt, app.category, app.formattedAppSize),
                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1
@@ -371,7 +372,7 @@ private fun AppCacheRowCard(
                         color = if (app.isCleared) EmeraldGreen.copy(alpha = 0.12f) else CoralRed.copy(alpha = 0.12f)
                     ) {
                         Text(
-                            text = if (app.isCleared) "Cache Cleared" else "Cache: ${app.formattedCacheSize}",
+                            text = if (app.isCleared) stringResource(R.string.app_cache_cleared) else stringResource(R.string.app_cache_val_fmt, app.formattedCacheSize),
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                             color = if (app.isCleared) EmeraldGreen else CoralRed,
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
@@ -387,7 +388,7 @@ private fun AppCacheRowCard(
                 IconButton(onClick = {}, enabled = false) {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
-                        contentDescription = "Cleared",
+                        contentDescription = stringResource(R.string.app_cache_cleared),
                         tint = EmeraldGreen,
                         modifier = Modifier.size(28.dp)
                     )
@@ -401,7 +402,7 @@ private fun AppCacheRowCard(
                     modifier = Modifier.testTag("clear_cache_btn_${app.id}")
                 ) {
                     Text(
-                        text = "Clear Cache",
+                        text = stringResource(R.string.btn_clear_cache),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
                     )
                 }

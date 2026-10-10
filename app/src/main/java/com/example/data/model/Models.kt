@@ -32,7 +32,7 @@ data class FolderStorageItem(
     val fileCount: Int,
     val category: String, // e.g. "Camera", "4K Videos", "App Caches", "Downloads", "Messaging"
     val isSystemFolder: Boolean = false,
-    val sampleFileTypes: String = "MP4, JPG"
+    val sampleFileTypes: String = ""
 ) {
     val formattedSize: String
         get() = formatFileSize(sizeBytes)
@@ -88,26 +88,26 @@ data class JunkCategory(
 }
 
 data class StorageStats(
-    val totalBytes: Long = 512L * 1024 * 1024 * 1024,
-    val usedBytes: Long = 104L * 1024 * 1024 * 1024,
-    val freeBytes: Long = 408L * 1024 * 1024 * 1024,
-    val photoBytes: Long = 42L * 1024 * 1024 * 1024,
-    val videoBytes: Long = 38L * 1024 * 1024 * 1024,
-    val audioBytes: Long = 6L * 1024 * 1024 * 1024,
-    val docBytes: Long = 4L * 1024 * 1024 * 1024,
-    val appBytes: Long = 10L * 1024 * 1024 * 1024,
-    val systemBytes: Long = 4L * 1024 * 1024 * 1024,
-    val junkBytes: Long = 3200L * 1024 * 1024,
-    val photoCount: Int = 2598,
-    val videoCount: Int = 266,
-    val duplicateCount: Int = 24,
-    val blurryCount: Int = 18,
-    val screenshotCount: Int = 42,
-    val largeFileCount: Int = 15,
-    val healthScore: Int = 88
+    val totalBytes: Long = 0L,
+    val usedBytes: Long = 0L,
+    val freeBytes: Long = 0L,
+    val photoBytes: Long = 0L,
+    val videoBytes: Long = 0L,
+    val audioBytes: Long = 0L,
+    val docBytes: Long = 0L,
+    val appBytes: Long = 0L,
+    val systemBytes: Long = 0L,
+    val junkBytes: Long = 0L,
+    val photoCount: Int = 0,
+    val videoCount: Int = 0,
+    val duplicateCount: Int = 0,
+    val blurryCount: Int = 0,
+    val screenshotCount: Int = 0,
+    val largeFileCount: Int = 0,
+    val healthScore: Int = 100
 ) {
     val usedPercentage: Float
-        get() = if (totalBytes > 0) (usedBytes.toFloat() / totalBytes.toFloat()) else 0.2f
+        get() = if (totalBytes > 0) (usedBytes.toFloat() / totalBytes.toFloat()) else 0f
 
     val usedPercent: Int
         get() = (usedPercentage * 100).toInt()
@@ -185,7 +185,8 @@ data class CleanupTip(
     val potentialSavingsBytes: Long,
     val category: TipCategory,
     val actionLabel: String,
-    val targetTab: MainScreenTab? = null
+    val targetTab: MainScreenTab? = null,
+    val itemCount: Int = 0
 ) {
     val formattedSavings: String
         get() = formatFileSize(potentialSavingsBytes)
@@ -199,7 +200,7 @@ data class SmartScheduleSettings(
     val scanJunk: Boolean = true,
     val scanDuplicates: Boolean = true,
     val scanLargeFiles: Boolean = true,
-    val lastScanDate: Long = System.currentTimeMillis() - (3 * 24 * 60 * 60 * 1000L)
+    val lastScanDate: Long = 0L
 )
 
 data class CloudPhotoItem(
@@ -236,10 +237,10 @@ data class StorageTrendPoint(
 
 data class StorageTrendSummary(
     val timeframeDays: Int = 30,
-    val totalAccumulatedBytes: Long = 8L * 1024 * 1024 * 1024,
-    val topGrowthCategory: String = "4K Video Recordings (+4.8 GB)",
-    val highestBurstDay: String = "Aug 18 (+3.2 GB)",
-    val averageDailyGrowthMb: Int = 280,
+    val totalAccumulatedBytes: Long = 0L,
+    val topGrowthCategory: String = "Normal Usage",
+    val highestBurstDay: String = "None",
+    val averageDailyGrowthMb: Int = 0,
     val trendPoints: List<StorageTrendPoint> = emptyList()
 ) {
     val formattedTotalAccumulated: String

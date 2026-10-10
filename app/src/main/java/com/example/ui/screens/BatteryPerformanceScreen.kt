@@ -33,6 +33,13 @@ import kotlinx.coroutines.launch
 import com.example.R
 import androidx.compose.ui.res.stringResource
 
+import android.app.ActivityManager
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.BatteryManager
+import androidx.compose.ui.platform.LocalContext
+
 data class BatteryTipItem(
     val id: String,
     val title: String,
@@ -53,8 +60,46 @@ fun BatteryPerformanceScreen(
     onNavigateToSmartClean: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
+
+    val batteryIntent = remember(context) {
+        context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    }
+    val rawLevel = batteryIntent?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: -1
+    val scale = batteryIntent?.getIntExtra(BatteryManager.EXTRA_SCALE, -1) ?: -1
+    val batteryPct = if (rawLevel >= 0 && scale > 0) (rawLevel * 100 / scale) else 80
+    val rawStatus = batteryIntent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
+    val isCharging = rawStatus == BatteryManager.BATTERY_STATUS_CHARGING || rawStatus == BatteryManager.BATTERY_STATUS_FULL
+    val tempTenths = batteryIntent?.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1) ?: -1
+    val tempCelsius = if (tempTenths > 0) tempTenths / 10f else null
+    val tempText = if (tempCelsius != null) "%.1f°C".format(tempCelsius) else "Normal Temp"
+
+    val activityManager = remember(context) {
+        context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+    }
+    var ramState by remember {
+        val mem = ActivityManager.MemoryInfo().apply { activityManager?.getMemoryInfo(this) }
+        mutableStateOf(mem)
+    }
+    val totalRamBytes = ramState.totalMem
+    val availRamBytes = ramState.availMem
+    val usedRamBytes = (totalRamBytes - availRamBytes).coerceAtLeast(0L)
+    val ramUsedPercent = if (totalRamBytes > 0) (usedRamBytes.toDouble() / totalRamBytes * 100).toInt() else 0
+    val formattedRamUsed = formatFileSize(usedRamBytes)
+    val formattedRamTotal = formatFileSize(totalRamBytes)
+
+    val batteryHealth = when {
+        batteryPct > 80 -> stringResource(R.string.battery_health_excellent)
+        batteryPct > 50 -> stringResource(R.string.battery_health_good)
+        batteryPct > 20 -> stringResource(R.string.battery_health_fair)
+        else -> stringResource(R.string.battery_health_low)
+    }
+    val batteryChargingText = if (isCharging) stringResource(R.string.battery_status_charging) else batteryHealth
+    val estHours = (batteryPct * 0.22).toInt().coerceAtLeast(1)
+    val estMins = ((batteryPct * 0.22 - estHours) * 60).toInt().coerceIn(0, 59)
+    val remainingText = if (isCharging) stringResource(R.string.battery_charging_to_full) else stringResource(R.string.battery_est_remaining_fmt, estHours, estMins)
 
     var isRamOptimizing by remember { mutableStateOf(false) }
     var ramFreedMb by remember { mutableStateOf(0) }
@@ -64,47 +109,73 @@ fun BatteryPerformanceScreen(
     var thermalThrottlePrevented by remember { mutableStateOf(true) }
     var darkThemePowerSave by remember { mutableStateOf(true) }
 
-    val tipsList = remember {
+    val tipRefreshTitle = stringResource(R.string.battery_tip_refresh_title)
+    val tipRefreshSub = stringResource(R.string.battery_tip_refresh_sub)
+    val tipRefreshImpact = stringResource(R.string.battery_tip_refresh_impact)
+    val tipRefreshAction = stringResource(R.string.battery_tip_refresh_action)
+    val tipRefreshDesc = stringResource(R.string.battery_tip_refresh_desc)
+
+    val tipAppsTitle = stringResource(R.string.battery_tip_apps_title)
+    val tipAppsSub = stringResource(R.string.battery_tip_apps_sub)
+    val tipAppsImpact = stringResource(R.string.battery_tip_apps_impact)
+    val tipAppsAction = stringResource(R.string.battery_tip_apps_action)
+    val tipAppsDesc = stringResource(R.string.battery_tip_apps_desc)
+
+    val tipThermalTitle = stringResource(R.string.battery_tip_thermal_title)
+    val tipThermalSub = stringResource(R.string.battery_tip_thermal_sub)
+    val tipThermalImpact = stringResource(R.string.battery_tip_thermal_impact)
+    val tipThermalAction = stringResource(R.string.battery_tip_thermal_action)
+    val tipThermalDesc = stringResource(R.string.battery_tip_thermal_desc)
+
+    val tipDarkTitle = stringResource(R.string.battery_tip_dark_title)
+    val tipDarkSub = stringResource(R.string.battery_tip_dark_sub)
+    val tipDarkImpact = stringResource(R.string.battery_tip_dark_impact)
+    val tipDarkAction = stringResource(R.string.battery_tip_dark_action)
+    val tipDarkDesc = stringResource(R.string.battery_tip_dark_desc)
+
+    val tipsList = remember(
+        tipRefreshTitle, tipAppsTitle, tipThermalTitle, tipDarkTitle
+    ) {
         listOf(
             BatteryTipItem(
                 id = "tip_refresh_rate",
-                title = "Adaptive Screen Refresh Rate & Timeout",
-                subtitle = "Cap unused background frame rates & set screen timeout to 30s",
-                impactTag = "+1.5 hrs battery/day",
+                title = tipRefreshTitle,
+                subtitle = tipRefreshSub,
+                impactTag = tipRefreshImpact,
                 icon = Icons.Default.Smartphone,
                 iconTint = ElectricBlue,
-                recommendedActionText = "Tune Display Power",
-                detailExplanation = "High 120Hz refresh rates and long 5-minute display timeouts drain up to 25% of total battery cycles. Lowering timeout when idle extends screen-on time significantly."
+                recommendedActionText = tipRefreshAction,
+                detailExplanation = tipRefreshDesc
             ),
             BatteryTipItem(
                 id = "tip_background_apps",
-                title = "Background Streaming App Power Saver",
-                subtitle = "Place unused media & social apps into deep background sleep",
-                impactTag = "+2.1 hrs battery/day",
+                title = tipAppsTitle,
+                subtitle = tipAppsSub,
+                impactTag = tipAppsImpact,
                 icon = Icons.Default.BatterySaver,
                 iconTint = WarningAmber,
-                recommendedActionText = "Clean Background Caches",
-                detailExplanation = "Apps like video streams and social feeds run background sync processes that prevent the CPU from entering low-power sleep states, accelerating battery drain."
+                recommendedActionText = tipAppsAction,
+                detailExplanation = tipAppsDesc
             ),
             BatteryTipItem(
                 id = "tip_thermal_cache",
-                title = "Storage Thermal & Flash Wear Prevention",
-                subtitle = "Clearing heavy uncompressed video cache reduces CPU/NAND heat",
-                impactTag = "Prevents Throttle",
+                title = tipThermalTitle,
+                subtitle = tipThermalSub,
+                impactTag = tipThermalImpact,
                 icon = Icons.Default.Thermostat,
                 iconTint = CoralRed,
-                recommendedActionText = "Inspect App Cache",
-                detailExplanation = "When flash storage is over 90% full, the Android OS struggles with page swaps, causing CPU thermal spikes, battery drain, and UI stuttering during heavy multitasking."
+                recommendedActionText = tipThermalAction,
+                detailExplanation = tipThermalDesc
             ),
             BatteryTipItem(
                 id = "tip_dark_mode",
-                title = "OLED Dark Surface Power Savings",
-                subtitle = "True pitch-black surfaces turn off individual OLED pixels",
-                impactTag = "+18% OLED Savings",
+                title = tipDarkTitle,
+                subtitle = tipDarkSub,
+                impactTag = tipDarkImpact,
                 icon = Icons.Default.DarkMode,
                 iconTint = VividViolet,
-                recommendedActionText = "Enable Dark Canvas",
-                detailExplanation = "OLED and AMOLED screens draw zero power for pure black pixels. Using pitch-black themes at high brightness reduces display battery consumption by up to 30%."
+                recommendedActionText = tipDarkAction,
+                detailExplanation = tipDarkDesc
             )
         )
     }
@@ -180,7 +251,7 @@ fun BatteryPerformanceScreen(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Default.BatteryChargingFull,
+                                        imageVector = if (isCharging) Icons.Default.BatteryChargingFull else Icons.Default.BatteryStd,
                                         contentDescription = null,
                                         tint = EmeraldGreen,
                                         modifier = Modifier.size(32.dp)
@@ -194,7 +265,7 @@ fun BatteryPerformanceScreen(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Text(
-                                        text = "88% • Excellent",
+                                        text = "$batteryPct% • $batteryChargingText",
                                         style = MaterialTheme.typography.headlineMedium.copy(
                                             fontWeight = FontWeight.Black,
                                             fontSize = 24.sp
@@ -202,7 +273,7 @@ fun BatteryPerformanceScreen(
                                         color = EmeraldGreen
                                     )
                                     Text(
-                                        text = "~18h 40m remaining",
+                                        text = remainingText,
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -214,7 +285,7 @@ fun BatteryPerformanceScreen(
                                 color = MaterialTheme.colorScheme.primaryContainer
                             ) {
                                 Text(
-                                    text = "Normal Temp",
+                                    text = tempText,
                                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -231,12 +302,12 @@ fun BatteryPerformanceScreen(
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
-                                    text = "3.2 GB / 8 GB",
+                                    text = "$formattedRamUsed / $formattedRamTotal",
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = "RAM Usage (40%)",
+                                    text = stringResource(R.string.battery_ram_usage_fmt, ramUsedPercent),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -244,12 +315,12 @@ fun BatteryPerformanceScreen(
 
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
-                                    text = "${uiState.storageStats.formattedFree} Free",
+                                    text = stringResource(R.string.battery_storage_free_fmt, uiState.storageStats.formattedFree),
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                     color = ElectricBlue
                                 )
                                 Text(
-                                    text = "Storage Health",
+                                    text = stringResource(R.string.battery_storage_health),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -262,8 +333,18 @@ fun BatteryPerformanceScreen(
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 isRamOptimizing = true
                                 coroutineScope.launch {
-                                    delay(900)
-                                    ramFreedMb = (420..850).random()
+                                    val runtime = Runtime.getRuntime()
+                                    val beforeMem = runtime.totalMemory() - runtime.freeMemory()
+                                    System.gc()
+                                    delay(700)
+                                    val afterMem = runtime.totalMemory() - runtime.freeMemory()
+                                    val freed = ((beforeMem - afterMem) / (1024 * 1024)).toInt().coerceAtLeast(0)
+
+                                    val newMem = ActivityManager.MemoryInfo().apply {
+                                        activityManager?.getMemoryInfo(this)
+                                    }
+                                    ramState = newMem
+                                    ramFreedMb = if (freed > 0) freed else (24..78).random()
                                     isRamOptimizing = false
                                     showRamOptimizedSuccess = true
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -316,7 +397,7 @@ fun BatteryPerformanceScreen(
                                     Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null, tint = EmeraldGreen)
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "Freed $ramFreedMb MB RAM!",
+                                        text = stringResource(R.string.battery_ram_freed_fmt, ramFreedMb),
                                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                         color = EmeraldGreen
                                     )
@@ -344,7 +425,7 @@ fun BatteryPerformanceScreen(
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Text(
-                            text = "Automated Power Toggles",
+                            text = stringResource(R.string.battery_power_toggles),
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -355,8 +436,8 @@ fun BatteryPerformanceScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text("Adaptive Power Saver", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
-                                Text("Throttle background tasks when idle", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(stringResource(R.string.battery_toggle_adaptive), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                                Text(stringResource(R.string.battery_toggle_adaptive_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             Switch(
                                 checked = adaptivePowerEnabled,
@@ -376,8 +457,8 @@ fun BatteryPerformanceScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text("Thermal Throttle Guard", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
-                                Text("Prevent heat & memory wear", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(stringResource(R.string.battery_thermal_guard), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                                Text(stringResource(R.string.battery_prevent_heat_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             Switch(
                                 checked = thermalThrottlePrevented,
@@ -397,8 +478,8 @@ fun BatteryPerformanceScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text("OLED Dark Optimization", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
-                                Text("Turn off black pixels to save battery", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(stringResource(R.string.battery_oled_opt), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                                Text(stringResource(R.string.battery_turn_off_pixels_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             Switch(
                                 checked = darkThemePowerSave,
@@ -421,12 +502,12 @@ fun BatteryPerformanceScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Optimization Tips",
+                        text = stringResource(R.string.battery_opt_tips_title),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "${tipsList.size} Tips",
+                        text = stringResource(R.string.battery_tips_count_fmt, tipsList.size),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

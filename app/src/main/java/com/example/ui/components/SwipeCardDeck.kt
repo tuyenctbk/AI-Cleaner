@@ -28,6 +28,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import com.example.data.model.MediaItem
 import com.example.ui.theme.*
 import kotlinx.coroutines.launch
@@ -231,7 +233,7 @@ fun SwipeCardDeck(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "${topItem.formattedSize} • ${if (topItem.width > 0) "${topItem.width}x${topItem.height}" else "High Res"}",
+                            text = "${topItem.formattedSize} • ${if (topItem.width > 0) "${topItem.width}x${topItem.height}" else stringResource(R.string.label_high_res)}",
                             color = Color.White.copy(alpha = 0.8f),
                             fontSize = 12.sp
                         )

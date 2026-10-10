@@ -27,6 +27,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.example.R
 import com.example.ui.theme.*
 import kotlin.math.cos
 import kotlin.math.sin
@@ -184,7 +186,7 @@ fun AiScanningAnimation(
                     ) {
                         Icon(
                             imageVector = Icons.Default.AutoAwesome,
-                            contentDescription = "AI Scanner",
+                            contentDescription = null,
                             tint = primaryColor,
                             modifier = Modifier.size(36.dp)
                         )
@@ -198,7 +200,7 @@ fun AiScanningAnimation(
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
-                    text = "AI Storage Engine Scanning",
+                    text = stringResource(R.string.scanning_engine_title),
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
                         fontSize = 17.sp
@@ -206,7 +208,7 @@ fun AiScanningAnimation(
                     color = onSurfaceColor
                 )
                 Text(
-                    text = stepText.ifEmpty { "Analyzing cache, temp files & media..." },
+                    text = stepText.ifEmpty { stringResource(R.string.scanning_engine_step_default) },
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp),
                     color = onSurfaceVariantColor
                 )
@@ -233,7 +235,7 @@ fun AiScanningAnimation(
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
-                        text = "Deep Junk Identification",
+                        text = stringResource(R.string.scanning_engine_subtitle),
                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                         color = onSurfaceColor
                     )

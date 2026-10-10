@@ -143,104 +143,119 @@ class GeminiCleanerService {
         val routines = mutableListOf<AiInsightRoutine>()
 
         if (cloudPhotosCount > 0) {
+            val estimatedCloudBytes = (cloudPhotosCount * 3_500_000L)
             routines.add(
                 AiInsightRoutine(
                     id = "routine_cloud_backup",
-                    title = "Delete ${formatFileSize((cloudPhotosCount * 4.2 * 1024 * 1024).toLong())} of backed-up cloud photos",
+                    title = "Purge local copies of $cloudPhotosCount backed-up photos",
                     summary = "Safe 1-click delete of photos already backed up to Google Photos cloud.",
-                    potentialSavingsBytes = (cloudPhotosCount * 4.2 * 1024 * 1024).toLong(),
+                    potentialSavingsBytes = estimatedCloudBytes,
                     confidenceScore = 99,
                     categoryTag = "Cloud Backup Routine",
                     actionType = AiRoutineAction.DELETE_CLOUD_BACKUPS,
-                    explanation = "These photos are 100% safely backed up on cloud servers. Removing local device copies frees memory without losing any memories.",
+                    explanation = "These $cloudPhotosCount photos have verified cloud copies. Purging local device copies frees ${formatFileSize(estimatedCloudBytes)}.",
                     itemCount = cloudPhotosCount
                 )
             )
         }
 
-        routines.add(
-            AiInsightRoutine(
-                id = "routine_blurry_photos",
-                title = "Delete 500MB of old blurry photos",
-                summary = "Purge out-of-focus, low-clarity photo shots detected in gallery.",
-                potentialSavingsBytes = 500L * 1024 * 1024,
-                confidenceScore = 97,
-                categoryTag = "Blurry Photo Scan",
-                actionType = AiRoutineAction.SAFE_QUICK_CLEAN,
-                explanation = "Identified 35 out-of-focus, low clarity photos in gallery. Removing them recovers 500MB instantly.",
-                itemCount = 35
+        if (stats.junkBytes > 0) {
+            routines.add(
+                AiInsightRoutine(
+                    id = "routine_safe_quick_clean",
+                    title = "Safe Quick Clean (${stats.formattedJunk})",
+                    summary = "Flush system temp files, thumbnail caches, and leftover directory fragments.",
+                    potentialSavingsBytes = stats.junkBytes,
+                    confidenceScore = 100,
+                    categoryTag = "System Cache",
+                    actionType = AiRoutineAction.SAFE_QUICK_CLEAN,
+                    explanation = "Identified ${stats.formattedJunk} in safe recoverable caches and temporary files.",
+                    itemCount = 1
+                )
             )
-        )
+        }
 
-        routines.add(
-            AiInsightRoutine(
-                id = "routine_duplicates",
-                title = "Purge 1.2GB of duplicate photo shots",
-                summary = "Keep the best shot in each cluster and remove redundant copies.",
-                potentialSavingsBytes = 1200L * 1024 * 1024,
-                confidenceScore = 98,
-                categoryTag = "Duplicate Detection",
-                actionType = AiRoutineAction.SAFE_QUICK_CLEAN,
-                explanation = "Found 8 duplicate groups with burst shots. AI auto-selected the crispest photos and marked 24 redundant duplicates.",
-                itemCount = 24
+        if (stats.duplicateCount > 0) {
+            val dupSavings = if (stats.photoBytes > 0) (stats.photoBytes * 0.2f).toLong().coerceAtLeast(1024 * 1024L) else 50L * 1024 * 1024L
+            routines.add(
+                AiInsightRoutine(
+                    id = "routine_duplicates",
+                    title = "Purge ${stats.duplicateCount} duplicate photos (${formatFileSize(dupSavings)})",
+                    summary = "Keep the best shot in each cluster and remove redundant copies.",
+                    potentialSavingsBytes = dupSavings,
+                    confidenceScore = 98,
+                    categoryTag = "Duplicate Detection",
+                    actionType = AiRoutineAction.SAFE_QUICK_CLEAN,
+                    explanation = "Found ${stats.duplicateCount} redundant duplicate photos across burst shots in gallery.",
+                    itemCount = stats.duplicateCount
+                )
             )
-        )
+        }
 
-        routines.add(
-            AiInsightRoutine(
-                id = "routine_4k_compress",
-                title = "Batch Compress 4.2GB 4K Heavy Video Clips",
-                summary = "Shrink top large camera videos by 65% with zero visible quality loss.",
-                potentialSavingsBytes = 4200L * 1024 * 1024,
-                confidenceScore = 96,
-                categoryTag = "Media Optimization",
-                actionType = AiRoutineAction.COMPRESS_4K_VIDEOS,
-                explanation = "Identified 8 high-bitrate 4K video recordings from last month. Compressing them frees up 4.2 GB instantly.",
-                itemCount = 8
+        if (stats.largeFileCount > 0 && stats.videoBytes > 0) {
+            val compressSavings = (stats.videoBytes * 0.5f).toLong().coerceAtLeast(1024 * 1024L)
+            routines.add(
+                AiInsightRoutine(
+                    id = "routine_4k_compress",
+                    title = "Batch Compress ${stats.largeFileCount} Large Media Files (${formatFileSize(compressSavings)})",
+                    summary = "Shrink heavy camera videos by up to 65% with lossless visual quality.",
+                    potentialSavingsBytes = compressSavings,
+                    confidenceScore = 96,
+                    categoryTag = "Media Optimization",
+                    actionType = AiRoutineAction.COMPRESS_4K_VIDEOS,
+                    explanation = "Found ${stats.largeFileCount} heavy media files totaling ${formatFileSize(stats.videoBytes)}. Compression reclaims ${formatFileSize(compressSavings)}.",
+                    itemCount = stats.largeFileCount
+                )
             )
-        )
+        }
 
-        routines.add(
-            AiInsightRoutine(
-                id = "routine_old_screenshots",
-                title = "Batch Delete 680MB of 30+ Day Old Screenshots",
-                summary = "Remove obsolete receipts, temporary screenshots, and screen grabs.",
-                potentialSavingsBytes = 680L * 1024 * 1024,
-                confidenceScore = 94,
-                categoryTag = "Screenshot Cleanup",
-                actionType = AiRoutineAction.DELETE_SCREENSHOTS,
-                explanation = "Screenshots taken over 30 days ago are rarely viewed again. Batch purging 42 old captures saves 680 MB.",
-                itemCount = 42
+        if (stats.screenshotCount > 0) {
+            val screenshotSavings = if (stats.photoBytes > 0) (stats.photoBytes * 0.1f).toLong().coerceAtLeast(1024 * 1024L) else 20L * 1024 * 1024L
+            routines.add(
+                AiInsightRoutine(
+                    id = "routine_old_screenshots",
+                    title = "Purge ${stats.screenshotCount} Old Screenshots (${formatFileSize(screenshotSavings)})",
+                    summary = "Remove obsolete receipts, temporary screenshots, and screen grabs.",
+                    potentialSavingsBytes = screenshotSavings,
+                    confidenceScore = 94,
+                    categoryTag = "Screenshot Cleanup",
+                    actionType = AiRoutineAction.DELETE_SCREENSHOTS,
+                    explanation = "Identified ${stats.screenshotCount} screenshots on device. Purging them reclaims ${formatFileSize(screenshotSavings)}.",
+                    itemCount = stats.screenshotCount
+                )
             )
-        )
-
-        routines.add(
-            AiInsightRoutine(
-                id = "routine_safe_quick_clean",
-                title = "Global Safe Quick Clean",
-                summary = "Instant flush of system temp files, thumbnail caches, and empty folders.",
-                potentialSavingsBytes = stats.junkBytes,
-                confidenceScore = 100,
-                categoryTag = "System Care",
-                actionType = AiRoutineAction.SAFE_QUICK_CLEAN,
-                explanation = "Performs a pre-defined 1-tap flush of app residual caches and temporary download directories.",
-                itemCount = 150
-            )
-        )
+        }
 
         if (customQuery.isNotBlank()) {
+            val querySavings = if (stats.junkBytes > 0) stats.junkBytes else 100L * 1024 * 1024L
             routines.add(
                 0,
                 AiInsightRoutine(
                     id = "routine_custom_query",
                     title = "Tailored Routine for: \"$customQuery\"",
                     summary = "Custom Gemini AI rule targeted specifically at your search context.",
-                    potentialSavingsBytes = 1850L * 1024 * 1024,
+                    potentialSavingsBytes = querySavings,
                     confidenceScore = 97,
                     categoryTag = "Custom Gemini Query",
                     actionType = AiRoutineAction.SAFE_QUICK_CLEAN,
                     explanation = "Gemini analyzed your custom intent: '$customQuery' and assembled a non-destructive cleanup pass.",
-                    itemCount = 25
+                    itemCount = 1
+                )
+            )
+        }
+
+        if (routines.isEmpty()) {
+            routines.add(
+                AiInsightRoutine(
+                    id = "routine_system_optimized",
+                    title = "Storage Healthy & Fully Optimized",
+                    summary = "No clutter, residual junk caches, or duplicate files found on device.",
+                    potentialSavingsBytes = 0L,
+                    confidenceScore = 100,
+                    categoryTag = "Storage Health",
+                    actionType = AiRoutineAction.SAFE_QUICK_CLEAN,
+                    explanation = "Your device storage is in optimal health. All scans report zero residual junk.",
+                    itemCount = 0
                 )
             )
         }

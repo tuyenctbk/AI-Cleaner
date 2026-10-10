@@ -68,6 +68,8 @@ fun DuplicatesScreen(
             projectedSpaceBytes = totalSelectedBytes,
             itemsPreviewList = selectedDuplicateItemsPreview.take(10),
             onConfirmDelete = {
+                showConfirmMassDeleteDialog = false
+                activeComparingGroupId = null
                 onDeleteSelected()
             },
             onDismiss = { showConfirmMassDeleteDialog = false }
@@ -365,7 +367,7 @@ private fun DuplicateCompareSheet(
                         modifier = Modifier.align(Alignment.TopStart)
                     ) {
                         Text(
-                            text = "Duplicate Candidate",
+                            text = stringResource(R.string.badge_duplicate_candidate),
                             color = Color.White,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
@@ -402,7 +404,7 @@ private fun DuplicateCompareSheet(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Comparing Candidate ${selectedCandidateIndex + 1} of ${duplicates.size}",
+                        text = stringResource(R.string.duplicates_comparing_candidate_fmt, selectedCandidateIndex + 1, duplicates.size),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -424,21 +426,21 @@ private fun DuplicateCompareSheet(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "Metadata & Quality Breakdown",
+                        text = stringResource(R.string.duplicates_metadata_breakdown),
                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.primary
                     )
 
-                    MetadataRow("File Name", bestItem.title, candidateItem.title)
-                    MetadataRow("File Size", bestItem.formattedSize, candidateItem.formattedSize, isBestHighlight = bestItem.sizeBytes > candidateItem.sizeBytes)
-                    MetadataRow("Resolution", "${bestItem.width} x ${bestItem.height}", "${candidateItem.width} x ${candidateItem.height}")
+                    MetadataRow(stringResource(R.string.metadata_file_name), bestItem.title, candidateItem.title)
+                    MetadataRow(stringResource(R.string.metadata_file_size), bestItem.formattedSize, candidateItem.formattedSize, isBestHighlight = bestItem.sizeBytes > candidateItem.sizeBytes)
+                    MetadataRow(stringResource(R.string.metadata_resolution), "${bestItem.width} x ${bestItem.height}", "${candidateItem.width} x ${candidateItem.height}")
                     MetadataRow(
-                        "Clarity Rating",
-                        if (bestItem.isBlurry) "82% (Slight Motion)" else "98% Crisp Focus",
-                        if (candidateItem.isBlurry) "74% Blurry" else "88% Sharp",
+                        stringResource(R.string.metadata_clarity_rating),
+                        if (bestItem.isBlurry) stringResource(R.string.clarity_slight_motion) else stringResource(R.string.clarity_crisp_focus),
+                        if (candidateItem.isBlurry) stringResource(R.string.clarity_blurry) else stringResource(R.string.clarity_sharp),
                         isBestHighlight = !bestItem.isBlurry
                     )
-                    MetadataRow("Storage Path", bestItem.path.takeLast(25), candidateItem.path.takeLast(25))
+                    MetadataRow(stringResource(R.string.metadata_storage_path), bestItem.path.takeLast(25), candidateItem.path.takeLast(25))
                 }
             }
 

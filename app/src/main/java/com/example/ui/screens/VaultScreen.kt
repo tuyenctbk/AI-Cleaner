@@ -66,7 +66,7 @@ fun VaultScreen(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = "${vaultedList.size} Files • ${formatFileSize(totalVaultBytes)} Secured",
+                            text = stringResource(R.string.vault_summary, vaultedList.size, formatFileSize(totalVaultBytes)),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -95,7 +95,7 @@ fun VaultScreen(
                             modifier = Modifier.testTag("vault_select_all_button")
                         ) {
                             Text(
-                                text = if (selectedItemIds.size == vaultedList.size) "Deselect All" else "Select All",
+                                text = stringResource(if (selectedItemIds.size == vaultedList.size) R.string.btn_deselect_all else R.string.btn_select_all),
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -213,12 +213,12 @@ fun VaultScreen(
 
                             Column {
                                 Text(
-                                    text = "Automated Vault Sorting",
+                                    text = stringResource(R.string.vault_auto_sort_title),
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 17.sp),
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = "Move sensitive or large files to protected storage.",
+                                    text = stringResource(R.string.vault_auto_sort_desc),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -248,7 +248,7 @@ fun VaultScreen(
             // Vault Items List Header
             item {
                 Text(
-                    text = "Vaulted Files (${vaultedList.size})",
+                    text = stringResource(R.string.vault_files_title, vaultedList.size),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 16.sp),
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(top = 8.dp)
@@ -279,12 +279,12 @@ fun VaultScreen(
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = "Vault is Empty",
+                                text = stringResource(R.string.vault_empty_title),
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "Run the Auto-Sort engine or select large files to move into Vault.",
+                                text = stringResource(R.string.vault_empty_desc),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(top = 4.dp)
@@ -352,7 +352,7 @@ private fun VaultItemRow(
                     maxLines = 1
                 )
                 Text(
-                    text = "${media.formattedSize} • Vault Path: /storage/emulated/0/Vault/",
+                    text = stringResource(R.string.vault_item_path_fmt, media.formattedSize),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1

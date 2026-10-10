@@ -118,12 +118,12 @@ fun SettingsScreen(
                             )
                             Column {
                                 Text(
-                                    text = "Pause Cleaning Tasks",
+                                    text = stringResource(R.string.settings_pause_cleaning),
                                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.onBackground
                                 )
                                 Text(
-                                    text = if (uiState.isCleaningPaused) "Background tasks and scans are paused." else "Pause all background tasks and timers.",
+                                    text = stringResource(if (uiState.isCleaningPaused) R.string.settings_pause_cleaning_on else R.string.settings_pause_cleaning_off),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -155,7 +155,7 @@ fun SettingsScreen(
                         modifier = Modifier.size(22.dp)
                     )
                     Text(
-                        text = "Downloads Auto-Expiry",
+                        text = stringResource(R.string.settings_auto_expiry_title),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onBackground
                     )
@@ -180,7 +180,7 @@ fun SettingsScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Text(
-                            text = "Auto-flag inactive downloads for cleanup after defined period.",
+                            text = stringResource(R.string.settings_auto_expiry_desc),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -189,7 +189,12 @@ fun SettingsScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            val options = listOf(30 to "30 Days", 60 to "60 Days", 90 to "90 Days", 0 to "Off")
+                            val options = listOf(
+                                30 to stringResource(R.string.label_days_30),
+                                60 to stringResource(R.string.label_days_60),
+                                90 to stringResource(R.string.label_days_90),
+                                0 to stringResource(R.string.label_off)
+                            )
                             options.forEach { (days, label) ->
                                 val isSelected = uiState.smartExpiryDays == days
                                 FilterChip(
@@ -215,8 +220,8 @@ fun SettingsScreen(
                         ) {
                             Text(
                                 text = if (uiState.smartExpiryDays > 0)
-                                    "Downloads older than ${uiState.smartExpiryDays} days flagged for cleanup."
-                                else "Auto-expiry is disabled.",
+                                    stringResource(R.string.settings_expiry_active_fmt, uiState.smartExpiryDays)
+                                else stringResource(R.string.settings_expiry_disabled),
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                                 color = EmeraldGreen,
                                 modifier = Modifier.padding(10.dp)
@@ -239,7 +244,7 @@ fun SettingsScreen(
                         modifier = Modifier.size(22.dp)
                     )
                     Text(
-                        text = "App Theme",
+                        text = stringResource(R.string.settings_theme_title),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onBackground
                     )
@@ -274,8 +279,8 @@ fun SettingsScreen(
                         ) {
                             // System Default Option
                             ThemeOptionCard(
-                                title = "System",
-                                subtitle = "Follow OS",
+                                title = stringResource(R.string.settings_theme_system),
+                                subtitle = stringResource(R.string.settings_theme_system_desc),
                                 icon = Icons.Default.BrightnessAuto,
                                 isSelected = currentTheme == AppThemeMode.SYSTEM,
                                 testTag = "theme_option_system",
@@ -288,8 +293,8 @@ fun SettingsScreen(
 
                             // Light Mode Option
                             ThemeOptionCard(
-                                title = "Light",
-                                subtitle = "Light canvas",
+                                title = stringResource(R.string.settings_theme_light),
+                                subtitle = stringResource(R.string.settings_theme_light_desc),
                                 icon = Icons.Default.LightMode,
                                 isSelected = currentTheme == AppThemeMode.LIGHT,
                                 testTag = "theme_option_light",
@@ -302,8 +307,8 @@ fun SettingsScreen(
 
                             // Dark Mode Option
                             ThemeOptionCard(
-                                title = "Dark",
-                                subtitle = "Dark canvas",
+                                title = stringResource(R.string.settings_theme_dark),
+                                subtitle = stringResource(R.string.settings_theme_dark_desc),
                                 icon = Icons.Default.DarkMode,
                                 isSelected = currentTheme == AppThemeMode.DARK,
                                 testTag = "theme_option_dark",
@@ -337,13 +342,14 @@ fun SettingsScreen(
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Text(
-                                    text = "Active Theme: ${
+                                    text = stringResource(
+                                        R.string.settings_active_theme_fmt,
                                         when (currentTheme) {
-                                            AppThemeMode.SYSTEM -> "System Default (Dynamic)"
-                                            AppThemeMode.LIGHT -> "Forced Light Mode"
-                                            AppThemeMode.DARK -> "Forced Dark Mode"
+                                            AppThemeMode.SYSTEM -> stringResource(R.string.theme_mode_system_dynamic)
+                                            AppThemeMode.LIGHT -> stringResource(R.string.theme_mode_light)
+                                            AppThemeMode.DARK -> stringResource(R.string.theme_mode_dark)
                                         }
-                                    }",
+                                    ),
                                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -366,7 +372,7 @@ fun SettingsScreen(
                         modifier = Modifier.size(22.dp)
                     )
                     Text(
-                        text = "Storage & System Notifications",
+                        text = stringResource(R.string.settings_notif_section_title),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onBackground
                     )
@@ -393,12 +399,12 @@ fun SettingsScreen(
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = "Low Storage Emergency Alert",
+                                    text = stringResource(R.string.settings_low_storage_alert_title),
                                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.onBackground
                                 )
                                 Text(
-                                    text = "Notifies when available internal storage drops below 10%",
+                                    text = stringResource(R.string.settings_low_storage_alert_desc),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -413,7 +419,7 @@ fun SettingsScreen(
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                 modifier = Modifier.testTag("test_low_storage_alert_button")
                             ) {
-                                Text("Test Alert", fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.btn_test_alert), fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -457,12 +463,12 @@ fun SettingsScreen(
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Smart Weekly Scheduler",
+                                text = stringResource(R.string.scheduler_weekly_scan),
                                 style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                             Text(
-                                text = "Configure automated background junk and duplicate scans",
+                                text = stringResource(R.string.settings_scheduler_item_desc),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -524,7 +530,7 @@ fun SettingsScreen(
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                             Text(
-                                text = "Rate 5 stars on Google Play to support development",
+                                text = stringResource(R.string.settings_rate_app_sub),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -577,7 +583,7 @@ fun SettingsScreen(
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                             Text(
-                                text = "Invite friends to clean storage and free space",
+                                text = stringResource(R.string.settings_share_app_sub),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -630,7 +636,7 @@ fun SettingsScreen(
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                             Text(
-                                text = "Replay product walkthrough and feature highlights",
+                                text = stringResource(R.string.settings_onboarding_sub),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -670,13 +676,13 @@ fun SettingsScreen(
                                 modifier = Modifier.size(16.dp)
                             )
                             Text(
-                                text = "100% On-Device Privacy Guaranteed",
+                                text = stringResource(R.string.settings_privacy_guaranteed),
                                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                 color = EmeraldGreen
                             )
                         }
                         Text(
-                            text = "AI Cleaner v2.4.0 • Zero Personal Data Collection",
+                            text = stringResource(R.string.settings_footer_fmt, "1.3"),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

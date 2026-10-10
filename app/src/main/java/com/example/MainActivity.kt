@@ -319,6 +319,7 @@ fun MainContentArea(
                         onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
                         onToggleCategory = { viewModel.toggleJunkCategory(it) },
                         onExecuteClean = { viewModel.executeSmartClean() },
+                        onScanAgain = { viewModel.startSmartScan() },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

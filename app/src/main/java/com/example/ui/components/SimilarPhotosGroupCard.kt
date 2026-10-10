@@ -73,7 +73,7 @@ fun SimilarPhotosGroupCard(
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "${group.items.size} Photos • ${group.selectedCount} Selected • ${formatFileSize(group.totalSizeBytes)}",
+                        text = stringResource(R.string.similar_group_summary_fmt, group.items.size, group.selectedCount, formatFileSize(group.totalSizeBytes)),
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

@@ -54,7 +54,7 @@ fun CleanupHistoryScreen(
                             color = PolishTextPrimary
                         )
                         Text(
-                            text = "Long-term AI Cleaner impact",
+                            text = stringResource(R.string.history_impact_subtitle),
                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
                             color = PolishTextSecondary
                         )
@@ -124,7 +124,7 @@ fun CleanupHistoryScreen(
                                 }
                                 Column {
                                     Text(
-                                        text = "Total Recovered Space",
+                                        text = stringResource(R.string.history_recovered_space),
                                         style = MaterialTheme.typography.labelMedium,
                                         color = PolishTextSecondary
                                     )
@@ -153,7 +153,7 @@ fun CleanupHistoryScreen(
                                     color = PolishTextPrimary
                                 )
                                 Text(
-                                    text = "Total Operations",
+                                    text = stringResource(R.string.history_total_operations),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = PolishTextSecondary
                                 )
@@ -167,7 +167,7 @@ fun CleanupHistoryScreen(
                                     color = PolishPrimary
                                 )
                                 Text(
-                                    text = "Avg per Session",
+                                    text = stringResource(R.string.history_avg_per_session),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = PolishTextSecondary
                                 )
@@ -185,12 +185,12 @@ fun CleanupHistoryScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Recent Cleanup Activity",
+                        text = stringResource(R.string.history_recent_activity),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                         color = PolishTextPrimary
                     )
                     Text(
-                        text = "$totalRecords Logged",
+                        text = stringResource(R.string.history_records_logged_fmt, totalRecords),
                         style = MaterialTheme.typography.labelSmall,
                         color = PolishTextSecondary
                     )
@@ -280,7 +280,7 @@ private fun HistoryRecordRowCard(record: CleanRecord) {
                         maxLines = 1
                     )
                     Text(
-                        text = "$formattedDate • ${record.itemsCount} items removed",
+                        text = stringResource(R.string.history_item_removed_fmt, formattedDate, record.itemsCount),
                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
                         color = PolishTextSecondary,
                         maxLines = 1

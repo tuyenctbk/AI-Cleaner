@@ -42,6 +42,7 @@ fun SmartCleanScreen(
     onBack: () -> Unit,
     onToggleCategory: (JunkType) -> Unit,
     onExecuteClean: () -> Unit,
+    onScanAgain: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val selectedCategories = uiState.junkCategories.filter { it.isSelected }
@@ -160,19 +161,20 @@ fun SmartCleanScreen(
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.img_cleaning_trash_1787907390869),
-                                contentDescription = "Clean Radar",
+                                contentDescription = null,
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop
                             )
                         }
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            val hasJunk = uiState.junkCategories.isNotEmpty()
                             Text(
-                                text = if (uiState.isScanning) stringResource(R.string.smart_clean_scanning) else stringResource(R.string.smart_clean_ready),
+                                text = if (uiState.isScanning) stringResource(R.string.smart_clean_scanning) else if (hasJunk) stringResource(R.string.smart_clean_ready) else stringResource(R.string.status_device_optimized),
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 16.sp),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = if (uiState.isScanning) uiState.scanStepText else stringResource(R.string.smart_clean_found_desc, formatFileSize(uiState.junkCategories.sumOf { it.sizeBytes })),
+                                text = if (uiState.isScanning) uiState.scanStepText else if (hasJunk) stringResource(R.string.smart_clean_found_desc, formatFileSize(uiState.junkCategories.sumOf { it.sizeBytes })) else stringResource(R.string.smart_clean_all_cleared),
                                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -191,13 +193,75 @@ fun SmartCleanScreen(
                 }
             }
 
-            // Categories List
+            // Categories List or Clean Empty State
             if (!uiState.isScanning) {
-                items(uiState.junkCategories) { category ->
-                    JunkCategoryRow(
-                        category = category,
-                        onToggle = { onToggleCategory(category.type) }
-                    )
+                if (uiState.junkCategories.isEmpty()) {
+                    item {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            border = CardDefaults.outlinedCardBorder().copy(brush = SolidColor(EmeraldGreen.copy(alpha = 0.5f)))
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(24.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(14.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(60.dp)
+                                        .clip(CircleShape)
+                                        .background(EmeraldGreen.copy(alpha = 0.15f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.CheckCircle,
+                                        contentDescription = null,
+                                        tint = EmeraldGreen,
+                                        modifier = Modifier.size(34.dp)
+                                    )
+                                }
+
+                                Text(
+                                    text = stringResource(R.string.smart_clean_empty_title),
+                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+
+                                Text(
+                                    text = stringResource(R.string.smart_clean_empty_desc),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                )
+
+                                Button(
+                                    onClick = onScanAgain,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(48.dp),
+                                    shape = RoundedCornerShape(24.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                                ) {
+                                    Icon(imageVector = Icons.Default.Refresh, contentDescription = null, tint = Color.White)
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(stringResource(R.string.btn_scan_again), fontWeight = FontWeight.Bold, color = Color.White)
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    items(uiState.junkCategories) { category ->
+                        JunkCategoryRow(
+                            category = category,
+                            onToggle = { onToggleCategory(category.type) }
+                        )
+                    }
                 }
             }
         }
@@ -248,18 +312,37 @@ private fun JunkCategoryRow(
                 }
 
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    val title = when (category.type) {
+                        com.example.data.model.JunkType.APP_CACHE -> stringResource(R.string.junk_type_app_cache)
+                        com.example.data.model.JunkType.TEMP_FILES -> stringResource(R.string.junk_type_temp_files)
+                        com.example.data.model.JunkType.EMPTY_FOLDERS -> stringResource(R.string.junk_type_empty_folders)
+                        com.example.data.model.JunkType.THUMBNAIL_CACHE -> stringResource(R.string.junk_type_thumbnail_cache)
+                        com.example.data.model.JunkType.RESIDUAL_FILES -> stringResource(R.string.junk_type_residual_files)
+                        com.example.data.model.JunkType.OLD_LOGS -> stringResource(R.string.junk_type_old_logs)
+                        com.example.data.model.JunkType.APK_PACKAGES -> stringResource(R.string.junk_type_apk_packages)
+                    }
+                    val description = when (category.type) {
+                        com.example.data.model.JunkType.APP_CACHE -> stringResource(R.string.junk_type_app_cache_desc)
+                        com.example.data.model.JunkType.TEMP_FILES -> stringResource(R.string.junk_type_temp_files_desc)
+                        com.example.data.model.JunkType.EMPTY_FOLDERS -> stringResource(R.string.junk_type_empty_folders_desc)
+                        com.example.data.model.JunkType.THUMBNAIL_CACHE -> stringResource(R.string.junk_type_thumbnail_cache_desc)
+                        com.example.data.model.JunkType.RESIDUAL_FILES -> stringResource(R.string.junk_type_residual_files_desc)
+                        com.example.data.model.JunkType.OLD_LOGS -> stringResource(R.string.junk_type_old_logs_desc)
+                        com.example.data.model.JunkType.APK_PACKAGES -> stringResource(R.string.junk_type_apk_packages_desc)
+                    }
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Text(
-                            text = category.title,
+                            text = title,
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                     Text(
-                        text = "${category.itemCount} items • ${category.description}",
+                        text = stringResource(R.string.smart_clean_items_desc, category.itemCount, description),
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

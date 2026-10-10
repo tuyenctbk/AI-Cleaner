@@ -84,7 +84,7 @@ fun MascotHeader(
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Text(
-                            text = "SMART AI",
+                            text = stringResource(R.string.badge_smart_ai),
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             fontSize = 9.sp,
                             fontWeight = FontWeight.ExtraBold,

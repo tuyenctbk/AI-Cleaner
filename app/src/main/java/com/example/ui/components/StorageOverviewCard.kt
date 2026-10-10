@@ -153,10 +153,12 @@ fun StorageOverviewCard(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 val total = stats.totalBytes.toFloat().coerceAtLeast(1f)
-                val photoRatio = (stats.photoBytes.toFloat() / total).coerceIn(0.05f, 0.5f)
-                val videoRatio = (stats.videoBytes.toFloat() / total).coerceIn(0.05f, 0.4f)
-                val junkRatio = (stats.junkBytes.toFloat() / total).coerceIn(0.03f, 0.2f)
-                val otherRatio = (1f - (photoRatio + videoRatio + junkRatio)).coerceAtLeast(0.1f)
+                val photoRatio = if (stats.photoBytes > 0) (stats.photoBytes.toFloat() / total).coerceIn(0.005f, 1f) else 0f
+                val videoRatio = if (stats.videoBytes > 0) (stats.videoBytes.toFloat() / total).coerceIn(0.005f, 1f) else 0f
+                val junkRatio = if (stats.junkBytes > 0) (stats.junkBytes.toFloat() / total).coerceIn(0.005f, 1f) else 0f
+                val otherUsedBytes = (stats.usedBytes - stats.photoBytes - stats.videoBytes - stats.junkBytes).coerceAtLeast(0L)
+                val otherRatio = if (otherUsedBytes > 0) (otherUsedBytes.toFloat() / total).coerceIn(0.005f, 1f) else 0f
+                val freeRatio = if (stats.freeBytes > 0) (stats.freeBytes.toFloat() / total).coerceIn(0.005f, 1f) else 0.01f
 
                 Row(
                     modifier = Modifier
@@ -165,30 +167,46 @@ fun StorageOverviewCard(
                         .clip(RoundedCornerShape(6.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(photoRatio)
-                            .background(MaterialTheme.colorScheme.primary)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(videoRatio)
-                            .background(ColorVideos)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(junkRatio)
-                            .background(ColorJunk)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(otherRatio)
-                            .background(MaterialTheme.colorScheme.outline)
-                    )
+                    if (photoRatio > 0.001f) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(photoRatio)
+                                .background(MaterialTheme.colorScheme.primary)
+                        )
+                    }
+                    if (videoRatio > 0.001f) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(videoRatio)
+                                .background(ColorVideos)
+                        )
+                    }
+                    if (junkRatio > 0.001f) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(junkRatio)
+                                .background(ColorJunk)
+                        )
+                    }
+                    if (otherRatio > 0.001f) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(otherRatio)
+                                .background(MaterialTheme.colorScheme.outline)
+                        )
+                    }
+                    if (freeRatio > 0.001f) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(freeRatio)
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                        )
+                    }
                 }
 
                 // Storage Segment Legend Row

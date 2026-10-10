@@ -84,7 +84,7 @@ fun CompressorScreen(
                             color = MaterialTheme.colorScheme.onBackground
                         )
                         Text(
-                            text = "${selectedItems.size} Selected • Save ${formatFileSize(estimatedSavings)}",
+                            text = stringResource(R.string.compressor_selected_summary_fmt, selectedItems.size, formatFileSize(estimatedSavings)),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -112,7 +112,7 @@ fun CompressorScreen(
                         modifier = Modifier.testTag("select_all_compressor_button")
                     ) {
                         Text(
-                            text = if (allSelectedInFilter) "Deselect All" else "Select All",
+                            text = if (allSelectedInFilter) stringResource(R.string.btn_deselect_all) else stringResource(R.string.btn_select_all),
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary,
                             fontSize = 13.sp
@@ -146,7 +146,7 @@ fun CompressorScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = "Compressing 4K Videos & High-Res Photos...",
+                                    text = stringResource(R.string.compressor_progress_title),
                                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -166,7 +166,7 @@ fun CompressorScreen(
                                 trackColor = MaterialTheme.colorScheme.surfaceVariant
                             )
                             Text(
-                                text = "Applying advanced codec optimization with lossless perceptual quality...",
+                                text = stringResource(R.string.compressor_progress_desc),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -195,7 +195,7 @@ fun CompressorScreen(
                                     tint = Color.White
                                 )
                                 Text(
-                                    text = "Batch Compress & Free ${formatFileSize(estimatedSavings)}",
+                                    text = stringResource(R.string.compressor_btn_compress_fmt, formatFileSize(estimatedSavings)),
                                     style = MaterialTheme.typography.titleMedium.copy(
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 15.sp
@@ -274,7 +274,7 @@ fun CompressorScreen(
                                     modifier = Modifier.align(Alignment.TopStart)
                                 ) {
                                     Text(
-                                        text = "Original (${activeMedia.formattedSize})",
+                                        text = stringResource(R.string.compressor_original_fmt, activeMedia.formattedSize),
                                         color = Color.White,
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.Bold,
@@ -296,7 +296,7 @@ fun CompressorScreen(
                                 ) {
                                     val targetSize = (activeMedia.sizeBytes * uiState.selectedCompressionQuality.factor).toLong()
                                     Text(
-                                        text = "Compressed (${formatFileSize(targetSize)})",
+                                        text = stringResource(R.string.compressor_compressed_fmt, formatFileSize(targetSize)),
                                         color = Color.White,
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.Bold,
@@ -333,9 +333,10 @@ fun CompressorScreen(
                                 tint = if (isVideo) CoralRed else EmeraldGreen,
                                 modifier = Modifier.size(16.dp)
                             )
+                            val resText = if (activeMedia.width > 0) "${activeMedia.width}x${activeMedia.height}" else if (isVideo) "3840x2160" else "4032x3024"
                             Text(
-                                text = if (isVideo) "4K / HD Video • ${if (activeMedia.width > 0) "${activeMedia.width}x${activeMedia.height}" else "3840x2160"}"
-                                else "High-Res Image • ${if (activeMedia.width > 0) "${activeMedia.width}x${activeMedia.height}" else "4032x3024"}",
+                                text = if (isVideo) stringResource(R.string.compressor_badge_video_fmt, resText)
+                                else stringResource(R.string.compressor_badge_image_fmt, resText),
                                 color = Color.White,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold
@@ -356,7 +357,7 @@ fun CompressorScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Compare,
-                            contentDescription = "Compare",
+                            contentDescription = stringResource(R.string.btn_compare),
                             tint = if (isCompareMode) MaterialTheme.colorScheme.primary else Color.White,
                             modifier = Modifier.size(20.dp)
                         )
@@ -390,7 +391,7 @@ fun CompressorScreen(
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
-                                text = "Estimated Output",
+                                text = stringResource(R.string.compressor_estimated_output),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -412,7 +413,7 @@ fun CompressorScreen(
 
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
-                                text = "Original Size",
+                                text = stringResource(R.string.compressor_original_size),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -428,7 +429,7 @@ fun CompressorScreen(
 
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
-                                text = "Space Saved",
+                                text = stringResource(R.string.compressor_space_saved),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -469,7 +470,13 @@ fun CompressorScreen(
                             ) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Text(
-                                        text = quality.label,
+                                        text = stringResource(
+                                            when (quality) {
+                                                CompressionQuality.HIGH -> R.string.compressor_quality_high
+                                                CompressionQuality.MEDIUM -> R.string.compressor_quality_medium
+                                                CompressionQuality.MAX_SAVINGS -> R.string.compressor_quality_max_savings
+                                            }
+                                        ),
                                         style = MaterialTheme.typography.labelMedium.copy(
                                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                             fontSize = 11.sp
@@ -477,7 +484,7 @@ fun CompressorScreen(
                                         color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Text(
-                                        text = "-${quality.savingPercentage}% Size",
+                                        text = stringResource(R.string.compressor_saving_pct_fmt, quality.savingPercentage),
                                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
                                         color = if (isSelected) Color.White.copy(alpha = 0.85f) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                                     )
@@ -552,7 +559,7 @@ fun CompressorScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = if (isVideo) "4K/HD" else "RAW",
+                                text = stringResource(if (isVideo) R.string.badge_4k_hd else R.string.badge_raw),
                                 color = if (isVideo) CoralRed else EmeraldGreen,
                                 fontSize = 8.sp,
                                 fontWeight = FontWeight.Bold

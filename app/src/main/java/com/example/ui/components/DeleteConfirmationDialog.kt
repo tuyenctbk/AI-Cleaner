@@ -123,7 +123,7 @@ fun MassDeletionSummaryDialog(
                     ) {
                         Column {
                             Text(
-                                text = "Projected Space to Recover",
+                                text = stringResource(R.string.dialog_projected_space),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -142,7 +142,7 @@ fun MassDeletionSummaryDialog(
                             color = CoralRed
                         ) {
                             Text(
-                                text = "$totalFilesCount Files",
+                                text = stringResource(R.string.dialog_total_files_fmt, totalFilesCount),
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                                 color = Color.White,
                                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
@@ -201,7 +201,7 @@ fun MassDeletionSummaryDialog(
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = "Total $totalFilesCount files (${formatFileSize(projectedSpaceBytes)}) will be permanently deleted from storage.",
+                        text = stringResource(R.string.dialog_delete_notice_fmt, totalFilesCount, formatFileSize(projectedSpaceBytes)),
                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

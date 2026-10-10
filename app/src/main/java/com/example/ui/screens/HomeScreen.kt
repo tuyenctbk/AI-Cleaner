@@ -476,7 +476,7 @@ private fun GlobalQuickActionCard(
                     color = EmeraldGreen.copy(alpha = 0.15f)
                 ) {
                     Text(
-                        text = "Freed ~${formatFileSize(junkBytes.coerceAtLeast(1_850_000_000L))}",
+                        text = stringResource(R.string.card_quick_clean_freed_fmt, formatFileSize(junkBytes.coerceAtLeast(1_850_000_000L))),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                         color = EmeraldGreen,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
