@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">מאתר שאריות של תיקיות ריקות...</string>
     <string name="scan_step_thumb_cache">מנתח מטמון תמונות ממוזערות...</string>
     <string name="scan_step_apk_packages">בודק חבילות APK ישנות...</string>
+    <string name="btn_dismiss">סגור</string>
 </resources>

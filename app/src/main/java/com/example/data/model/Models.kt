@@ -175,7 +175,8 @@ enum class TipCategory {
     APP_USAGE,
     CLOUD_SYNC,
     HEAVY_MEDIA,
-    CACHE_ACCUMULATION
+    CACHE_ACCUMULATION,
+    SIMILAR_PHOTOS
 }
 
 data class CleanupTip(

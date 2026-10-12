@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">Leere Verzeichnisreste werden lokalisiert...</string>
     <string name="scan_step_thumb_cache">Vorschaubild-Cache wird analysiert...</string>
     <string name="scan_step_apk_packages">Veraltete APK-Pakete werden überprüft...</string>
+    <string name="btn_dismiss">Schließen</string>
 </resources>

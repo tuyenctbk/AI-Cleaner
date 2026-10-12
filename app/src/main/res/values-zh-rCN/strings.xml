@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">正在定位残留空文件夹...</string>
     <string name="scan_step_thumb_cache">正在分析缩略图图像缓存...</string>
     <string name="scan_step_apk_packages">正在检查已废弃的 APK 安装包...</string>
+    <string name="btn_dismiss">关闭</string>
 </resources>

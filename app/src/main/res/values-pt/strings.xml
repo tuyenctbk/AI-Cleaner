@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">Localizando pastas vazias órfãs...</string>
     <string name="scan_step_thumb_cache">Analisando cache de miniaturas de imagem...</string>
     <string name="scan_step_apk_packages">Verificando pacotes APK obsoletos...</string>
+    <string name="btn_dismiss">Dispensar</string>
 </resources>

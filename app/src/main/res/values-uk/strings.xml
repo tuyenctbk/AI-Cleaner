@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">Пошук залишкових порожніх каталогів...</string>
     <string name="scan_step_thumb_cache">Аналіз кешу ескізів зображень...</string>
     <string name="scan_step_apk_packages">Перевірка застарілих пакетів APK...</string>
+    <string name="btn_dismiss">Приховати</string>
 </resources>

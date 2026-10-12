@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">Menemukan Sisa Direktori Kosong...</string>
     <string name="scan_step_thumb_cache">Menganalisis Cache Gambar Mini...</string>
     <string name="scan_step_apk_packages">Memeriksa Paket APK Usang...</string>
+    <string name="btn_dismiss">Tutup</string>
 </resources>

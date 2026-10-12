@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">Boş Dizin Artıkları Bulunuyor...</string>
     <string name="scan_step_thumb_cache">Küçük Resim Önbelleği Analiz Ediliyor...</string>
     <string name="scan_step_apk_packages">Eski APK Paketleri Kontrol Ediliyor...</string>
+    <string name="btn_dismiss">Kapat</string>
 </resources>

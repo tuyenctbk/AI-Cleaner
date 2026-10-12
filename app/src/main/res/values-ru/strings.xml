@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">Поиск оставшихся пустых каталогов...</string>
     <string name="scan_step_thumb_cache">Анализ кэша миниатюр изображений...</string>
     <string name="scan_step_apk_packages">Проверка устаревших пакетов APK...</string>
+    <string name="btn_dismiss">Скрыть</string>
 </resources>

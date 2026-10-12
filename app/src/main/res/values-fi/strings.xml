@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">Etsitään tyhjien kansioiden jäänteitä...</string>
     <string name="scan_step_thumb_cache">Analysoidaan pikkukuvien välimuistia...</string>
     <string name="scan_step_apk_packages">Tarkistetaan vanhentuneita APK-paketteja...</string>
+    <string name="btn_dismiss">Hylkää</string>
 </resources>

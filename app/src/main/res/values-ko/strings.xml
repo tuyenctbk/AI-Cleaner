@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">빈 디렉터리 잔여물 위치 파악 중...</string>
     <string name="scan_step_thumb_cache">갤러리 썸네일 이미지 캐시 분석 중...</string>
     <string name="scan_step_apk_packages">불필요한 APK 패키지 확인 중...</string>
+    <string name="btn_dismiss">닫기</string>
 </resources>

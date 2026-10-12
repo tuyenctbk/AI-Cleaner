@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">खाली फ़ोल्डरों के अवशेष खोजे जा रहे हैं...</string>
     <string name="scan_step_thumb_cache">थंबनेल छवि कैश का विश्लेषण किया जा रहा है...</string>
     <string name="scan_step_apk_packages">अप्रचलित APK पैकेज जांचे जा रहे हैं...</string>
+    <string name="btn_dismiss">खारिज करें</string>
 </resources>

@@ -14,8 +14,8 @@
 /build/
 **/build/
 /captures/
-release/
-bundle/
+/app/release/
+/app/bundle/
 
 # Gradle
 .gradle/
@@ -59,17 +59,23 @@ secrets.properties
 !.env.example
 local.defaults.properties
 
-# Python & Scripting Tools
+# Python & Scripting Tools (all scripts are local-only helpers)
+*.py
+*.pyc
+*.pyo
+*.pyd
 __pycache__/
-*.py[cod]
 *$py.class
-*.so
 .Python
 env/
 venv/
 .venv/
 ENV/
 .pytest_cache/
+
+# Generated localization tooling intermediates (re-creatable)
+tools/missing_keys.json
+tools/canonical_keys.txt
 
 # Testing & Roborazzi outputs
 **/roborazzi/
@@ -94,6 +100,10 @@ Thumbs.db
 # Memory Dumps & Diagnostics
 *.hprof
 *.log
+
+# Native libs: ignore build-generated .so but keep checked-in jniLibs
+*.so
+!**/src/**/jniLibs/**/*.so
 
 # Editors & Tools
 .vscode/

@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">Mencari Baki Direktori Kosong...</string>
     <string name="scan_step_thumb_cache">Menganalisis Cache Imej Kecil...</string>
     <string name="scan_step_apk_packages">Memeriksa Pakej APK Lapuk...</string>
+    <string name="btn_dismiss">Tutup</string>
 </resources>

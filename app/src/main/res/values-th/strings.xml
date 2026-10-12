@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">กำลังค้นหาโฟลเดอร์ว่างที่หลงเหลือ...</string>
     <string name="scan_step_thumb_cache">กำลังวิเคราะห์แคชรูปขนาดย่อ...</string>
     <string name="scan_step_apk_packages">กำลังตรวจสอบแพ็กเกจ APK ที่ไม่ได้ใช้งาน...</string>
+    <string name="btn_dismiss">ปิด</string>
 </resources>

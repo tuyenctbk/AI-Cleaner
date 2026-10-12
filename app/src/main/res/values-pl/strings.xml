@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">Lokalizowanie pustych folderów...</string>
     <string name="scan_step_thumb_cache">Analizowanie pamięci podręcznej miniatur...</string>
     <string name="scan_step_apk_packages">Sprawdzanie przestarzałych pakietów APK...</string>
+    <string name="btn_dismiss">Odrzuć</string>
 </resources>

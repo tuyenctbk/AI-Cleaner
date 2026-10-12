@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">Đang xác định các thư mục trống còn sót lại...</string>
     <string name="scan_step_thumb_cache">Đang phân tích bộ nhớ đệm hình thu nhỏ...</string>
     <string name="scan_step_apk_packages">Đang kiểm tra các gói cài đặt APK cũ...</string>
+    <string name="btn_dismiss">Đóng</string>
 </resources>

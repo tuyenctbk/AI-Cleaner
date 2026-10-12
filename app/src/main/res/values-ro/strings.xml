@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">Se localizează dosarele goale orfane...</string>
     <string name="scan_step_thumb_cache">Se analizează cache-ul miniaturilor foto...</string>
     <string name="scan_step_apk_packages">Se verifică pachetele APK învechite...</string>
+    <string name="btn_dismiss">Închide</string>
 </resources>

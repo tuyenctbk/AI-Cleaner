@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">Εντοπισμός υπολειμμάτων άδειων φακέλων...</string>
     <string name="scan_step_thumb_cache">Ανάλυση προσωρινής μνήμης μικρογραφιών...</string>
     <string name="scan_step_apk_packages">Έλεγχος παρωχημένων πακέτων APK...</string>
+    <string name="btn_dismiss">Απόρριψη</string>
 </resources>

@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">Lege maprestanten lokaliseren...</string>
     <string name="scan_step_thumb_cache">Miniatuurcache analyseren...</string>
     <string name="scan_step_apk_packages">Verouderde APK-pakketten controleren...</string>
+    <string name="btn_dismiss">Sluiten</string>
 </resources>

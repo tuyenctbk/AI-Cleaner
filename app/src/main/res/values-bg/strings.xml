@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">Намиране на празни папки...</string>
     <string name="scan_step_thumb_cache">Анализиране на кеша на миниатюри...</string>
     <string name="scan_step_apk_packages">Проверка на остарели пакети APK...</string>
+    <string name="btn_dismiss">Отхвърли</string>
 </resources>

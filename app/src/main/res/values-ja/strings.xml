@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">空フォルダーの残骸を特定中...</string>
     <string name="scan_step_thumb_cache">サムネイル画像キャッシュを分析中...</string>
     <string name="scan_step_apk_packages">不要なAPKパッケージを確認中...</string>
+    <string name="btn_dismiss">閉じる</string>
 </resources>

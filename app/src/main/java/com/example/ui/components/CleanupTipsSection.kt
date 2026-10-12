@@ -109,6 +109,7 @@ private fun TipCard(
         TipCategory.CLOUD_SYNC -> Icons.Default.CloudSync to EmeraldGreen
         TipCategory.HEAVY_MEDIA -> Icons.Default.Movie to CoralRed
         TipCategory.CACHE_ACCUMULATION -> Icons.Default.CleaningServices to WarningAmber
+        TipCategory.SIMILAR_PHOTOS -> Icons.Default.PhotoLibrary to ElectricBlue
     }
 
     Card(

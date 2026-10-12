@@ -35,9 +35,6 @@ import com.example.ui.theme.*
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-import com.example.R
-import androidx.compose.ui.res.stringResource
-
 @Composable
 fun SwipeCardDeck(
     items: List<MediaItem>,

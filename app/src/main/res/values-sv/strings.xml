@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">Hittar rester av tomma mappar...</string>
     <string name="scan_step_thumb_cache">Analyserar miniatyrcache...</string>
     <string name="scan_step_apk_packages">Kontrollerar föråldrade APK-paket...</string>
+    <string name="btn_dismiss">Stäng</string>
 </resources>

@@ -614,4 +614,5 @@
     <string name="scan_step_empty_dirs">Locating Empty Directory Leftovers...</string>
     <string name="scan_step_thumb_cache">Analyzing Thumbnail Image Cache...</string>
     <string name="scan_step_apk_packages">Checking Obsolete APK Packages...</string>
+    <string name="btn_dismiss">Dismiss</string>
 </resources>

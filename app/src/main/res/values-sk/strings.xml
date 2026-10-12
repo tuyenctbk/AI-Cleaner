@@ -525,4 +525,5 @@
     <string name="scan_step_empty_dirs">Vyhľadávanie prázdnych priečinkov...</string>
     <string name="scan_step_thumb_cache">Analyzovanie vyrovnávacej pamäte miniatúr...</string>
     <string name="scan_step_apk_packages">Kontrola zastaraných inštalačných balíčkov APK...</string>
+    <string name="btn_dismiss">Zavrieť</string>
 </resources>

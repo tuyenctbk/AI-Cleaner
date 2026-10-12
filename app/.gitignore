@@ -2,3 +2,6 @@
 *.iml
 .cxx/
 .externalNativeBuild/
+*.py
+*.pyc
+__pycache__/
