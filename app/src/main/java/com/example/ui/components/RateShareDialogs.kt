@@ -47,7 +47,9 @@ fun RateAppDialog(
             shape = RoundedCornerShape(28.dp),
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 8.dp,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .widthIn(max = 480.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -195,7 +197,9 @@ fun ShareAppDialog(
             shape = RoundedCornerShape(28.dp),
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 8.dp,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .widthIn(max = 480.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -278,7 +282,7 @@ fun ShareAppDialog(
                 OutlinedButton(
                     onClick = {
                         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        val clip = ClipData.newPlainText("App Link", "$shareText https://play.google.com/store/apps/details?id=${context.packageName}")
+                        val clip = ClipData.newPlainText(context.getString(R.string.app_name), "$shareText https://play.google.com/store/apps/details?id=${context.packageName}")
                         clipboard.setPrimaryClip(clip)
                         Toast.makeText(context, context.getString(R.string.share_link_copied), Toast.LENGTH_SHORT).show()
                         onShared()

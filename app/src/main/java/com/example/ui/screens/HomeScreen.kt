@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Security
@@ -557,7 +558,7 @@ private fun AiCloudIntelligenceHub(
             IntelligenceCard(
                 title = stringResource(R.string.card_storage_trends),
                 subtitle = stringResource(R.string.card_storage_history),
-                icon = Icons.Default.ShowChart,
+                icon = Icons.AutoMirrored.Filled.ShowChart,
                 color = ElectricBlue,
                 onClick = onOpenStorageTrends,
                 modifier = Modifier.weight(1f)

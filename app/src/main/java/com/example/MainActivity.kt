@@ -565,7 +565,7 @@ private fun CleanerBottomNavigationBar(
 
 private data class NavigationItemData(
     val tab: MainScreenTab,
-    @androidx.annotation.StringRes val labelRes: Int,
+    @get:androidx.annotation.StringRes val labelRes: Int,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector
 )

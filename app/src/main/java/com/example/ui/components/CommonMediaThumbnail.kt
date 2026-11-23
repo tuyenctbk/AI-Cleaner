@@ -28,7 +28,7 @@ import com.example.R
 import androidx.compose.ui.res.stringResource
 import com.example.data.model.MediaItem
 
-private val sampleGradients = listOf(
+private val placeholderGradients = listOf(
     Brush.linearGradient(listOf(Color(0xFF2563EB), Color(0xFF60A5FA))),
     Brush.linearGradient(listOf(Color(0xFFF97316), Color(0xFFFBBF24))),
     Brush.linearGradient(listOf(Color(0xFF8B5CF6), Color(0xFFC084FC))),
@@ -52,16 +52,21 @@ fun CommonMediaThumbnail(
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
-        if (mediaItem.uriString.isNotBlank()) {
+        val model = when {
+            mediaItem.uriString.isNotBlank() -> mediaItem.uriString
+            mediaItem.path.isNotBlank() -> java.io.File(mediaItem.path)
+            else -> null
+        }
+        if (model != null) {
             AsyncImage(
-                model = mediaItem.uriString,
+                model = model,
                 contentDescription = mediaItem.title,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = contentScale
             )
         } else {
             // High aesthetic photo placeholder based on index
-            val gradient = sampleGradients[mediaItem.sampleImageIndex % sampleGradients.size]
+            val gradient = placeholderGradients[mediaItem.visualPlaceholderIndex % placeholderGradients.size]
             Box(
                 modifier = Modifier
                     .fillMaxSize()

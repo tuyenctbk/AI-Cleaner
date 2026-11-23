@@ -20,6 +20,9 @@ data class MediaItem(
     val sampleImageIndex: Int = 0, // Fallback visual index if local file doesn't have thumbnail
     val isSelected: Boolean = false
 ) {
+    val visualPlaceholderIndex: Int
+        get() = sampleImageIndex
+
     val formattedSize: String
         get() = formatFileSize(sizeBytes)
 }

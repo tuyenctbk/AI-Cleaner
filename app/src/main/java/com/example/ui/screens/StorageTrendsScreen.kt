@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -140,7 +141,7 @@ fun StorageTrendsScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Icon(imageVector = Icons.Default.TrendingUp, contentDescription = null, tint = ElectricBlue)
+                                Icon(imageVector = Icons.AutoMirrored.Filled.TrendingUp, contentDescription = null, tint = ElectricBlue)
                                 Text(
                                     text = stringResource(R.string.trends_accumulation_delta_fmt, selectedTimeframeDays),
                                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),

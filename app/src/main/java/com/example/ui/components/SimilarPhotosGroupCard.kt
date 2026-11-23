@@ -1,4 +1,6 @@
 package com.example.ui.components
+import androidx.compose.ui.res.stringResource
+import com.example.R
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,9 +31,6 @@ import com.example.ui.theme.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.remember
 import com.example.ui.components.dpadFocusable
-
-import com.example.R
-import androidx.compose.ui.res.stringResource
 
 @Composable
 fun SimilarPhotosGroupCard(

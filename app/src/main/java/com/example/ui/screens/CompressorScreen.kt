@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -44,6 +45,7 @@ fun CompressorScreen(
     onToggleItem: (Long) -> Unit,
     onStartCompression: () -> Unit,
     onSelectAll: ((Boolean) -> Unit)? = null,
+    onOpenPermissionGuide: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current
@@ -213,12 +215,25 @@ fun CompressorScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .testTag("compressor_screen_column")
-        ) {
+        if (!uiState.permissionGranted) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                com.example.ui.components.PermissionNoticeCard(
+                    onGrantClick = onOpenPermissionGuide
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .testTag("compressor_screen_column")
+            ) {
             // Media Category Filter Chips
             Row(
                 modifier = Modifier
@@ -406,7 +421,7 @@ fun CompressorScreen(
                         }
 
                         Icon(
-                            imageVector = Icons.Default.ArrowForward,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                         )
@@ -577,4 +592,5 @@ fun CompressorScreen(
             }
         }
     }
+}
 }

@@ -1,4 +1,6 @@
 package com.example.ui.screens
+import androidx.compose.ui.res.stringResource
+import com.example.R
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -28,9 +30,6 @@ import com.example.ui.theme.*
 import com.example.ui.viewmodel.CleanerUiState
 import java.text.SimpleDateFormat
 import java.util.*
-
-import com.example.R
-import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
