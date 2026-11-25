@@ -246,7 +246,7 @@ fun AiScanningAnimation(
                     color = primaryColor
                 ) {
                     Text(
-                        text = "${(progress * 100).toInt()}%",
+                        text = stringResource(R.string.format_percentage, (progress * 100).toInt()),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Black),
                         color = Color.White,
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)

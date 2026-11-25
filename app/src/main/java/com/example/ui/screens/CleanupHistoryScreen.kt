@@ -50,21 +50,21 @@ fun CleanupHistoryScreen(
                         Text(
                             text = stringResource(R.string.title_cleanup_history),
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
-                            color = PolishTextPrimary
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = stringResource(R.string.history_impact_subtitle),
                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                            color = PolishTextSecondary
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.btn_back), tint = PolishTextPrimary)
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.btn_back), tint = MaterialTheme.colorScheme.onSurface)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = PolishSurface)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
         modifier = modifier
@@ -87,9 +87,9 @@ fun CleanupHistoryScreen(
                         .shadow(4.dp, RoundedCornerShape(24.dp), ambientColor = Color.Black.copy(alpha = 0.04f))
                         .testTag("cleanup_history_hero_card"),
                     shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = PolishSurface),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     border = CardDefaults.outlinedCardBorder().copy(
-                        brush = androidx.compose.ui.graphics.SolidColor(PolishOutline.copy(alpha = 0.6f))
+                        brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.outline.copy(alpha = 0.6f))
                     )
                 ) {
                     Column(
@@ -125,7 +125,7 @@ fun CleanupHistoryScreen(
                                     Text(
                                         text = stringResource(R.string.history_recovered_space),
                                         style = MaterialTheme.typography.labelMedium,
-                                        color = PolishTextSecondary
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Text(
                                         text = formatFileSize(totalFreedBytes),
@@ -139,7 +139,7 @@ fun CleanupHistoryScreen(
                             }
                         }
 
-                        HorizontalDivider(color = PolishOutline.copy(alpha = 0.3f))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -149,12 +149,12 @@ fun CleanupHistoryScreen(
                                 Text(
                                     text = "$totalRecords",
                                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                                    color = PolishTextPrimary
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = stringResource(R.string.history_total_operations),
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = PolishTextSecondary
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
 
@@ -163,12 +163,12 @@ fun CleanupHistoryScreen(
                                 Text(
                                     text = formatFileSize(avgBytes),
                                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                                    color = PolishPrimary
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
                                     text = stringResource(R.string.history_avg_per_session),
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = PolishTextSecondary
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -186,12 +186,12 @@ fun CleanupHistoryScreen(
                     Text(
                         text = stringResource(R.string.history_recent_activity),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = PolishTextPrimary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = stringResource(R.string.history_records_logged_fmt, totalRecords),
                         style = MaterialTheme.typography.labelSmall,
-                        color = PolishTextSecondary
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -204,7 +204,7 @@ fun CleanupHistoryScreen(
                             .fillMaxWidth()
                             .padding(vertical = 24.dp),
                         shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = PolishSurface)
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                     ) {
                         Column(
                             modifier = Modifier
@@ -213,9 +213,9 @@ fun CleanupHistoryScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Icon(imageVector = Icons.Default.History, contentDescription = null, tint = PolishTextSecondary, modifier = Modifier.size(40.dp))
-                            Text(stringResource(R.string.history_empty_title), style = MaterialTheme.typography.titleSmall, color = PolishTextPrimary)
-                            Text(stringResource(R.string.history_empty_desc), style = MaterialTheme.typography.bodySmall, color = PolishTextSecondary)
+                            Icon(imageVector = Icons.Default.History, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(40.dp))
+                            Text(stringResource(R.string.history_empty_title), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurface)
+                            Text(stringResource(R.string.history_empty_desc), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
@@ -239,9 +239,9 @@ private fun HistoryRecordRowCard(record: CleanRecord) {
             .shadow(1.dp, RoundedCornerShape(18.dp), ambientColor = Color.Black.copy(alpha = 0.02f))
             .testTag("history_record_${record.id}"),
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = PolishSurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = CardDefaults.outlinedCardBorder().copy(
-            brush = androidx.compose.ui.graphics.SolidColor(PolishOutline.copy(alpha = 0.4f))
+            brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
         )
     ) {
         Row(
@@ -275,13 +275,13 @@ private fun HistoryRecordRowCard(record: CleanRecord) {
                     Text(
                         text = record.description,
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = PolishTextPrimary,
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1
                     )
                     Text(
                         text = stringResource(R.string.history_item_removed_fmt, formattedDate, record.itemsCount),
                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                        color = PolishTextSecondary,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1
                     )
                 }
@@ -294,7 +294,7 @@ private fun HistoryRecordRowCard(record: CleanRecord) {
                 color = EmeraldGreen.copy(alpha = 0.12f)
             ) {
                 Text(
-                    text = "+${formatFileSize(record.freedBytes)}",
+                    text = stringResource(R.string.storage_delta_plus_fmt, formatFileSize(record.freedBytes)),
                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Black),
                     color = EmeraldGreen,
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)

@@ -174,7 +174,7 @@ fun SwipeCleanScreen(
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "${(progressFraction * 100).toInt()}%",
+                        text = stringResource(R.string.format_percentage, (progressFraction * 100).toInt()),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -255,7 +255,7 @@ fun SwipeCleanScreen(
                             .background(CoralRed, RoundedCornerShape(3.dp))
                     )
                     Text(
-                        text = stringResource(R.string.btn_delete) + ": ${uiState.swipeTrashItems.size}",
+                        text = stringResource(R.string.swipe_counter_delete_fmt, uiState.swipeTrashItems.size),
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -270,7 +270,7 @@ fun SwipeCleanScreen(
                             .background(EmeraldGreen, RoundedCornerShape(3.dp))
                     )
                     Text(
-                        text = stringResource(R.string.btn_keep) + ": ${uiState.swipeKeepItems.size}",
+                        text = stringResource(R.string.swipe_counter_keep_fmt, uiState.swipeKeepItems.size),
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

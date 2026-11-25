@@ -10,9 +10,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CleaningServices
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -22,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -42,6 +46,7 @@ fun AppCacheScreen(
     onClearAllAppCaches: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("All") }
     var showConfirmClearAllCacheDialog by remember { mutableStateOf(false) }
@@ -64,7 +69,9 @@ fun AppCacheScreen(
             subtitle = stringResource(R.string.dialog_clear_all_cache_sub),
             totalFilesCount = unclearedApps.size,
             projectedSpaceBytes = totalUnclearedCacheBytes,
-            itemsPreviewList = unclearedApps.map { "${it.appName} Cache (${it.formattedCacheSize})" },
+            itemsPreviewList = unclearedApps.map {
+                context.getString(R.string.app_cache_item_preview_fmt, it.appName, it.formattedCacheSize)
+            },
             onConfirmDelete = {
                 showConfirmClearAllCacheDialog = false
                 onClearAllAppCaches()
@@ -82,24 +89,24 @@ fun AppCacheScreen(
                         Text(
                             text = stringResource(R.string.title_app_cache),
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
-                            color = PolishTextPrimary
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = stringResource(R.string.ranked_by_cache_size),
                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                            color = PolishTextSecondary
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.btn_back), tint = PolishTextPrimary)
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.btn_back), tint = MaterialTheme.colorScheme.onSurface)
                     }
                 },
                 actions = {
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = PolishPrimaryContainer
+                        color = MaterialTheme.colorScheme.primaryContainer
                     ) {
                         Text(
                             text = stringResource(R.string.app_cache_count_fmt, uiState.appCacheItems.size),
@@ -302,6 +309,69 @@ fun AppCacheScreen(
                     app = app,
                     onClearCache = { onClearAppCache(app.id) }
                 )
+            }
+
+            // Play-Policy-Compliant System Storage Settings Card for other apps
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("open_system_storage_settings_card"),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.app_cache_system_settings_title),
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = stringResource(R.string.app_cache_system_settings_desc),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        OutlinedButton(
+                            onClick = {
+                                val storageIntent = Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                try {
+                                    context.startActivity(storageIntent)
+                                } catch (_: Exception) {
+                                    try {
+                                        context.startActivity(
+                                            Intent(Settings.ACTION_SETTINGS).apply {
+                                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                            }
+                                        )
+                                    } catch (_: Exception) {}
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .testTag("open_android_storage_settings_button"),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(R.string.app_cache_open_storage_settings),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
             }
         }
     }

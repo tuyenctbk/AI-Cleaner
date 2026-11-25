@@ -39,11 +39,21 @@ fun AiInsightsScreen(
     onQueryChange: (String) -> Unit,
     onGenerateInsights: (String) -> Unit,
     onExecuteRoutine: (AiInsightRoutine) -> Unit,
+    onToggleEcoLite: (Boolean) -> Unit = {},
+    onClaimGraceCredits: () -> Unit = {},
+    onRetryEcoLite: (String) -> Unit = {},
+    onRunLocalAi: (String) -> Unit = {},
+    onOpenAiSettings: () -> Unit = {},
+    onOpenSmartRecommendations: () -> Unit = {},
+    onRescanScreenshots: () -> Unit = {},
+    onDeleteSafeScreenshots: () -> Unit = {},
+    onProtectReceiptsToVault: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current
     var queryInput by remember { mutableStateOf(uiState.aiQueryText) }
     var selectedRoutineForExecution by remember { mutableStateOf<AiInsightRoutine?>(null) }
+    var showSafeScreenshotDeleteDialog by remember { mutableStateOf(false) }
 
     selectedRoutineForExecution?.let { routine ->
         com.example.ui.components.MassDeletionSummaryDialog(
@@ -60,36 +70,47 @@ fun AiInsightsScreen(
         )
     }
 
+    if (showSafeScreenshotDeleteDialog && uiState.screenshotSummary.safeCleanableItems.isNotEmpty()) {
+        val safeItems = uiState.screenshotSummary.safeCleanableItems
+        com.example.ui.components.MassDeletionSummaryDialog(
+            title = stringResource(R.string.ai_ocr_dialog_clean_title),
+            subtitle = stringResource(R.string.ai_ocr_dialog_clean_subtitle),
+            totalFilesCount = safeItems.size,
+            projectedSpaceBytes = uiState.screenshotSummary.safeCleanableBytes,
+            itemsPreviewList = safeItems.take(8).map { "${it.title} (${it.formattedSize})" },
+            onConfirmDelete = {
+                showSafeScreenshotDeleteDialog = false
+                onDeleteSafeScreenshots()
+            },
+            onDismiss = { showSafeScreenshotDeleteDialog = false }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
                         Text(
                             text = stringResource(R.string.title_ai_insights),
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
-                            color = PolishTextPrimary
+                            color = MaterialTheme.colorScheme.onSurface
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Surface(
-                            shape = RoundedCornerShape(6.dp),
-                            color = VividViolet.copy(alpha = 0.2f)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.brand_gemini),
-                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                color = VividViolet,
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                            )
-                        }
+                        com.example.ui.components.ActiveAiEnginePill(
+                            quota = uiState.aiQuota,
+                            fromCache = uiState.aiLastResultFromCache
+                        )
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.btn_back), tint = PolishTextPrimary)
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.btn_back), tint = MaterialTheme.colorScheme.onSurface)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = PolishBackground)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
         },
         containerColor = MaterialTheme.colorScheme.background,
@@ -104,12 +125,120 @@ fun AiInsightsScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+            // Daily AI Value Receipt & Free-Tier Quota Status
+            item {
+                com.example.ui.components.DailyAiValueReceiptCard(
+                    quota = uiState.aiQuota,
+                    cascadedToLite = uiState.aiLastCascadedToLite,
+                    onOpenAiSettings = onOpenAiSettings
+                )
+            }
+
+            // Stage 1: Proactive 80% Usage Soft Nudge Banner
+            if (uiState.aiQuota.shouldShowSoftNudge) {
+                item {
+                    com.example.ui.components.AiSoftNudgeBanner(
+                        quota = uiState.aiQuota,
+                        onSwitchToEcoLite = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onToggleEcoLite(true)
+                        }
+                    )
+                }
+            }
+
+            // Stage 2: Smart Quota Recovery Card (100% / 429)
+            if (uiState.aiQuota.shouldShowQuotaRecovery) {
+                item {
+                    com.example.ui.components.AiQuotaRecoveryCard(
+                        quota = uiState.aiQuota,
+                        onClaimGraceCredits = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onClaimGraceCredits()
+                        },
+                        onRetryEcoLite = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onRetryEcoLite(queryInput)
+                        },
+                        onRunLocalAi = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onRunLocalAi(queryInput)
+                        },
+                        onOpenAiSettings = onOpenAiSettings
+                    )
+                }
+            }
+
+            // Smart Recommendations Shortcut (Blurry Photos, Low-Res Screenshots & Beyond Duplicates)
+            item {
+                val activeRecs = uiState.smartRecommendations.filter { !it.isApplied }
+                Card(
+                    onClick = onOpenSmartRecommendations,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("ai_insights_open_smart_recommendations"),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = CoralRed.copy(alpha = 0.08f)),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, CoralRed.copy(alpha = 0.4f))
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .defaultMinSize(minHeight = 64.dp)
+                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.title_smart_recommendations),
+                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = stringResource(
+                                    R.string.smart_rec_card_subtitle_fmt,
+                                    activeRecs.size,
+                                    com.example.data.model.formatFileSize(activeRecs.sumOf { it.reclaimableBytes })
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = CoralRed
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.Default.ChevronRight,
+                            contentDescription = stringResource(R.string.smart_rec_tier_banner_cta),
+                            tint = CoralRed
+                        )
+                    }
+                }
+            }
+
+            // On-Device ML Kit Smart Screenshot Organizer
+            item {
+                com.example.ui.components.SmartScreenshotOrganizerCard(
+                    summary = uiState.screenshotSummary,
+                    onRescanScreenshots = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onRescanScreenshots()
+                    },
+                    onRequestDeleteSafe = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        showSafeScreenshotDeleteDialog = true
+                    },
+                    onProtectReceiptsToVault = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onProtectReceiptsToVault()
+                    }
+                )
+            }
+
             // Natural Language Query Card
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = PolishSurface),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     border = CardDefaults.outlinedCardBorder().copy(
                         brush = Brush.horizontalGradient(listOf(VividViolet, ElectricBlue))
                     )
@@ -128,7 +257,7 @@ fun AiInsightsScreen(
                             Text(
                                 text = stringResource(R.string.ai_ask_gemini_cleaner),
                                 style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                color = PolishTextPrimary
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
 
@@ -142,14 +271,14 @@ fun AiInsightsScreen(
                                 .fillMaxWidth()
                                 .testTag("ai_query_input"),
                             placeholder = {
-                                Text(stringResource(R.string.ai_insight_query_placeholder), color = PolishTextSecondary)
+                                Text(stringResource(R.string.ai_insight_query_placeholder), color = MaterialTheme.colorScheme.onSurfaceVariant)
                             },
                             shape = RoundedCornerShape(14.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor = PolishSurfaceVariant,
-                                unfocusedContainerColor = PolishSurfaceVariant,
+                                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                                 focusedBorderColor = VividViolet,
-                                unfocusedBorderColor = PolishOutline.copy(alpha = 0.4f)
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
                             )
                         )
 
@@ -158,7 +287,9 @@ fun AiInsightsScreen(
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onGenerateInsights(queryInput)
                             },
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("ai_generate_insights_button"),
                             shape = RoundedCornerShape(14.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = VividViolet)
                         ) {
@@ -186,7 +317,7 @@ fun AiInsightsScreen(
                     Text(
                         text = stringResource(R.string.ai_suggested_routines_title),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = PolishTextPrimary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     Text(
@@ -221,7 +352,7 @@ private fun AiRoutineCardItem(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = PolishSurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = CardDefaults.outlinedCardBorder().copy(
             brush = Brush.horizontalGradient(
                 if (routine.isExecuted) listOf(EmeraldGreen, EmeraldGreen) else listOf(VividViolet.copy(alpha = 0.6f), ElectricBlue.copy(alpha = 0.6f))
@@ -270,16 +401,16 @@ private fun AiRoutineCardItem(
             Text(
                 text = routine.title,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = PolishTextPrimary
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Text(
                 text = routine.explanation,
                 style = MaterialTheme.typography.bodySmall,
-                color = PolishTextSecondary
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            HorizontalDivider(color = PolishOutline.copy(alpha = 0.3f))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -287,7 +418,7 @@ private fun AiRoutineCardItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text(stringResource(R.string.ai_insight_potential_savings), style = MaterialTheme.typography.labelSmall, color = PolishTextSecondary)
+                    Text(stringResource(R.string.ai_insight_potential_savings), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(
                         text = routine.formattedSavings,
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),

@@ -8,7 +8,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ScheduleSend
 import androidx.compose.material.icons.filled.*
+import com.example.BuildConfig
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -38,6 +40,9 @@ fun SettingsScreen(
     onTestNotification: () -> Unit,
     onSetSmartExpiryDays: (Int) -> Unit,
     onTogglePauseCleaning: () -> Unit,
+    onSetEcoLiteMode: (Boolean) -> Unit = {},
+    onTestAndSaveByokKey: (String) -> Unit = {},
+    onClearByokKey: () -> Unit = {},
     onReopenOnboarding: () -> Unit = {},
     onRateApp: () -> Unit = {},
     onShareApp: () -> Unit = {},
@@ -142,6 +147,16 @@ fun SettingsScreen(
                 }
             }
 
+            // AI Engine, Eco Lite & BYOK Card
+            item {
+                com.example.ui.components.SettingsAiEngineCard(
+                    uiState = uiState,
+                    onSetEcoLiteMode = onSetEcoLiteMode,
+                    onTestAndSaveByokKey = onTestAndSaveByokKey,
+                    onClearByokKey = onClearByokKey
+                )
+            }
+
             // Downloads Smart Expiry Rules Section Header
             item {
                 Row(
@@ -149,7 +164,7 @@ fun SettingsScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ScheduleSend,
+                        imageVector = Icons.AutoMirrored.Filled.ScheduleSend,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(22.dp)
@@ -682,7 +697,7 @@ fun SettingsScreen(
                             )
                         }
                         Text(
-                            text = stringResource(R.string.settings_footer_fmt, "1.3"),
+                            text = stringResource(R.string.settings_footer_fmt, BuildConfig.VERSION_NAME),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

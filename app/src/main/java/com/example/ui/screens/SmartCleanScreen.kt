@@ -90,7 +90,7 @@ fun SmartCleanScreen(
                     ) {
                         Button(
                             onClick = onExecuteClean,
-                            enabled = totalSelectedBytes > 0,
+                            enabled = selectedCategories.isNotEmpty(),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(54.dp)

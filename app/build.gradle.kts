@@ -17,8 +17,8 @@ android {
     applicationId = "com.soloprono.aicleaner"
     minSdk = 24
     targetSdk = 36
-    versionCode = 5
-    versionName = "1.5"
+    versionCode = 10
+    versionName = "2.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
@@ -58,10 +58,10 @@ android {
   }
 }
 
-// Configure the Secrets Gradle Plugin to use local.properties
+// Configure the Secrets Gradle Plugin to use .env / .env.example
 secrets {
-  propertiesFileName = "local.properties"
-  defaultPropertiesFileName = "local.defaults.properties"
+  propertiesFileName = ".env"
+  defaultPropertiesFileName = ".env.example"
   ignoreList.add("sdk.*")
   ignoreList.add("FIREBASE_APPCHECK_DEBUG_TOKEN")
 }
@@ -93,6 +93,14 @@ dependencies {
   implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.room.ktx)
   implementation(libs.androidx.room.runtime)
+  implementation(libs.androidx.work.runtime.ktx)
+  implementation(libs.androidx.media3.transformer)
+  implementation(libs.androidx.media3.common)
+  implementation(libs.androidx.media3.effect)
+  implementation(libs.androidx.glance.appwidget)
+  implementation(libs.androidx.glance.material3)
+  implementation(libs.mlkit.face.detection)
+  implementation(libs.mlkit.text.recognition)
   implementation(libs.coil.compose)
   implementation(libs.converter.moshi)
   implementation(libs.firebase.ai)
@@ -109,6 +117,7 @@ dependencies {
   implementation(libs.firebase.appcheck.debug)
   implementation(libs.kotlinx.coroutines.android)
   implementation(libs.kotlinx.coroutines.core)
+  implementation(libs.kotlinx.coroutines.play.services)
   implementation(libs.logging.interceptor)
   implementation(libs.moshi.kotlin)
   implementation(libs.okhttp)

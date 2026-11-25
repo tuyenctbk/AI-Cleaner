@@ -29,8 +29,13 @@ import com.example.data.model.formatFileSize
 import com.example.ui.theme.*
 import com.example.ui.viewmodel.CleanerUiState
 
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.R
 import androidx.compose.ui.res.stringResource
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -176,31 +181,33 @@ fun CloudPhotosCleanerScreen(
                 }
             }
 
-            // Select All Row
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(R.string.cloud_photos_backed_up_count_fmt, photos.size),
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    TextButton(
-                        onClick = {
-                            val allSelected = selectedPhotos.size == photos.size
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            onSelectAll(!allSelected)
-                        }
+            // Select All Row (only when photos exist)
+            if (photos.isNotEmpty()) {
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = stringResource(if (selectedPhotos.size == photos.size) R.string.btn_deselect_all else R.string.btn_select_all),
-                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.primary
+                            text = stringResource(R.string.cloud_photos_backed_up_count_fmt, photos.size),
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.onSurface
                         )
+
+                        TextButton(
+                            onClick = {
+                                val allSelected = selectedPhotos.size == photos.size
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                onSelectAll(!allSelected)
+                            }
+                        ) {
+                            Text(
+                                text = stringResource(if (selectedPhotos.size == photos.size) R.string.btn_deselect_all else R.string.btn_select_all),
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
             }
@@ -317,7 +324,15 @@ private fun CloudPhotoRowItem(
                 colors = CheckboxDefaults.colors(checkedColor = EmeraldGreen)
             )
 
-            // Thumbnail visual placeholder
+            // Real photo thumbnail with fallback icon
+            val context = LocalContext.current
+            val thumbnailModel = remember(photo.uriString, photo.path) {
+                when {
+                    photo.uriString.isNotBlank() -> photo.uriString
+                    photo.path.isNotBlank() -> File(photo.path).takeIf { it.exists() }
+                    else -> null
+                }
+            }
             Box(
                 modifier = Modifier
                     .size(56.dp)
@@ -329,8 +344,19 @@ private fun CloudPhotoRowItem(
                     imageVector = Icons.Default.Photo,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(26.dp)
                 )
+                if (thumbnailModel != null) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(context)
+                            .data(thumbnailModel)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = photo.title,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
 
             Column(modifier = Modifier.weight(1f)) {

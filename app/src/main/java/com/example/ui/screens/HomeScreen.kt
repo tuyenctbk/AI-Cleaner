@@ -38,14 +38,12 @@ import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Widgets
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.CloudDone
-import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 
 import androidx.compose.material.icons.filled.PauseCircle
 import androidx.compose.material.icons.filled.PlayCircle
-import androidx.compose.ui.platform.LocalConfiguration
 
 @Composable
 fun HomeScreen(
@@ -59,17 +57,33 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current
-    val isWideScreen = LocalConfiguration.current.screenWidthDp >= 600
 
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .statusBarsPadding()
-            .testTag("home_screen_lazy_column"),
-        contentPadding = PaddingValues(top = 8.dp, bottom = 96.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+    val quickSummary = androidx.compose.runtime.remember(
+        uiState.allMedia,
+        uiState.appCacheItems,
+        uiState.junkCategories,
+        uiState.storageStats.junkBytes
     ) {
+        com.example.data.scanner.QuickCleanupPlanner.buildSummary(
+            allMedia = uiState.allMedia,
+            appCacheItems = uiState.appCacheItems,
+            junkCategories = uiState.junkCategories,
+            fallbackJunkBytes = uiState.storageStats.junkBytes
+        )
+    }
+
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        val isWideScreen = maxWidth >= 600.dp
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .statusBarsPadding()
+                .testTag("home_screen_lazy_column"),
+            contentPadding = PaddingValues(top = 8.dp, bottom = 96.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
         // Mascot and App Identity Header
         item {
             MascotHeader(onOpenSettings = { onNavigate(MainScreenTab.SETTINGS) })
@@ -99,6 +113,7 @@ fun HomeScreen(
                             stats = uiState.storageStats,
                             isScanning = uiState.isScanning,
                             onSmartCleanClick = onSmartClean,
+                            onOpenStorageAnalyzer = { onNavigate(MainScreenTab.STORAGE_ANALYZER) },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
@@ -107,10 +122,16 @@ fun HomeScreen(
                             isExecuting = uiState.isExecutingGlobalQuickClean,
                             progress = uiState.globalQuickCleanProgress,
                             stepText = uiState.globalQuickCleanStepText,
-                            junkBytes = uiState.storageStats.junkBytes,
+                            cachedBytes = quickSummary.cachedBytes,
+                            largeFilesCount = quickSummary.largeFiles.size,
+                            largeFilesBytes = quickSummary.largeFilesBytes,
                             onQuickCleanClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 onGlobalQuickClean()
+                            },
+                            onOpenQuickCleanup = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                onNavigate(MainScreenTab.QUICK_CLEANUP)
                             },
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -123,20 +144,27 @@ fun HomeScreen(
                 StorageOverviewCard(
                     stats = uiState.storageStats,
                     isScanning = uiState.isScanning,
-                    onSmartCleanClick = onSmartClean
+                    onSmartCleanClick = onSmartClean,
+                    onOpenStorageAnalyzer = { onNavigate(MainScreenTab.STORAGE_ANALYZER) }
                 )
             }
 
-            // Global Quick Action Card (Pre-defined Safe Quick Clean routine)
+            // Global Quick Action Card (Pre-defined Safe Quick Clean + Large Files & Cache Quick Cleanup)
             item {
                 GlobalQuickActionCard(
                     isExecuting = uiState.isExecutingGlobalQuickClean,
                     progress = uiState.globalQuickCleanProgress,
                     stepText = uiState.globalQuickCleanStepText,
-                    junkBytes = uiState.storageStats.junkBytes,
+                    cachedBytes = quickSummary.cachedBytes,
+                    largeFilesCount = quickSummary.largeFiles.size,
+                    largeFilesBytes = quickSummary.largeFilesBytes,
                     onQuickCleanClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         onGlobalQuickClean()
+                    },
+                    onOpenQuickCleanup = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onNavigate(MainScreenTab.QUICK_CLEANUP)
                     }
                 )
             }
@@ -144,12 +172,16 @@ fun HomeScreen(
 
         // AI & Cloud Intelligence Hub
         item {
+            val activeRecommendations = uiState.smartRecommendations.filter { !it.isApplied }
             AiCloudIntelligenceHub(
                 cloudPhotosCount = uiState.cloudSyncedPhotos.size,
                 aiRoutinesCount = uiState.aiRoutines.size,
+                smartRecommendationsCount = activeRecommendations.size,
+                smartRecommendationsBytes = activeRecommendations.sumOf { it.reclaimableBytes },
                 onOpenCloudCleaner = { onNavigate(MainScreenTab.CLOUD_SYNCED_PHOTOS) },
                 onOpenStorageTrends = { onNavigate(MainScreenTab.STORAGE_TRENDS) },
-                onOpenAiInsights = { onNavigate(MainScreenTab.AI_INSIGHTS) }
+                onOpenAiInsights = { onNavigate(MainScreenTab.AI_INSIGHTS) },
+                onOpenSmartRecommendations = { onNavigate(MainScreenTab.SMART_RECOMMENDATIONS) }
             )
         }
 
@@ -185,7 +217,10 @@ fun HomeScreen(
         item {
             HomeScreenWidgetCard(
                 stats = uiState.storageStats,
-                onOneTapScan = onSmartClean,
+                onQuickClean = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onGlobalQuickClean()
+                },
                 onTestLowStorageNotification = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     onTestLowStorageNotification()
@@ -202,6 +237,7 @@ fun HomeScreen(
                     onClick = { onNavigate(MainScreenTab.CLEANUP_HISTORY) }
                 )
             }
+        }
         }
     }
 }
@@ -276,7 +312,7 @@ private fun CleanHistoryBanner(
 @Composable
 private fun HomeScreenWidgetCard(
     stats: com.example.data.model.StorageStats,
-    onOneTapScan: () -> Unit,
+    onQuickClean: () -> Unit,
     onTestLowStorageNotification: () -> Unit
 ) {
     Card(
@@ -380,14 +416,14 @@ private fun HomeScreenWidgetCard(
                         )
 
                         Button(
-                            onClick = onOneTapScan,
+                            onClick = onQuickClean,
                             shape = RoundedCornerShape(12.dp),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue)
                         ) {
                             Icon(imageVector = Icons.Default.FlashOn, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(stringResource(R.string.btn_scan), style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold))
+                            Text(stringResource(R.string.btn_quick_clean), style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold))
                         }
                     }
                 }
@@ -415,10 +451,14 @@ private fun GlobalQuickActionCard(
     isExecuting: Boolean,
     progress: Float,
     stepText: String,
-    junkBytes: Long,
+    cachedBytes: Long,
+    largeFilesCount: Int,
+    largeFilesBytes: Long,
     onQuickCleanClick: () -> Unit,
+    onOpenQuickCleanup: () -> Unit,
     modifier: Modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
 ) {
+    val totalReclaimable = cachedBytes + largeFilesBytes
     Card(
         modifier = modifier
             .testTag("global_quick_action_card"),
@@ -440,6 +480,7 @@ private fun GlobalQuickActionCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
+                    modifier = Modifier.weight(1f),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
@@ -460,12 +501,17 @@ private fun GlobalQuickActionCard(
 
                     Column {
                         Text(
-                            text = stringResource(R.string.btn_safe_quick_clean),
+                            text = stringResource(R.string.title_quick_cleanup),
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = stringResource(R.string.card_quick_clean_desc),
+                            text = stringResource(
+                                R.string.quick_cleanup_home_sub_fmt,
+                                formatFileSize(cachedBytes),
+                                largeFilesCount,
+                                formatFileSize(largeFilesBytes)
+                            ),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -477,7 +523,11 @@ private fun GlobalQuickActionCard(
                     color = EmeraldGreen.copy(alpha = 0.15f)
                 ) {
                     Text(
-                        text = stringResource(R.string.card_quick_clean_freed_fmt, formatFileSize(junkBytes.coerceAtLeast(1_850_000_000L))),
+                        text = if (totalReclaimable > 0L) {
+                            stringResource(R.string.card_quick_clean_freed_fmt, formatFileSize(totalReclaimable))
+                        } else {
+                            stringResource(R.string.status_device_optimized)
+                        },
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                         color = EmeraldGreen,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -503,17 +553,42 @@ private fun GlobalQuickActionCard(
                     )
                 }
             } else {
-                Button(
-                    onClick = onQuickCleanClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("global_quick_action_button"),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Icon(imageVector = Icons.Default.CleaningServices, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(stringResource(R.string.btn_quick_clean), fontWeight = FontWeight.Bold)
+                    Button(
+                        onClick = onOpenQuickCleanup,
+                        modifier = Modifier
+                            .weight(1f)
+                            .defaultMinSize(minHeight = 48.dp)
+                            .testTag("open_quick_cleanup_button"),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen)
+                    ) {
+                        Icon(imageVector = Icons.Default.CleaningServices, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(stringResource(R.string.title_quick_cleanup), fontWeight = FontWeight.Bold)
+                    }
+
+                    OutlinedButton(
+                        onClick = onQuickCleanClick,
+                        modifier = Modifier
+                            .defaultMinSize(minHeight = 48.dp)
+                            .testTag("global_quick_action_button"),
+                        shape = RoundedCornerShape(14.dp),
+                        border = CardDefaults.outlinedCardBorder().copy(
+                            brush = androidx.compose.ui.graphics.SolidColor(EmeraldGreen.copy(alpha = 0.5f))
+                        )
+                    ) {
+                        Icon(imageVector = Icons.Default.FlashOn, contentDescription = null, tint = EmeraldGreen, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = stringResource(R.string.quick_cleanup_preset_cache_only),
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                            color = EmeraldGreen
+                        )
+                    }
                 }
             }
         }
@@ -524,9 +599,12 @@ private fun GlobalQuickActionCard(
 private fun AiCloudIntelligenceHub(
     cloudPhotosCount: Int,
     aiRoutinesCount: Int,
+    smartRecommendationsCount: Int,
+    smartRecommendationsBytes: Long,
     onOpenCloudCleaner: () -> Unit,
     onOpenStorageTrends: () -> Unit,
-    onOpenAiInsights: () -> Unit
+    onOpenAiInsights: () -> Unit,
+    onOpenSmartRecommendations: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -539,6 +617,37 @@ private fun AiCloudIntelligenceHub(
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.onSurface
         )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            // Smart Recommendations (Gemini Media Library Audit beyond duplicates)
+            IntelligenceCard(
+                title = stringResource(R.string.title_smart_recommendations),
+                subtitle = stringResource(
+                    R.string.smart_rec_card_subtitle_fmt,
+                    smartRecommendationsCount,
+                    formatFileSize(smartRecommendationsBytes)
+                ),
+                icon = Icons.Default.AutoAwesome,
+                color = CoralRed,
+                onClick = onOpenSmartRecommendations,
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("home_smart_recommendations_card")
+            )
+
+            // Gemini AI Insights
+            IntelligenceCard(
+                title = stringResource(R.string.card_ai_insights),
+                subtitle = stringResource(R.string.badge_routines_count, aiRoutinesCount),
+                icon = Icons.Default.AutoAwesome,
+                color = VividViolet,
+                onClick = onOpenAiInsights,
+                modifier = Modifier.weight(1f)
+            )
+        }
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -561,16 +670,6 @@ private fun AiCloudIntelligenceHub(
                 icon = Icons.AutoMirrored.Filled.ShowChart,
                 color = ElectricBlue,
                 onClick = onOpenStorageTrends,
-                modifier = Modifier.weight(1f)
-            )
-
-            // Gemini AI Insights
-            IntelligenceCard(
-                title = stringResource(R.string.card_ai_insights),
-                subtitle = stringResource(R.string.badge_routines_count, aiRoutinesCount),
-                icon = Icons.Default.AutoAwesome,
-                color = VividViolet,
-                onClick = onOpenAiInsights,
                 modifier = Modifier.weight(1f)
             )
         }

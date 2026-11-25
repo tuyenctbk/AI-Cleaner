@@ -204,6 +204,36 @@ fun SwipeCardDeck(
                         modifier = Modifier.fillMaxSize()
                     )
 
+                    // On-Device ML Kit Screenshot Category Pill
+                    if (topItem.isScreenshot && topItem.screenshotCategory != com.example.data.model.ScreenshotCategory.NONE) {
+                        val (catLabelRes, catColor) = when (topItem.screenshotCategory) {
+                            com.example.data.model.ScreenshotCategory.OTP_OR_CODE ->
+                                R.string.swipe_badge_otp_safe to CoralRed
+                            com.example.data.model.ScreenshotCategory.RECEIPT_OR_DOC ->
+                                R.string.swipe_badge_receipt_keep to EmeraldGreen
+                            com.example.data.model.ScreenshotCategory.CHAT_OR_MEME ->
+                                R.string.swipe_badge_chat_meme to AmberGolden
+                            else ->
+                                R.string.swipe_badge_screenshot to ElectricBlue
+                        }
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = catColor.copy(alpha = 0.92f),
+                            modifier = Modifier
+                                .align(Alignment.TopStart)
+                                .padding(12.dp)
+                                .testTag("swipe_screenshot_category_badge")
+                        ) {
+                            Text(
+                                text = stringResource(catLabelRes),
+                                color = Color.White,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                            )
+                        }
+                    }
+
                     // Gradient Scrim at bottom
                     Box(
                         modifier = Modifier
@@ -229,8 +259,13 @@ fun SwipeCardDeck(
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold
                         )
+                        val resolutionText = if (topItem.width > 0 && topItem.height > 0) {
+                            stringResource(R.string.format_resolution, topItem.width, topItem.height)
+                        } else {
+                            stringResource(R.string.label_high_res)
+                        }
                         Text(
-                            text = "${topItem.formattedSize} • ${if (topItem.width > 0) "${topItem.width}x${topItem.height}" else stringResource(R.string.label_high_res)}",
+                            text = stringResource(R.string.storage_media_subtitle_fmt, topItem.formattedSize, resolutionText),
                             color = Color.White.copy(alpha = 0.8f),
                             fontSize = 12.sp
                         )

@@ -46,6 +46,7 @@ fun VaultScreen(
 ) {
     val haptic = LocalHapticFeedback.current
     var selectedItemIds by remember { mutableStateOf<Set<Long>>(emptySet()) }
+    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
 
     val vaultedList = uiState.vaultItems
     val selectedItemsList = remember(vaultedList, selectedItemIds) {
@@ -54,6 +55,18 @@ fun VaultScreen(
 
     val totalVaultBytes = vaultedList.sumOf { it.sizeBytes }
     val selectedBytes = selectedItemsList.sumOf { it.sizeBytes }
+
+    if (showConfirmDeleteDialog && selectedItemsList.isNotEmpty()) {
+        com.example.ui.components.DeleteConfirmationDialog(
+            selectedItems = selectedItemsList,
+            onConfirmDelete = {
+                showConfirmDeleteDialog = false
+                onDeleteSelected(selectedItemsList)
+                selectedItemIds = emptySet()
+            },
+            onDismiss = { showConfirmDeleteDialog = false }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -141,8 +154,7 @@ fun VaultScreen(
                         Button(
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                onDeleteSelected(selectedItemsList)
-                                selectedItemIds = emptySet()
+                                showConfirmDeleteDialog = true
                             },
                             modifier = Modifier
                                 .weight(1f)

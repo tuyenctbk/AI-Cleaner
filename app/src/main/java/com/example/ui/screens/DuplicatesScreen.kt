@@ -44,6 +44,8 @@ fun DuplicatesScreen(
     onToggleGroup: (groupId: String, selectAll: Boolean) -> Unit,
     onSelectAllDuplicates: () -> Unit,
     onDeleteSelected: () -> Unit,
+    onRunBackgroundScan: () -> Unit = {},
+    onMarkFlaggedReviewed: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current
@@ -89,12 +91,12 @@ fun DuplicatesScreen(
                         Text(
                             text = stringResource(R.string.duplicates_title),
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
-                            color = PolishTextPrimary
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                         Text(
                             text = stringResource(R.string.duplicates_summary, totalDuplicatesCount, totalSelectedCount),
                             style = MaterialTheme.typography.bodySmall,
-                            color = PolishTextSecondary
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 },
@@ -103,7 +105,7 @@ fun DuplicatesScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.btn_back),
-                            tint = PolishTextPrimary
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 },
@@ -118,26 +120,26 @@ fun DuplicatesScreen(
                         Icon(
                             imageVector = Icons.Default.AutoAwesome,
                             contentDescription = null,
-                            tint = PolishPrimary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = stringResource(R.string.btn_keep_best_shot),
                             fontWeight = FontWeight.Bold,
-                            color = PolishPrimary
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = PolishBackground
+                    containerColor = MaterialTheme.colorScheme.background
                 )
             )
         },
         bottomBar = {
             if (totalSelectedCount > 0) {
                 Surface(
-                    color = PolishSurface,
+                    color = MaterialTheme.colorScheme.surface,
                     tonalElevation = 4.dp,
                     shadowElevation = 8.dp,
                     modifier = Modifier.fillMaxWidth()
@@ -156,7 +158,7 @@ fun DuplicatesScreen(
                                 .testTag("delete_duplicates_button"),
                             shape = RoundedCornerShape(28.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = PolishPrimary
+                                containerColor = MaterialTheme.colorScheme.primary
                             )
                         ) {
                             Row(
@@ -187,26 +189,39 @@ fun DuplicatesScreen(
             .background(MaterialTheme.colorScheme.background)
     ) { innerPadding ->
         if (uiState.duplicateGroups.isEmpty()) {
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
+                    .padding(innerPadding)
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                BackgroundDuplicateScanCard(
+                    uiState = uiState,
+                    onRunBackgroundScan = onRunBackgroundScan,
+                    onMarkFlaggedReviewed = onMarkFlaggedReviewed
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = stringResource(R.string.duplicates_empty_title),
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = PolishTextPrimary
-                    )
-                    Text(
-                        text = stringResource(R.string.duplicates_empty_subtitle),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = PolishTextSecondary
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.duplicates_empty_title),
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Text(
+                            text = stringResource(R.string.duplicates_empty_subtitle),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         } else {
@@ -217,6 +232,15 @@ fun DuplicatesScreen(
                     .testTag("duplicates_lazy_column"),
                 contentPadding = PaddingValues(top = 8.dp, bottom = 24.dp)
             ) {
+                item(key = "background_dhash_review_card") {
+                    Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
+                        BackgroundDuplicateScanCard(
+                            uiState = uiState,
+                            onRunBackgroundScan = onRunBackgroundScan,
+                            onMarkFlaggedReviewed = onMarkFlaggedReviewed
+                        )
+                    }
+                }
                 items(uiState.duplicateGroups, key = { it.id }) { group ->
                     SimilarPhotosGroupCard(
                         group = group,
@@ -239,6 +263,145 @@ fun DuplicatesScreen(
     }
 }
 
+@Composable
+private fun BackgroundDuplicateScanCard(
+    uiState: CleanerUiState,
+    onRunBackgroundScan: () -> Unit,
+    onMarkFlaggedReviewed: () -> Unit
+) {
+    val formattedLastScan = remember(uiState.lastDuplicateScanMillis) {
+        if (uiState.lastDuplicateScanMillis > 0L) {
+            java.text.DateFormat.getDateTimeInstance(
+                java.text.DateFormat.SHORT,
+                java.text.DateFormat.SHORT,
+                java.util.Locale.getDefault()
+            ).format(java.util.Date(uiState.lastDuplicateScanMillis))
+        } else {
+            ""
+        }
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("background_duplicate_scan_card"),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (uiState.flaggedDuplicatesCount > 0) {
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f)
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+            }
+        ),
+        border = CardDefaults.outlinedCardBorder().copy(
+            brush = SolidColor(MaterialTheme.colorScheme.outline.copy(alpha = 0.35f))
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PhotoLibrary,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.duplicates_bg_scan_title),
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    val subtitleText = when {
+                        uiState.isDuplicateWorkerRunning -> stringResource(R.string.duplicates_bg_scan_running)
+                        uiState.flaggedDuplicatesCount > 0 -> stringResource(
+                            R.string.duplicates_bg_scan_flagged_fmt,
+                            uiState.flaggedDuplicatesCount,
+                            uiState.flaggedDuplicatesGroupCount,
+                            formatFileSize(uiState.flaggedDuplicatesReclaimableBytes)
+                        )
+                        formattedLastScan.isNotEmpty() -> stringResource(
+                            R.string.duplicates_bg_scan_last_run_fmt,
+                            formattedLastScan
+                        )
+                        else -> stringResource(R.string.duplicates_bg_scan_idle_desc)
+                    }
+                    Text(
+                        text = subtitleText,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            if (uiState.isDuplicateWorkerRunning) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp)
+                        .clip(RoundedCornerShape(2.dp)),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                FilledTonalButton(
+                    onClick = onRunBackgroundScan,
+                    enabled = !uiState.isDuplicateWorkerRunning,
+                    modifier = Modifier
+                        .defaultMinSize(minHeight = 48.dp)
+                        .testTag("run_background_duplicate_scan_button"),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = stringResource(R.string.duplicates_btn_scan_gallery_dhash),
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold)
+                    )
+                }
+
+                if (uiState.flaggedDuplicatesCount > 0) {
+                    TextButton(
+                        onClick = onMarkFlaggedReviewed,
+                        modifier = Modifier
+                            .defaultMinSize(minHeight = 48.dp)
+                            .testTag("mark_flagged_duplicates_reviewed_button")
+                    ) {
+                        Text(
+                            text = stringResource(R.string.duplicates_btn_mark_reviewed),
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DuplicateCompareSheet(
@@ -249,8 +412,9 @@ private fun DuplicateCompareSheet(
     val haptic = LocalHapticFeedback.current
     val bestItem = group.items.firstOrNull { it.isBestShot } ?: group.items.first()
     val duplicates = group.items.filter { it.id != bestItem.id }
-    var selectedCandidateIndex by remember { mutableIntStateOf(0) }
-    val candidateItem = duplicates.getOrNull(selectedCandidateIndex) ?: duplicates.firstOrNull() ?: bestItem
+    var selectedCandidateIndex by remember(group.id) { mutableIntStateOf(0) }
+    val safeIndex = selectedCandidateIndex.coerceIn(0, (duplicates.size - 1).coerceAtLeast(0))
+    val candidateItem = duplicates.getOrNull(safeIndex) ?: duplicates.firstOrNull() ?: bestItem
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -279,7 +443,7 @@ private fun DuplicateCompareSheet(
                         color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
-                        text = group.label,
+                        text = stringResource(R.string.storage_media_subtitle_fmt, group.label, group.matchReason),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -338,7 +502,7 @@ private fun DuplicateCompareSheet(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = if (!bestItem.isSelected) "KEEP" else "DEL",
+                            text = if (!bestItem.isSelected) stringResource(R.string.btn_keep_tag) else stringResource(R.string.btn_del_tag),
                             color = Color.White,
                             fontSize = 8.sp,
                             fontWeight = FontWeight.Bold
@@ -395,7 +559,7 @@ private fun DuplicateCompareSheet(
             }
 
             if (duplicates.size > 1) {
-                // Selector Row for Multiple Duplicates
+                // Interactive Selector Row for Multiple Duplicates
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -403,11 +567,42 @@ private fun DuplicateCompareSheet(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    IconButton(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            selectedCandidateIndex = if (safeIndex > 0) safeIndex - 1 else duplicates.lastIndex
+                        },
+                        modifier = Modifier
+                            .size(48.dp)
+                            .testTag("prev_duplicate_candidate_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ChevronLeft,
+                            contentDescription = stringResource(R.string.btn_back),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                     Text(
-                        text = stringResource(R.string.duplicates_comparing_candidate_fmt, selectedCandidateIndex + 1, duplicates.size),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        text = stringResource(R.string.duplicates_comparing_candidate_fmt, safeIndex + 1, duplicates.size),
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 8.dp)
                     )
+                    IconButton(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            selectedCandidateIndex = if (safeIndex < duplicates.lastIndex) safeIndex + 1 else 0
+                        },
+                        modifier = Modifier
+                            .size(48.dp)
+                            .testTag("next_duplicate_candidate_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ChevronRight,
+                            contentDescription = stringResource(R.string.btn_compare),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
 
@@ -433,13 +628,51 @@ private fun DuplicateCompareSheet(
 
                     MetadataRow(stringResource(R.string.metadata_file_name), bestItem.title, candidateItem.title)
                     MetadataRow(stringResource(R.string.metadata_file_size), bestItem.formattedSize, candidateItem.formattedSize, isBestHighlight = bestItem.sizeBytes > candidateItem.sizeBytes)
-                    MetadataRow(stringResource(R.string.metadata_resolution), "${bestItem.width} x ${bestItem.height}", "${candidateItem.width} x ${candidateItem.height}")
+                    MetadataRow(
+                        stringResource(R.string.metadata_resolution),
+                        stringResource(R.string.format_resolution, bestItem.width, bestItem.height),
+                        stringResource(R.string.format_resolution, candidateItem.width, candidateItem.height)
+                    )
+                    val bestClarityLabel = when {
+                        bestItem.sharpnessScore > 0f && !bestItem.isBlurry ->
+                            stringResource(R.string.clarity_score_sharp_fmt, bestItem.sharpnessScore.toInt())
+                        bestItem.sharpnessScore > 0f && bestItem.isBlurry ->
+                            stringResource(R.string.clarity_score_blurry_fmt, bestItem.sharpnessScore.toInt())
+                        bestItem.isBlurry -> stringResource(R.string.clarity_slight_motion)
+                        else -> stringResource(R.string.clarity_crisp_focus)
+                    }
+                    val candClarityLabel = when {
+                        candidateItem.sharpnessScore > 0f && !candidateItem.isBlurry ->
+                            stringResource(R.string.clarity_score_sharp_fmt, candidateItem.sharpnessScore.toInt())
+                        candidateItem.sharpnessScore > 0f && candidateItem.isBlurry ->
+                            stringResource(R.string.clarity_score_blurry_fmt, candidateItem.sharpnessScore.toInt())
+                        candidateItem.isBlurry -> stringResource(R.string.clarity_blurry)
+                        else -> stringResource(R.string.clarity_sharp)
+                    }
                     MetadataRow(
                         stringResource(R.string.metadata_clarity_rating),
-                        if (bestItem.isBlurry) stringResource(R.string.clarity_slight_motion) else stringResource(R.string.clarity_crisp_focus),
-                        if (candidateItem.isBlurry) stringResource(R.string.clarity_blurry) else stringResource(R.string.clarity_sharp),
-                        isBestHighlight = !bestItem.isBlurry
+                        bestClarityLabel,
+                        candClarityLabel,
+                        isBestHighlight = bestItem.sharpnessScore >= candidateItem.sharpnessScore && !bestItem.isBlurry
                     )
+                    if (bestItem.faceCount > 0 || candidateItem.faceCount > 0) {
+                        val bestFaceLabel = when {
+                            bestItem.faceCount == 0 -> stringResource(R.string.face_not_detected)
+                            bestItem.hasBlinkingFace -> stringResource(R.string.face_blink_detected)
+                            else -> stringResource(R.string.face_eyes_open_fmt, bestItem.faceQualityScore.toInt().coerceIn(0, 100))
+                        }
+                        val candFaceLabel = when {
+                            candidateItem.faceCount == 0 -> stringResource(R.string.face_not_detected)
+                            candidateItem.hasBlinkingFace -> stringResource(R.string.face_blink_detected)
+                            else -> stringResource(R.string.face_eyes_open_fmt, candidateItem.faceQualityScore.toInt().coerceIn(0, 100))
+                        }
+                        MetadataRow(
+                            stringResource(R.string.metadata_face_eyes),
+                            bestFaceLabel,
+                            candFaceLabel,
+                            isBestHighlight = bestItem.faceCount > 0 && !bestItem.hasBlinkingFace && bestItem.faceQualityScore >= candidateItem.faceQualityScore
+                        )
+                    }
                     MetadataRow(stringResource(R.string.metadata_storage_path), bestItem.path.takeLast(25), candidateItem.path.takeLast(25))
                 }
             }

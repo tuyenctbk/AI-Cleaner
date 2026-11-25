@@ -1,5 +1,8 @@
 package com.example.ui.screens
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
@@ -57,6 +61,13 @@ fun StorageTrendsScreen(
     val burstPoints = remember(filteredPoints) {
         filteredPoints.filter { it.isRapidAccumulationBurst }
     }
+    val timeframeDeltaBytes = remember(filteredPoints) {
+        filteredPoints.sumOf { it.deltaBytes }
+    }
+    val timeframePeakDay = remember(filteredPoints, summary.highestBurstDay) {
+        val peak = filteredPoints.maxByOrNull { it.deltaBytes }
+        if (peak != null && peak.deltaBytes > 0L) peak.dayLabel else summary.highestBurstDay
+    }
 
     Scaffold(
         topBar = {
@@ -65,15 +76,15 @@ fun StorageTrendsScreen(
                     Text(
                         text = stringResource(R.string.title_storage_trends),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
-                        color = PolishTextPrimary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.btn_back), tint = PolishTextPrimary)
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.btn_back), tint = MaterialTheme.colorScheme.onSurface)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = PolishBackground)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
         },
         containerColor = MaterialTheme.colorScheme.background,
@@ -95,8 +106,8 @@ fun StorageTrendsScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val timeframes = listOf(7 to "7 Days", 14 to "14 Days", 30 to "30 Days")
-                    timeframes.forEach { (days, label) ->
+                    val timeframes = listOf(7, 14, 30)
+                    timeframes.forEach { days ->
                         val isSelected = selectedTimeframeDays == days
                         FilterChip(
                             selected = isSelected,
@@ -104,12 +115,12 @@ fun StorageTrendsScreen(
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 selectedTimeframeDays = days
                             },
-                            label = { Text(label, fontWeight = FontWeight.Bold) },
+                            label = { Text(stringResource(R.string.trends_days_fmt, days), fontWeight = FontWeight.Bold) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = ElectricBlue,
                                 selectedLabelColor = Color.White,
-                                containerColor = PolishSurface,
-                                labelColor = PolishTextPrimary
+                                containerColor = MaterialTheme.colorScheme.surface,
+                                labelColor = MaterialTheme.colorScheme.onSurface
                             )
                         )
                     }
@@ -121,7 +132,7 @@ fun StorageTrendsScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = PolishSurface),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     border = CardDefaults.outlinedCardBorder().copy(
                         brush = Brush.horizontalGradient(listOf(ElectricBlue, VividViolet))
                     )
@@ -145,31 +156,39 @@ fun StorageTrendsScreen(
                                 Text(
                                     text = stringResource(R.string.trends_accumulation_delta_fmt, selectedTimeframeDays),
                                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = PolishTextPrimary
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
 
                             Text(
-                                text = "+${formatFileSize(filteredPoints.sumOf { it.deltaBytes })}",
+                                text = if (timeframeDeltaBytes > 0L) stringResource(R.string.storage_delta_plus_fmt, formatFileSize(timeframeDeltaBytes)) else formatFileSize(0L),
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                color = CoralRed
+                                color = if (timeframeDeltaBytes > 0L) CoralRed else EmeraldGreen
                             )
                         }
 
-                        HorizontalDivider(color = PolishOutline.copy(alpha = 0.3f))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Column {
-                                Text(stringResource(R.string.trends_top_growth_driver), style = MaterialTheme.typography.labelSmall, color = PolishTextSecondary)
-                                Text(summary.topGrowthCategory, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold), color = PolishTextPrimary)
+                                Text(stringResource(R.string.trends_top_growth_driver), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(
+                                    summary.topGrowthCategory.ifBlank { stringResource(R.string.trends_normal_usage) },
+                                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
                             }
 
                             Column(horizontalAlignment = Alignment.End) {
-                                Text(stringResource(R.string.trends_peak_accumulation), style = MaterialTheme.typography.labelSmall, color = PolishTextSecondary)
-                                Text(summary.highestBurstDay, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold), color = CoralRed)
+                                Text(stringResource(R.string.trends_peak_accumulation), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(
+                                    timeframePeakDay.ifBlank { stringResource(R.string.trends_none) },
+                                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = if (timeframeDeltaBytes > 0L) CoralRed else EmeraldGreen
+                                )
                             }
                         }
                     }
@@ -183,7 +202,7 @@ fun StorageTrendsScreen(
                         .fillMaxWidth()
                         .testTag("storage_trend_canvas_chart"),
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = PolishSurface)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Column(
                         modifier = Modifier
@@ -194,7 +213,7 @@ fun StorageTrendsScreen(
                         Text(
                             text = stringResource(R.string.trends_growth_trend_graph),
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                            color = PolishTextPrimary
+                            color = MaterialTheme.colorScheme.onSurface
                         )
 
                         // Smooth Trend Canvas Drawing
@@ -212,7 +231,7 @@ fun StorageTrendsScreen(
                             Text(
                                 text = filteredPoints.firstOrNull()?.dayLabel ?: "",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = PolishTextSecondary
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
                                 text = stringResource(R.string.trends_accumulation_delta_label),
@@ -222,7 +241,7 @@ fun StorageTrendsScreen(
                             Text(
                                 text = filteredPoints.lastOrNull()?.dayLabel ?: "",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = PolishTextSecondary
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -240,7 +259,7 @@ fun StorageTrendsScreen(
                         Text(
                             text = stringResource(R.string.trends_bursts_detected),
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = PolishTextPrimary
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -249,7 +268,7 @@ fun StorageTrendsScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = PolishSurfaceVariant),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                         border = CardDefaults.outlinedCardBorder().copy(
                             brush = Brush.horizontalGradient(listOf(CoralRed, VibrantOrange))
                         )
@@ -263,9 +282,9 @@ fun StorageTrendsScreen(
                         ) {
                             Box(
                                 modifier = Modifier
-                                .size(42.dp)
-                                .clip(CircleShape)
-                                .background(CoralRed.copy(alpha = 0.15f)),
+                                    .size(42.dp)
+                                    .clip(CircleShape)
+                                    .background(CoralRed.copy(alpha = 0.15f)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(imageVector = Icons.Default.FlashOn, contentDescription = null, tint = CoralRed)
@@ -275,12 +294,12 @@ fun StorageTrendsScreen(
                                 Text(
                                     text = stringResource(R.string.trends_burst_event_fmt, burstPoint.dayLabel),
                                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = PolishTextPrimary
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = burstPoint.burstDescription ?: stringResource(R.string.trends_abnormal_accumulation),
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = PolishTextSecondary
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
 
@@ -304,6 +323,15 @@ private fun StorageTrendCanvasChart(
     points: List<StorageTrendPoint>,
     modifier: Modifier = Modifier
 ) {
+    val revealProgress = remember(points) { Animatable(0f) }
+    LaunchedEffect(points) {
+        revealProgress.snapTo(0f)
+        revealProgress.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing)
+        )
+    }
+
     Canvas(modifier = modifier) {
         if (points.size < 2) return@Canvas
 
@@ -319,8 +347,8 @@ private fun StorageTrendCanvasChart(
         val path = Path()
         val fillPath = Path()
 
-        val strokeColor = Color(0xFF00E5FF)
-        val burstColor = Color(0xFFFF5252)
+        val strokeColor = ElectricBlue
+        val burstColor = CoralRed
 
         points.forEachIndexed { i, pt ->
             val x = i * dx
@@ -352,44 +380,46 @@ private fun StorageTrendCanvasChart(
             }
         }
 
-        // Draw area gradient fill
-        drawPath(
-            path = fillPath,
-            brush = Brush.verticalGradient(
-                colors = listOf(strokeColor.copy(alpha = 0.35f), strokeColor.copy(alpha = 0.0f))
+        clipRect(right = width * revealProgress.value) {
+            // Draw area gradient fill
+            drawPath(
+                path = fillPath,
+                brush = Brush.verticalGradient(
+                    colors = listOf(strokeColor.copy(alpha = 0.32f), strokeColor.copy(alpha = 0.0f))
+                )
             )
-        )
 
-        // Draw trend curve
-        drawPath(
-            path = path,
-            color = strokeColor,
-            style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
-        )
+            // Draw trend curve
+            drawPath(
+                path = path,
+                color = strokeColor,
+                style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
+            )
 
-        // Draw burst indicators & data points
-        points.forEachIndexed { i, pt ->
-            val x = i * dx
-            val normalizedY = 1f - ((pt.usedBytes - minVal) / range)
-            val y = (normalizedY * (height - 40.dp.toPx())) + 20.dp.toPx()
+            // Draw burst indicators & data points
+            points.forEachIndexed { i, pt ->
+                val x = i * dx
+                val normalizedY = 1f - ((pt.usedBytes - minVal) / range)
+                val y = (normalizedY * (height - 40.dp.toPx())) + 20.dp.toPx()
 
-            if (pt.isRapidAccumulationBurst) {
-                drawCircle(
-                    color = burstColor,
-                    radius = 7.dp.toPx(),
-                    center = Offset(x, y)
-                )
-                drawCircle(
-                    color = Color.White,
-                    radius = 3.dp.toPx(),
-                    center = Offset(x, y)
-                )
-            } else if (i % 5 == 0 || i == points.size - 1) {
-                drawCircle(
-                    color = strokeColor,
-                    radius = 4.dp.toPx(),
-                    center = Offset(x, y)
-                )
+                if (pt.isRapidAccumulationBurst) {
+                    drawCircle(
+                        color = burstColor,
+                        radius = 7.dp.toPx(),
+                        center = Offset(x, y)
+                    )
+                    drawCircle(
+                        color = Color.White,
+                        radius = 3.dp.toPx(),
+                        center = Offset(x, y)
+                    )
+                } else if (i % 5 == 0 || i == points.size - 1) {
+                    drawCircle(
+                        color = strokeColor,
+                        radius = 4.dp.toPx(),
+                        center = Offset(x, y)
+                    )
+                }
             }
         }
     }

@@ -48,7 +48,7 @@ fun DeleteConfirmationDialog(
 @Composable
 fun MassDeletionSummaryDialog(
     title: String,
-    subtitle: String = "Permanent cleanup action",
+    subtitle: String = stringResource(R.string.dialog_permanent_cleanup_action),
     totalFilesCount: Int,
     projectedSpaceBytes: Long,
     itemsPreviewList: List<String> = emptyList(),

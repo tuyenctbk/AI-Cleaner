@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CleaningServices
+import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -36,6 +37,7 @@ fun StorageOverviewCard(
     stats: StorageStats,
     isScanning: Boolean = false,
     onSmartCleanClick: () -> Unit = {},
+    onOpenStorageAnalyzer: (() -> Unit)? = null,
     modifier: Modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 6.dp)
 ) {
     Card(
@@ -91,7 +93,7 @@ fun StorageOverviewCard(
                         modifier = Modifier.padding(top = 4.dp)
                     ) {
                         Text(
-                            text = "${formatFileSize(stats.freeBytes)} " + stringResource(R.string.storage_donut_free),
+                            text = stringResource(R.string.storage_free_badge_fmt, formatFileSize(stats.freeBytes)),
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -101,14 +103,23 @@ fun StorageOverviewCard(
                     }
                 }
 
-                // Right: Circular Progress Ring
+                // Right: Animated Circular Progress Ring
                 Box(
                     modifier = Modifier.size(86.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    val progress = (stats.usedPercent / 100f).coerceIn(0f, 1f)
+                    val targetProgress = (stats.usedPercent / 100f).coerceIn(0f, 1f)
+                    val animatedProgress by animateFloatAsState(
+                        targetValue = targetProgress,
+                        animationSpec = tween(durationMillis = 850, easing = FastOutSlowInEasing),
+                        label = "StorageRingProgress"
+                    )
                     val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
-                    val primaryColor = MaterialTheme.colorScheme.primary
+                    val ringColor = when {
+                        stats.usedPercent >= 90 -> CoralRed
+                        stats.usedPercent >= 75 -> WarningAmber
+                        else -> MaterialTheme.colorScheme.primary
+                    }
                     Canvas(modifier = Modifier.size(80.dp)) {
                         val strokeWidth = 8.dp.toPx()
                         // Background track
@@ -116,11 +127,11 @@ fun StorageOverviewCard(
                             color = surfaceVariantColor,
                             style = Stroke(width = strokeWidth)
                         )
-                        // Progress arc
+                        // Animated Progress arc
                         drawArc(
-                            color = primaryColor,
+                            color = ringColor,
                             startAngle = -90f,
-                            sweepAngle = 360f * progress,
+                            sweepAngle = 360f * animatedProgress,
                             useCenter = false,
                             style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
                         )
@@ -128,7 +139,7 @@ fun StorageOverviewCard(
 
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "${stats.usedPercent}%",
+                            text = stringResource(R.string.format_percentage, (animatedProgress * 100).toInt()),
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.ExtraBold,
                                 fontSize = 18.sp
@@ -281,6 +292,33 @@ fun StorageOverviewCard(
                             letterSpacing = 0.2.sp
                         ),
                         color = Color.White
+                    )
+                }
+            }
+
+            if (onOpenStorageAnalyzer != null) {
+                OutlinedButton(
+                    onClick = onOpenStorageAnalyzer,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .defaultMinSize(minHeight = 48.dp)
+                        .testTag("home_open_storage_analyzer_button"),
+                    shape = RoundedCornerShape(24.dp),
+                    border = CardDefaults.outlinedCardBorder().copy(
+                        brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.primary.copy(alpha = 0.45f))
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PieChart,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.btn_open_storage_analyzer),
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }

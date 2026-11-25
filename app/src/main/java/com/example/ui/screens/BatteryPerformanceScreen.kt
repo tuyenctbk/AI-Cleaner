@@ -1,6 +1,9 @@
 package com.example.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -58,6 +61,7 @@ fun BatteryPerformanceScreen(
     onBack: () -> Unit,
     onNavigateToAppCache: () -> Unit,
     onNavigateToSmartClean: () -> Unit,
+    onSetThemeMode: (AppThemeMode) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -69,12 +73,18 @@ fun BatteryPerformanceScreen(
     }
     val rawLevel = batteryIntent?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: -1
     val scale = batteryIntent?.getIntExtra(BatteryManager.EXTRA_SCALE, -1) ?: -1
-    val batteryPct = if (rawLevel >= 0 && scale > 0) (rawLevel * 100 / scale) else 80
+    val batteryManager = remember(context) {
+        context.getSystemService(Context.BATTERY_SERVICE) as? BatteryManager
+    }
+    val batteryPct = when {
+        rawLevel >= 0 && scale > 0 -> (rawLevel * 100 / scale).coerceIn(0, 100)
+        else -> batteryManager?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)?.takeIf { it in 0..100 } ?: 0
+    }
     val rawStatus = batteryIntent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
     val isCharging = rawStatus == BatteryManager.BATTERY_STATUS_CHARGING || rawStatus == BatteryManager.BATTERY_STATUS_FULL
     val tempTenths = batteryIntent?.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1) ?: -1
     val tempCelsius = if (tempTenths > 0) tempTenths / 10f else null
-    val tempText = if (tempCelsius != null) "%.1f°C".format(tempCelsius) else "Normal Temp"
+    val tempText = if (tempCelsius != null) "%.1f°C".format(tempCelsius) else stringResource(R.string.battery_temp_normal)
 
     val activityManager = remember(context) {
         context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
@@ -107,7 +117,17 @@ fun BatteryPerformanceScreen(
 
     var adaptivePowerEnabled by remember { mutableStateOf(true) }
     var thermalThrottlePrevented by remember { mutableStateOf(true) }
-    var darkThemePowerSave by remember { mutableStateOf(true) }
+    val darkThemePowerSave = uiState.themeMode == AppThemeMode.DARK
+    val animatedBatteryProgress by animateFloatAsState(
+        targetValue = (batteryPct / 100f).coerceIn(0f, 1f),
+        animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing),
+        label = "battery_progress"
+    )
+    val batteryAccentColor = when {
+        batteryPct > 50 -> EmeraldGreen
+        batteryPct > 20 -> WarningAmber
+        else -> CoralRed
+    }
 
     val tipRefreshTitle = stringResource(R.string.battery_tip_refresh_title)
     val tipRefreshSub = stringResource(R.string.battery_tip_refresh_sub)
@@ -247,13 +267,13 @@ fun BatteryPerformanceScreen(
                                     modifier = Modifier
                                         .size(54.dp)
                                         .clip(RoundedCornerShape(16.dp))
-                                        .background(EmeraldGreen.copy(alpha = 0.15f)),
+                                        .background(batteryAccentColor.copy(alpha = 0.15f)),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = if (isCharging) Icons.Default.BatteryChargingFull else Icons.Default.BatteryStd,
                                         contentDescription = null,
-                                        tint = EmeraldGreen,
+                                        tint = batteryAccentColor,
                                         modifier = Modifier.size(32.dp)
                                     )
                                 }
@@ -265,12 +285,16 @@ fun BatteryPerformanceScreen(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Text(
-                                        text = "$batteryPct% • $batteryChargingText",
+                                        text = stringResource(
+                                            R.string.battery_level_charging_fmt,
+                                            batteryPct,
+                                            batteryChargingText
+                                        ),
                                         style = MaterialTheme.typography.headlineMedium.copy(
                                             fontWeight = FontWeight.Black,
                                             fontSize = 24.sp
                                         ),
-                                        color = EmeraldGreen
+                                        color = batteryAccentColor
                                     )
                                     Text(
                                         text = remainingText,
@@ -293,6 +317,16 @@ fun BatteryPerformanceScreen(
                             }
                         }
 
+                        LinearProgressIndicator(
+                            progress = { animatedBatteryProgress },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(8.dp)
+                                .clip(RoundedCornerShape(4.dp)),
+                            color = batteryAccentColor,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+
                         HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
 
                         // Real-time RAM & Speed Stats
@@ -302,7 +336,11 @@ fun BatteryPerformanceScreen(
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
-                                    text = "$formattedRamUsed / $formattedRamTotal",
+                                    text = stringResource(
+                                        R.string.battery_ram_fraction_fmt,
+                                        formattedRamUsed,
+                                        formattedRamTotal
+                                    ),
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
@@ -333,18 +371,21 @@ fun BatteryPerformanceScreen(
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 isRamOptimizing = true
                                 coroutineScope.launch {
+                                    val beforeSysAvail = ActivityManager.MemoryInfo().apply {
+                                        activityManager?.getMemoryInfo(this)
+                                    }.availMem
                                     val runtime = Runtime.getRuntime()
-                                    val beforeMem = runtime.totalMemory() - runtime.freeMemory()
+                                    val beforeHeap = runtime.totalMemory() - runtime.freeMemory()
                                     System.gc()
-                                    delay(700)
-                                    val afterMem = runtime.totalMemory() - runtime.freeMemory()
-                                    val freed = ((beforeMem - afterMem) / (1024 * 1024)).toInt().coerceAtLeast(0)
-
+                                    delay(600)
+                                    val afterHeap = runtime.totalMemory() - runtime.freeMemory()
                                     val newMem = ActivityManager.MemoryInfo().apply {
                                         activityManager?.getMemoryInfo(this)
                                     }
+                                    val sysDeltaMb = ((newMem.availMem - beforeSysAvail) / (1024 * 1024)).toInt().coerceAtLeast(0)
+                                    val heapDeltaMb = ((beforeHeap - afterHeap) / (1024 * 1024)).toInt().coerceAtLeast(0)
                                     ramState = newMem
-                                    ramFreedMb = if (freed > 0) freed else (24..78).random()
+                                    ramFreedMb = maxOf(sysDeltaMb, heapDeltaMb)
                                     isRamOptimizing = false
                                     showRamOptimizedSuccess = true
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -397,7 +438,11 @@ fun BatteryPerformanceScreen(
                                     Icon(imageVector = Icons.Default.CheckCircle, contentDescription = null, tint = EmeraldGreen)
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = stringResource(R.string.battery_ram_freed_fmt, ramFreedMb),
+                                        text = if (ramFreedMb > 0) {
+                                            stringResource(R.string.battery_ram_freed_fmt, ramFreedMb)
+                                        } else {
+                                            "${stringResource(R.string.status_device_optimized)} • ${formatFileSize(availRamBytes)}"
+                                        },
                                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                         color = EmeraldGreen
                                     )
@@ -483,9 +528,9 @@ fun BatteryPerformanceScreen(
                             }
                             Switch(
                                 checked = darkThemePowerSave,
-                                onCheckedChange = {
+                                onCheckedChange = { enabled ->
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    darkThemePowerSave = it
+                                    onSetThemeMode(if (enabled) AppThemeMode.DARK else AppThemeMode.SYSTEM)
                                 },
                                 modifier = Modifier.testTag("toggle_dark_theme")
                             )
@@ -520,10 +565,10 @@ fun BatteryPerformanceScreen(
                     tip = tip,
                     onActionClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        if (tip.id == "tip_thermal_cache" || tip.id == "tip_background_apps") {
-                            onNavigateToAppCache()
-                        } else {
-                            onNavigateToSmartClean()
+                        when (tip.id) {
+                            "tip_thermal_cache", "tip_background_apps" -> onNavigateToAppCache()
+                            "tip_dark_mode" -> onSetThemeMode(AppThemeMode.DARK)
+                            else -> onNavigateToSmartClean()
                         }
                     }
                 )

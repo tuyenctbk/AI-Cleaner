@@ -1,6 +1,8 @@
 package com.example.ui.components
 
-import androidx.compose.animation.*
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,6 +22,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,43 +39,66 @@ private data class OnboardingPageData(
     val descRes: Int,
     val icon: ImageVector,
     val gradientColors: List<Color>,
-    val tags: List<String>
+    val tagResIds: List<Int>
 )
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun OnboardingScreen(
     onCompleteOnboarding: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val haptic = LocalHapticFeedback.current
     val primaryColor = MaterialTheme.colorScheme.primary
     val primaryContainer = MaterialTheme.colorScheme.primaryContainer
     val errorColor = MaterialTheme.colorScheme.error
-    val secondaryColor = MaterialTheme.colorScheme.secondary
 
-    val pages = remember(primaryColor, primaryContainer, errorColor, secondaryColor) {
+    val pages = remember(primaryColor, primaryContainer, errorColor) {
         listOf(
             OnboardingPageData(
                 titleRes = R.string.onboarding_title_1,
                 descRes = R.string.onboarding_desc_1,
-                icon = Icons.Default.AutoAwesome,
-                gradientColors = listOf(primaryColor, primaryContainer),
-                tags = listOf("Gemini AI", "1-Tap Quick Clean", "Cache Purge")
+                icon = Icons.Default.Bolt,
+                gradientColors = listOf(EmeraldGreen, ElectricBlue),
+                tagResIds = listOf(
+                    R.string.onboarding_tag_quick_clean,
+                    R.string.onboarding_tag_large_files,
+                    R.string.onboarding_tag_cache_purge
+                )
+            ),
+            OnboardingPageData(
+                titleRes = R.string.onboarding_title_analyzer,
+                descRes = R.string.onboarding_desc_analyzer,
+                icon = Icons.Default.PieChart,
+                gradientColors = listOf(ElectricBlue, VividViolet),
+                tagResIds = listOf(
+                    R.string.onboarding_tag_pie_charts,
+                    R.string.analyzer_scope_file_types,
+                    R.string.onboarding_tag_glance_widget
+                )
             ),
             OnboardingPageData(
                 titleRes = R.string.onboarding_title_2,
                 descRes = R.string.onboarding_desc_2,
-                icon = Icons.Default.Swipe,
+                icon = Icons.Default.BurstMode,
                 gradientColors = listOf(errorColor, primaryColor),
-                tags = listOf("Gesture Swipe", "Blurry Photo Scan", "Instant Undo")
+                tagResIds = listOf(
+                    R.string.onboarding_tag_dhash_scan,
+                    R.string.onboarding_tag_offline_ocr,
+                    R.string.onboarding_tag_gesture_swipe
+                )
             ),
             OnboardingPageData(
                 titleRes = R.string.onboarding_title_3,
                 descRes = R.string.onboarding_desc_3,
                 icon = Icons.Default.Lock,
                 gradientColors = listOf(MintGreen, primaryColor),
-                tags = listOf("Safe Vault", "Smart Expiry", "Duplicate Detector")
+                tagResIds = listOf(
+                    R.string.onboarding_tag_safe_vault,
+                    R.string.onboarding_tag_smart_expiry,
+                    R.string.onboarding_tag_on_device
+                )
             )
         )
     }
@@ -84,7 +112,7 @@ fun OnboardingScreen(
                 Brush.verticalGradient(
                     colors = listOf(
                         MaterialTheme.colorScheme.surface,
-                        MaterialTheme.colorScheme.surfaceVariant,
+                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
                         MaterialTheme.colorScheme.background
                     )
                 )
@@ -94,20 +122,46 @@ fun OnboardingScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .widthIn(max = 600.dp)
+                .align(Alignment.Center)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Top Bar: Skip button
+            // Top Bar: Step pill & Skip button
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant
+                ) {
+                    Text(
+                        text = stringResource(
+                            R.string.onboarding_step_fmt,
+                            pagerState.currentPage + 1,
+                            pages.size
+                        ),
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                    )
+                }
+
                 if (pagerState.currentPage < pages.size - 1) {
                     TextButton(
-                        onClick = onCompleteOnboarding,
-                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurfaceVariant)
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            onCompleteOnboarding()
+                        },
+                        modifier = Modifier
+                            .defaultMinSize(minHeight = 48.dp)
+                            .testTag("onboarding_skip_button"),
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     ) {
                         Text(
                             text = stringResource(R.string.onboarding_skip),
@@ -115,7 +169,7 @@ fun OnboardingScreen(
                         )
                     }
                 } else {
-                    Spacer(modifier = Modifier.height(36.dp))
+                    Spacer(modifier = Modifier.height(48.dp))
                 }
             }
 
@@ -125,54 +179,75 @@ fun OnboardingScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
+                    .testTag("onboarding_pager")
             ) { pageIdx ->
                 val page = pages[pageIdx]
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    // Hero Animated Icon Graphic Badge
+                    // Hero Icon Graphic Badge with soft outer aura
                     Box(
-                        modifier = Modifier
-                            .size(140.dp)
-                            .clip(CircleShape)
-                            .background(
-                                Brush.radialGradient(
-                                    colors = page.gradientColors.map { it.copy(alpha = 0.85f) }
-                                )
-                            )
-                            .border(
-                                width = 3.dp,
-                                brush = Brush.linearGradient(listOf(Color.White.copy(alpha = 0.6f), Color.Transparent)),
-                                shape = CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.size(164.dp)
                     ) {
-                        Icon(
-                            imageVector = page.icon,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(64.dp)
+                        Box(
+                            modifier = Modifier
+                                .size(164.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    Brush.radialGradient(
+                                        colors = listOf(
+                                            page.gradientColors.first().copy(alpha = 0.22f),
+                                            Color.Transparent
+                                        )
+                                    )
+                                )
                         )
+                        Box(
+                            modifier = Modifier
+                                .size(132.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    Brush.linearGradient(
+                                        colors = page.gradientColors.map { it.copy(alpha = 0.92f) }
+                                    )
+                                )
+                                .border(
+                                    width = 3.dp,
+                                    brush = Brush.linearGradient(
+                                        listOf(Color.White.copy(alpha = 0.65f), Color.Transparent)
+                                    ),
+                                    shape = CircleShape
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = page.icon,
+                                contentDescription = stringResource(page.titleRes),
+                                tint = Color.White,
+                                modifier = Modifier.size(62.dp)
+                            )
+                        }
                     }
 
-                    Spacer(modifier = Modifier.height(36.dp))
+                    Spacer(modifier = Modifier.height(28.dp))
 
                     // Title
                     Text(
                         text = stringResource(page.titleRes),
                         style = MaterialTheme.typography.headlineMedium.copy(
                             fontWeight = FontWeight.ExtraBold,
-                            fontSize = 26.sp
+                            fontSize = 25.sp
                         ),
                         color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     // Description
                     Text(
@@ -186,21 +261,22 @@ fun OnboardingScreen(
                         modifier = Modifier.padding(horizontal = 8.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(28.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                    // Tags Row
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    // Adaptive Wrapping Feature Tags Row
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        page.tags.forEach { tag ->
+                        page.tagResIds.forEach { tagRes ->
                             Surface(
                                 shape = RoundedCornerShape(16.dp),
-                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.22f))
                             ) {
                                 Text(
-                                    text = tag,
+                                    text = stringResource(tagRes),
                                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
                                     color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
@@ -215,22 +291,31 @@ fun OnboardingScreen(
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(24.dp)
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                // Page Dots Indicator
+                // Animated Page Dots Indicator
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     repeat(pages.size) { index ->
                         val isSelected = pagerState.currentPage == index
+                        val dotWidth by animateDpAsState(
+                            targetValue = if (isSelected) 28.dp else 8.dp,
+                            animationSpec = tween(durationMillis = 220),
+                            label = "OnboardingDot_$index"
+                        )
                         Box(
                             modifier = Modifier
                                 .height(8.dp)
-                                .width(if (isSelected) 28.dp else 8.dp)
+                                .width(dotWidth)
                                 .clip(RoundedCornerShape(4.dp))
                                 .background(
-                                    if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+                                    if (isSelected) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+                                    }
                                 )
                         )
                     }
@@ -239,6 +324,7 @@ fun OnboardingScreen(
                 // Next / Get Started Button
                 Button(
                     onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         if (pagerState.currentPage < pages.size - 1) {
                             coroutineScope.launch {
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
@@ -249,7 +335,8 @@ fun OnboardingScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp),
+                        .height(56.dp)
+                        .testTag("onboarding_next_button"),
                     shape = RoundedCornerShape(28.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
@@ -271,7 +358,11 @@ fun OnboardingScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Icon(
-                            imageVector = if (pagerState.currentPage == pages.size - 1) Icons.Default.CheckCircle else Icons.AutoMirrored.Filled.ArrowForward,
+                            imageVector = if (pagerState.currentPage == pages.size - 1) {
+                                Icons.Default.CheckCircle
+                            } else {
+                                Icons.AutoMirrored.Filled.ArrowForward
+                            },
                             contentDescription = null,
                             modifier = Modifier.size(20.dp)
                         )

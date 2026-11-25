@@ -18,7 +18,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -73,8 +72,9 @@ fun QuickActionGrid(
             )
         }
 
-        val isWide = LocalConfiguration.current.screenWidthDp >= 600
-
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            val isWide = maxWidth >= 580.dp
+            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
         if (isWide) {
             // Adaptive 4-column Layout for Tablets / Wide Screens
             Row(
@@ -162,7 +162,7 @@ fun QuickActionGrid(
                 ToolFeatureCard(
                     title = stringResource(R.string.card_battery),
                     subtitle = stringResource(R.string.card_battery_sub),
-                    badgeText = stringResource(R.string.badge_health_format, 88),
+                    badgeText = stringResource(R.string.badge_health_format, stats.healthScore),
                     badgeColor = EmeraldGreen,
                     icon = Icons.Default.BatteryChargingFull,
                     iconTint = EmeraldGreen,
@@ -293,7 +293,7 @@ fun QuickActionGrid(
             ToolFeatureCard(
                 title = stringResource(R.string.card_battery),
                 subtitle = stringResource(R.string.card_battery_sub),
-                badgeText = stringResource(R.string.badge_health_format, 88),
+                badgeText = stringResource(R.string.badge_health_format, stats.healthScore),
                 badgeColor = EmeraldGreen,
                 icon = Icons.Default.BatteryChargingFull,
                 iconTint = EmeraldGreen,
@@ -316,6 +316,8 @@ fun QuickActionGrid(
                 onClick = onOpenSmartScheduler,
                 modifier = Modifier.weight(1f).testTag("auto_scan_card")
             )
+        }
+        }
         }
         }
 

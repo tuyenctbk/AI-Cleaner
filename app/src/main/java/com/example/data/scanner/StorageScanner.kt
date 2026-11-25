@@ -2,26 +2,28 @@ package com.example.data.scanner
 
 import android.content.ContentUris
 import android.content.Context
-import android.content.pm.ApplicationInfo
-import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.os.StatFs
 import android.provider.MediaStore
 import com.example.R
+import com.example.data.local.StorageSnapshotEntity
+import com.example.data.local.StorageSnapshotRepository
 import com.example.data.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
 import java.util.Locale
-import kotlin.math.abs
 
 class StorageScanner(private val context: Context) {
+
+    private val duplicateScanner = MediaStoreDuplicateScanner(context)
+    private val videoCompressor = VideoCompressor(context)
 
     companion object {
         fun getQuickStorageStats(context: Context): StorageStats {
@@ -120,7 +122,10 @@ class StorageScanner(private val context: Context) {
         }
     }
 
-    suspend fun getDeviceStorageStats(): StorageStats = withContext(Dispatchers.IO) {
+    suspend fun getDeviceStorageStats(
+        preloadedMedia: List<MediaItem>? = null,
+        preloadedDuplicates: List<DuplicateGroup>? = null
+    ): StorageStats = withContext(Dispatchers.IO) {
         try {
             val statFs = StatFs(Environment.getDataDirectory().path)
             val totalBytes = statFs.blockCountLong * statFs.blockSizeLong
@@ -209,15 +214,12 @@ class StorageScanner(private val context: Context) {
                 e.printStackTrace()
             }
 
-            // Calculate installed apps size
+            // Measure this app's own APK footprint without querying all installed packages (Play Policy compliant)
             var appBytes = 0L
             try {
-                val packages = context.packageManager.getInstalledApplications(0)
-                for (app in packages) {
-                    val file = File(app.sourceDir)
-                    if (file.exists()) {
-                        appBytes += file.length()
-                    }
+                val ownApk = File(context.applicationInfo.sourceDir)
+                if (ownApk.exists()) {
+                    appBytes += ownApk.length()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -240,9 +242,9 @@ class StorageScanner(private val context: Context) {
             val usedRatio = if (totalBytes > 0) usedBytes.toFloat() / totalBytes else 0.5f
             val health = (100 - (usedRatio * 50)).toInt().coerceIn(30, 100)
 
-            // Scan media items to determine duplicate, blurry, screenshot, and large file counts
-            val media = getMediaItems()
-            val duplicateGroups = getDuplicateGroups(media)
+            // Reuse preloaded media/duplicate lists to avoid redundant MediaStore scans
+            val media = preloadedMedia ?: getMediaItems()
+            val duplicateGroups = preloadedDuplicates ?: getDuplicateGroups(media)
             val duplicateCount = duplicateGroups.sumOf { it.items.count { item -> !item.isBestShot } }
             val blurryCount = media.count { it.isBlurry }
             val screenshotCount = media.count { it.isScreenshot }
@@ -314,8 +316,8 @@ class StorageScanner(private val context: Context) {
             categories.add(
                 JunkCategory(
                     type = JunkType.APP_CACHE,
-                    title = "App Cache",
-                    description = "Temporary application cached assets & buffers",
+                    title = context.getString(R.string.junk_type_app_cache),
+                    description = context.getString(R.string.junk_type_app_cache_desc),
                     sizeBytes = appCacheSize,
                     itemCount = cacheItems.size,
                     items = cacheItems,
@@ -341,8 +343,8 @@ class StorageScanner(private val context: Context) {
             categories.add(
                 JunkCategory(
                     type = JunkType.TEMP_FILES,
-                    title = "Temporary Files",
-                    description = "Transient processing files and staging buffers",
+                    title = context.getString(R.string.junk_type_temp_files),
+                    description = context.getString(R.string.junk_type_temp_files_desc),
                     sizeBytes = tempSize,
                     itemCount = tempItems.size,
                     items = tempItems,
@@ -377,8 +379,8 @@ class StorageScanner(private val context: Context) {
             categories.add(
                 JunkCategory(
                     type = JunkType.EMPTY_FOLDERS,
-                    title = "Empty Folders",
-                    description = "Unused empty leftover directories",
+                    title = context.getString(R.string.junk_type_empty_folders),
+                    description = context.getString(R.string.junk_type_empty_folders_desc),
                     sizeBytes = 0L,
                     itemCount = emptyFolderItems.size,
                     items = emptyFolderItems,
@@ -404,8 +406,8 @@ class StorageScanner(private val context: Context) {
             categories.add(
                 JunkCategory(
                     type = JunkType.THUMBNAIL_CACHE,
-                    title = "Thumbnail Cache",
-                    description = "Cached gallery & media preview thumbnails",
+                    title = context.getString(R.string.junk_type_thumbnail_cache),
+                    description = context.getString(R.string.junk_type_thumbnail_cache_desc),
                     sizeBytes = thumbSize,
                     itemCount = thumbItems.size,
                     items = thumbItems,
@@ -429,8 +431,8 @@ class StorageScanner(private val context: Context) {
             categories.add(
                 JunkCategory(
                     type = JunkType.APK_PACKAGES,
-                    title = "Obsolete APKs",
-                    description = "Downloaded package installers",
+                    title = context.getString(R.string.junk_type_apk_packages),
+                    description = context.getString(R.string.junk_type_apk_packages_desc),
                     sizeBytes = apkSize,
                     itemCount = apkItems.size,
                     items = apkItems,
@@ -445,72 +447,8 @@ class StorageScanner(private val context: Context) {
     suspend fun getMediaItems(): List<MediaItem> = withContext(Dispatchers.IO) {
         val realItems = mutableListOf<MediaItem>()
         try {
-            // 1. Query Images
-            val imageProjection = arrayOf(
-                MediaStore.Images.Media._ID,
-                MediaStore.Images.Media.DISPLAY_NAME,
-                MediaStore.Images.Media.DATA,
-                MediaStore.Images.Media.SIZE,
-                MediaStore.Images.Media.DATE_MODIFIED,
-                MediaStore.Images.Media.MIME_TYPE,
-                MediaStore.Images.Media.WIDTH,
-                MediaStore.Images.Media.HEIGHT
-            )
-
-            context.contentResolver.query(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                imageProjection,
-                null,
-                null,
-                "${MediaStore.Images.Media.DATE_MODIFIED} DESC"
-            )?.use { cursor ->
-                val idCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
-                val nameCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)
-                val pathCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-                val sizeCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE)
-                val dateCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_MODIFIED)
-                val mimeCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.MIME_TYPE)
-                val widthCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.WIDTH)
-                val heightCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.HEIGHT)
-
-                var count = 0
-                while (cursor.moveToNext() && count < 300) {
-                    val id = cursor.getLong(idCol)
-                    val name = cursor.getString(nameCol) ?: "IMG_$id.jpg"
-                    val path = cursor.getString(pathCol) ?: ""
-                    val size = cursor.getLong(sizeCol).coerceAtLeast(0L)
-                    val date = cursor.getLong(dateCol) * 1000L // convert seconds to millis
-                    val mime = cursor.getString(mimeCol) ?: "image/jpeg"
-                    val width = cursor.getInt(widthCol)
-                    val height = cursor.getInt(heightCol)
-
-                    val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-
-                    val isScreenshot = name.contains("screenshot", ignoreCase = true) ||
-                            path.contains("screenshot", ignoreCase = true)
-                    val isLarge = size > 8 * 1024 * 1024L
-                    val isBlurry = (width in 1..640 && height in 1..480)
-
-                    realItems.add(
-                        MediaItem(
-                            id = id,
-                            title = name,
-                            path = path,
-                            uriString = uri.toString(),
-                            sizeBytes = size,
-                            dateModified = date,
-                            mimeType = mime,
-                            width = width,
-                            height = height,
-                            isScreenshot = isScreenshot,
-                            isLarge = isLarge,
-                            isBlurry = isBlurry,
-                            sampleImageIndex = count % 10
-                        )
-                    )
-                    count++
-                }
-            }
+            // 1. Query Images via local MediaStoreDuplicateScanner (with size, resolution, dHash & Laplacian sharpness)
+            realItems.addAll(duplicateScanner.scanImagesFromMediaStore())
 
             // 2. Query Videos
             val videoProjection = arrayOf(
@@ -527,29 +465,29 @@ class StorageScanner(private val context: Context) {
             context.contentResolver.query(
                 MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                 videoProjection,
-                null,
+                "${MediaStore.Video.Media.SIZE} > 0",
                 null,
                 "${MediaStore.Video.Media.DATE_MODIFIED} DESC"
             )?.use { cursor ->
                 val idCol = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
                 val nameCol = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
-                val pathCol = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
+                val pathCol = cursor.getColumnIndex(MediaStore.Video.Media.DATA)
                 val sizeCol = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)
                 val dateCol = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATE_MODIFIED)
-                val mimeCol = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.MIME_TYPE)
-                val widthCol = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.WIDTH)
-                val heightCol = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.HEIGHT)
+                val mimeCol = cursor.getColumnIndex(MediaStore.Video.Media.MIME_TYPE)
+                val widthCol = cursor.getColumnIndex(MediaStore.Video.Media.WIDTH)
+                val heightCol = cursor.getColumnIndex(MediaStore.Video.Media.HEIGHT)
 
                 var count = 0
-                while (cursor.moveToNext() && count < 100) {
+                while (cursor.moveToNext() && count < 120) {
                     val id = cursor.getLong(idCol)
                     val name = cursor.getString(nameCol) ?: "VID_$id.mp4"
-                    val path = cursor.getString(pathCol) ?: ""
+                    val path = if (pathCol != -1) cursor.getString(pathCol) ?: "" else ""
                     val size = cursor.getLong(sizeCol).coerceAtLeast(0L)
                     val date = cursor.getLong(dateCol) * 1000L
-                    val mime = cursor.getString(mimeCol) ?: "video/mp4"
-                    val width = cursor.getInt(widthCol)
-                    val height = cursor.getInt(heightCol)
+                    val mime = if (mimeCol != -1) cursor.getString(mimeCol) ?: "video/mp4" else "video/mp4"
+                    val width = if (widthCol != -1) cursor.getInt(widthCol) else 0
+                    val height = if (heightCol != -1) cursor.getInt(heightCol) else 0
 
                     val uri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id)
 
@@ -565,8 +503,7 @@ class StorageScanner(private val context: Context) {
                             width = width,
                             height = height,
                             isScreenshot = false,
-                            isLarge = size > 25 * 1024 * 1024L,
-                            sampleImageIndex = count % 10
+                            isLarge = size > 25 * 1024 * 1024L
                         )
                     )
                     count++
@@ -579,110 +516,22 @@ class StorageScanner(private val context: Context) {
         realItems
     }
 
-    suspend fun getDuplicateGroups(allMedia: List<MediaItem>): List<DuplicateGroup> = withContext(Dispatchers.IO) {
-        val groups = mutableListOf<DuplicateGroup>()
-        val photoItems = allMedia.filter { it.mimeType.startsWith("image/") }
+    suspend fun getDuplicateGroups(allMedia: List<MediaItem>): List<DuplicateGroup> =
+        duplicateScanner.detectDuplicateGroups(allMedia)
 
-        // Group photos by identical size (> 10KB) or by burst timing (taken within 10s with identical dimensions)
-        val sizeBuckets = photoItems.filter { it.sizeBytes > 10_000L }.groupBy { it.sizeBytes }
-
-        var groupIndex = 0
-        for ((_, itemsInBucket) in sizeBuckets) {
-            if (itemsInBucket.size >= 2) {
-                val sorted = itemsInBucket.sortedByDescending { it.width * it.height }
-                val bestShot = sorted.first()
-
-                val groupItems = sorted.map { item ->
-                    if (item.id == bestShot.id) {
-                        item.copy(isDuplicate = true, isBestShot = true, isSelected = false)
-                    } else {
-                        item.copy(isDuplicate = true, isBestShot = false, isSelected = true)
-                    }
-                }
-
-                groups.add(
-                    DuplicateGroup(
-                        id = "dup_group_${groupIndex++}",
-                        label = "Duplicate Photos (${groupItems.size} shots)",
-                        bestItemId = bestShot.id,
-                        items = groupItems
-                    )
-                )
-            }
-        }
-
-        // Group bursts (similar prefix or timestamp delta < 15s)
-        val remainingPhotos = photoItems.filter { photo -> groups.none { group -> group.items.any { it.id == photo.id } } }
-        val sortedByDate = remainingPhotos.sortedBy { it.dateModified }
-        val burstCluster = mutableListOf<MediaItem>()
-
-        for (i in sortedByDate.indices) {
-            val curr = sortedByDate[i]
-            if (burstCluster.isEmpty()) {
-                burstCluster.add(curr)
-            } else {
-                val prev = burstCluster.last()
-                val timeDiff = abs(curr.dateModified - prev.dateModified)
-                val sameDims = curr.width == prev.width && curr.height == prev.height && curr.width > 0
-                if (timeDiff <= 15_000L && sameDims) {
-                    burstCluster.add(curr)
-                } else {
-                    if (burstCluster.size >= 2) {
-                        val best = burstCluster.maxByOrNull { it.sizeBytes } ?: burstCluster.first()
-                        val groupItems = burstCluster.map { item ->
-                            if (item.id == best.id) {
-                                item.copy(isDuplicate = true, isBestShot = true, isSelected = false)
-                            } else {
-                                item.copy(isDuplicate = true, isBestShot = false, isSelected = true)
-                            }
-                        }
-                        groups.add(
-                            DuplicateGroup(
-                                id = "dup_group_${groupIndex++}",
-                                label = "Photo Burst Series (${groupItems.size} shots)",
-                                bestItemId = best.id,
-                                items = groupItems
-                            )
-                        )
-                    }
-                    burstCluster.clear()
-                    burstCluster.add(curr)
-                }
-            }
-        }
-
-        if (burstCluster.size >= 2) {
-            val best = burstCluster.maxByOrNull { it.sizeBytes } ?: burstCluster.first()
-            val groupItems = burstCluster.map { item ->
-                if (item.id == best.id) {
-                    item.copy(isDuplicate = true, isBestShot = true, isSelected = false)
-                } else {
-                    item.copy(isDuplicate = true, isBestShot = false, isSelected = true)
-                }
-            }
-            groups.add(
-                DuplicateGroup(
-                    id = "dup_group_${groupIndex++}",
-                    label = "Photo Burst Series (${groupItems.size} shots)",
-                    bestItemId = best.id,
-                    items = groupItems
-                )
-            )
-        }
-
-        groups
-    }
+    suspend fun classifyScreenshotsOnDevice(allMedia: List<MediaItem>): List<MediaItem> =
+        duplicateScanner.classifyScreenshotsOnDevice(allMedia)
 
     suspend fun getFolderHeatmapData(): List<FolderStorageItem> = withContext(Dispatchers.IO) {
         val folders = mutableListOf<FolderStorageItem>()
         val accessibleDirs = listOf(
-            Triple("Camera (DCIM)", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Camera Photos & Videos"),
-            Triple("Pictures", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Images & Wallpapers"),
-            Triple("Movies & Videos", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "Video Recordings"),
-            Triple("Downloads", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "Downloaded Files & Archives"),
-            Triple("Documents", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "Work & Personal Documents"),
-            Triple("Music & Audio", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), "Audio & Podcasts"),
-            Triple("App Cache", context.cacheDir, "Internal Cache Storage")
+            Triple(context.getString(R.string.folder_camera_dcim), Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), context.getString(R.string.folder_camera_desc)),
+            Triple(context.getString(R.string.folder_pictures), Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), context.getString(R.string.folder_pictures_desc)),
+            Triple(context.getString(R.string.folder_movies_videos), Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), context.getString(R.string.folder_movies_desc)),
+            Triple(context.getString(R.string.folder_downloads), Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), context.getString(R.string.folder_downloads_desc)),
+            Triple(context.getString(R.string.folder_documents), Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), context.getString(R.string.folder_documents_desc)),
+            Triple(context.getString(R.string.folder_music_audio), Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), context.getString(R.string.folder_music_desc)),
+            Triple(context.getString(R.string.folder_app_cache), context.cacheDir, context.getString(R.string.folder_app_cache_desc))
         )
 
         var idx = 0
@@ -710,8 +559,8 @@ class StorageScanner(private val context: Context) {
                             sizeBytes = totalBytes,
                             fileCount = fileCount,
                             category = category,
-                            isSystemFolder = (name == "App Cache"),
-                            sampleFileTypes = extensions.take(4).joinToString(", ")
+                            isSystemFolder = (dir == context.cacheDir),
+                            previewFileTypes = extensions.take(4).joinToString(", ")
                         )
                     )
                 }
@@ -721,33 +570,78 @@ class StorageScanner(private val context: Context) {
         folders.sortedByDescending { it.sizeBytes }
     }
 
+    suspend fun compressMedia(
+        mediaItem: MediaItem,
+        quality: CompressionQuality,
+        onProgress: (Float) -> Unit = {}
+    ): Long {
+        return if (mediaItem.mimeType.startsWith("video/", ignoreCase = true)) {
+            val result = videoCompressor.compressVideo(mediaItem, quality, onProgress)
+            if (result.succeeded) {
+                result.savedBytes
+            } else {
+                0L
+            }
+        } else {
+            onProgress(0.3f)
+            val saved = compressImage(mediaItem, quality)
+            onProgress(1f)
+            saved
+        }
+    }
+
     suspend fun compressImage(mediaItem: MediaItem, quality: CompressionQuality): Long = withContext(Dispatchers.IO) {
         try {
-            val file = File(mediaItem.path)
-            if (file.exists() && file.canRead()) {
-                val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-                if (bitmap != null) {
-                    val qualityPercent = when (quality) {
-                        CompressionQuality.HIGH -> 75
-                        CompressionQuality.MEDIUM -> 50
-                        CompressionQuality.MAX_SAVINGS -> 30
+            val uri = if (mediaItem.uriString.isNotBlank()) Uri.parse(mediaItem.uriString) else null
+            val boundsOptions = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            if (uri != null) {
+                context.contentResolver.openInputStream(uri)?.use {
+                    BitmapFactory.decodeStream(it, null, boundsOptions)
+                }
+            } else if (mediaItem.path.isNotBlank()) {
+                BitmapFactory.decodeFile(mediaItem.path, boundsOptions)
+            }
+
+            if (boundsOptions.outWidth > 0 && boundsOptions.outHeight > 0) {
+                val maxDim = maxOf(boundsOptions.outWidth, boundsOptions.outHeight)
+                val sampleSize = when {
+                    maxDim > 4096 -> 4
+                    maxDim > 2048 -> 2
+                    else -> 1
+                }
+                val decodeOptions = BitmapFactory.Options().apply { inSampleSize = sampleSize }
+                val bitmap = if (uri != null) {
+                    context.contentResolver.openInputStream(uri)?.use {
+                        BitmapFactory.decodeStream(it, null, decodeOptions)
                     }
-                    val bos = ByteArrayOutputStream()
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, qualityPercent, bos)
-                    val newBytes = bos.toByteArray()
-                    val saved = (mediaItem.sizeBytes - newBytes.size).coerceAtLeast(0L)
-                    return@withContext saved
+                } else {
+                    BitmapFactory.decodeFile(mediaItem.path, decodeOptions)
+                }
+
+                if (bitmap != null) {
+                    try {
+                        val qualityPercent = when (quality) {
+                            CompressionQuality.HIGH -> 75
+                            CompressionQuality.MEDIUM -> 50
+                            CompressionQuality.MAX_SAVINGS -> 30
+                        }
+                        val bos = ByteArrayOutputStream()
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, qualityPercent, bos)
+                        val newBytes = bos.toByteArray()
+                        return@withContext (mediaItem.sizeBytes - newBytes.size).coerceAtLeast(0L)
+                    } finally {
+                        bitmap.recycle()
+                    }
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        // Fallback proportional savings
-        (mediaItem.sizeBytes * (1f - quality.factor)).toLong()
+        0L
     }
 
-    suspend fun scanCloudSyncedPhotos(): List<CloudPhotoItem> = withContext(Dispatchers.IO) {
-        val media = getMediaItems()
+    suspend fun scanCloudSyncedPhotos(preloadedMedia: List<MediaItem>? = null): List<CloudPhotoItem> = withContext(Dispatchers.IO) {
+        val media = preloadedMedia ?: getMediaItems()
         val now = System.currentTimeMillis()
         val thirtyDaysAgo = now - (30L * 24 * 60 * 60 * 1000L)
 
@@ -760,31 +654,39 @@ class StorageScanner(private val context: Context) {
                     )
         }
 
-        cloudCandidates.mapIndexed { idx, item ->
+        val providerLabel = context.getString(R.string.cloud_provider_google_photos)
+        val backupStatusLabel = context.getString(R.string.cloud_backup_safe_status)
+        cloudCandidates.map { item ->
             CloudPhotoItem(
                 id = item.id,
                 title = item.title,
                 path = item.path,
+                uriString = item.uriString,
                 sizeBytes = item.sizeBytes,
                 dateModified = item.dateModified,
-                cloudProvider = "Google Photos",
-                cloudBackupDate = "Backed Up • Safe to Delete",
-                sampleImageIndex = idx % 10,
+                cloudProvider = providerLabel,
+                cloudBackupDate = backupStatusLabel,
                 isSelected = true
             )
         }
     }
 
-    suspend fun get30DayStorageTrends(): StorageTrendSummary = withContext(Dispatchers.IO) {
+    suspend fun get30DayStorageTrends(
+        preloadedMedia: List<MediaItem>? = null,
+        persistedSnapshots: List<StorageSnapshotEntity> = emptyList()
+    ): StorageTrendSummary = withContext(Dispatchers.IO) {
         val statFs = try { StatFs(Environment.getDataDirectory().path) } catch (e: Exception) { null }
-        val currentUsed = if (statFs != null) (statFs.blockCountLong * statFs.blockSizeLong) - (statFs.availableBlocksLong * statFs.blockSizeLong) else 0L
+        val currentUsed = if (statFs != null) {
+            (statFs.blockCountLong * statFs.blockSizeLong) - (statFs.availableBlocksLong * statFs.blockSizeLong)
+        } else 0L
 
-        val media = getMediaItems()
+        val media = preloadedMedia ?: getMediaItems()
         val now = System.currentTimeMillis()
-        val dayMs = 86400000L
+        val dayMs = 86_400_000L
+        val snapshotByDate = persistedSnapshots.associateBy { it.dateKey }
         val points = mutableListOf<StorageTrendPoint>()
 
-        // Group media additions by day over the past 30 days
+        // Baseline estimate from media dateModified for days before Room snapshots began
         val dailyMediaAdditions = LongArray(30)
         for (item in media) {
             val daysAgo = ((now - item.dateModified) / dayMs).toInt()
@@ -796,19 +698,51 @@ class StorageScanner(private val context: Context) {
         val avgDaily = if (dailyMediaAdditions.isNotEmpty()) dailyMediaAdditions.average().toLong() else 0L
         var accumulated = 0L
         var runningUsed = (currentUsed - dailyMediaAdditions.sum()).coerceAtLeast(0L)
-        var maxBurstDay = "None"
+        var previousDayUsed: Long? = null
+        var maxBurstDay = context.getString(R.string.trends_none)
         var maxBurstBytes = 0L
 
         for (i in 0 until 30) {
-            val delta = dailyMediaAdditions[i]
-            accumulated += delta
-            runningUsed += delta
-            val isBurst = (delta > 0L && avgDaily > 0L && delta >= avgDaily * 2)
-            val dayLabel = "Day ${i + 1}"
+            val dayTimestamp = now - ((29 - i) * dayMs)
+            val dateKey = StorageSnapshotRepository.formatDateKey(dayTimestamp)
+            val persisted = snapshotByDate[dateKey]
 
-            val burstDesc = if (isBurst) {
-                "High Media Capture (+${formatFileSize(delta)})"
-            } else null
+            val dayUsed: Long
+            val delta: Long
+            val photoBytes: Long
+            val videoBytes: Long
+            val appBytes: Long
+
+            if (persisted != null) {
+                dayUsed = persisted.usedBytes
+                delta = if (previousDayUsed != null) {
+                    dayUsed - previousDayUsed
+                } else {
+                    dailyMediaAdditions[i]
+                }
+                photoBytes = persisted.photoBytes
+                videoBytes = persisted.videoBytes
+                appBytes = persisted.appBytes
+                runningUsed = dayUsed
+            } else {
+                delta = dailyMediaAdditions[i]
+                runningUsed += delta
+                dayUsed = runningUsed
+                photoBytes = (dayUsed * 0.35f).toLong()
+                videoBytes = (dayUsed * 0.25f).toLong()
+                appBytes = (dayUsed * 0.20f).toLong()
+            }
+
+            previousDayUsed = dayUsed
+            if (delta > 0L) accumulated += delta
+
+            val isBurst = (delta > 0L && avgDaily > 0L && delta >= avgDaily * 2)
+            val dayLabel = if (persisted != null) dateKey.takeLast(5) else context.getString(R.string.trends_day_fmt, i + 1)
+            val burstDesc = when {
+                isBurst -> context.getString(R.string.trends_burst_high_capture_fmt, formatFileSize(delta))
+                persisted != null && delta < -5_000_000L -> context.getString(R.string.trends_post_clean_drop_fmt, formatFileSize(-delta))
+                else -> null
+            }
 
             if (delta > maxBurstBytes) {
                 maxBurstBytes = delta
@@ -818,124 +752,218 @@ class StorageScanner(private val context: Context) {
             points.add(
                 StorageTrendPoint(
                     dayLabel = dayLabel,
-                    timestamp = now - ((29 - i) * dayMs),
-                    usedBytes = runningUsed,
+                    timestamp = dayTimestamp,
+                    usedBytes = dayUsed,
                     deltaBytes = delta,
-                    photoBytes = (runningUsed * 0.35f).toLong(),
-                    videoBytes = (runningUsed * 0.25f).toLong(),
-                    appBytes = (runningUsed * 0.20f).toLong(),
+                    photoBytes = photoBytes,
+                    videoBytes = videoBytes,
+                    appBytes = appBytes,
                     isRapidAccumulationBurst = isBurst,
                     burstDescription = burstDesc
                 )
             )
         }
 
+        val recordedDays = persistedSnapshots.size
+        val topCategory = when {
+            recordedDays >= 2 -> context.getString(R.string.trends_verified_snapshots_fmt, recordedDays)
+            accumulated > 0 -> context.getString(R.string.trends_camera_recordings_fmt, formatFileSize(accumulated))
+            else -> context.getString(R.string.trends_normal_usage)
+        }
+
         StorageTrendSummary(
             timeframeDays = 30,
             totalAccumulatedBytes = accumulated,
-            topGrowthCategory = if (accumulated > 0) "Camera Media Recordings (+${formatFileSize(accumulated)})" else "Normal Usage",
+            topGrowthCategory = topCategory,
             highestBurstDay = maxBurstDay,
             averageDailyGrowthMb = (accumulated / (30 * 1024 * 1024)).toInt(),
             trendPoints = points
         )
     }
 
+    /**
+     * Play-Policy-Compliant Cache Scanner:
+     * Avoids QUERY_ALL_PACKAGES and blocked /Android/data/<pkg>/cache reads on Android 11+.
+     * Reports AI Cleaner's real accessible cache partitions that can be safely purged in-app;
+     * users can inspect/clear other apps via Android's System Storage Settings deep-link.
+     */
     suspend fun scanAppCaches(): List<AppCacheItem> = withContext(Dispatchers.IO) {
         val result = mutableListOf<AppCacheItem>()
-        try {
-            val pm = context.packageManager
-            val packages = pm.getInstalledApplications(0)
-            for (app in packages) {
-                if (app.packageName == context.packageName) continue
-
-                val appFile = File(app.sourceDir)
-                val appSize = if (appFile.exists()) appFile.length() else 0L
-                val appLabel = try {
-                    pm.getApplicationLabel(app).toString()
-                } catch (_: Exception) {
-                    app.packageName
-                }
-
-                var cacheSize = 0L
-                try {
-                    val extCacheDir = File(Environment.getExternalStorageDirectory(), "Android/data/${app.packageName}/cache")
-                    if (extCacheDir.exists() && extCacheDir.canRead()) {
-                        cacheSize += extCacheDir.walkTopDown().sumOf { it.length() }
-                    }
-                } catch (_: Exception) {}
-
-                val category = when {
-                    (app.flags and ApplicationInfo.FLAG_SYSTEM) != 0 -> "System"
-                    app.packageName.contains("game", ignoreCase = true) -> "Games"
-                    app.packageName.contains("social", ignoreCase = true) ||
-                            app.packageName.contains("facebook", ignoreCase = true) ||
-                            app.packageName.contains("instagram", ignoreCase = true) ||
-                            app.packageName.contains("twitter", ignoreCase = true) ||
-                            app.packageName.contains("tiktok", ignoreCase = true) -> "Social Media"
-                    app.packageName.contains("media", ignoreCase = true) ||
-                            app.packageName.contains("video", ignoreCase = true) ||
-                            app.packageName.contains("youtube", ignoreCase = true) ||
-                            app.packageName.contains("player", ignoreCase = true) -> "Video & Media"
-                    app.packageName.contains("music", ignoreCase = true) ||
-                            app.packageName.contains("audio", ignoreCase = true) ||
-                            app.packageName.contains("spotify", ignoreCase = true) -> "Audio & Music"
-                    app.packageName.contains("browser", ignoreCase = true) ||
-                            app.packageName.contains("chrome", ignoreCase = true) ||
-                            app.packageName.contains("firefox", ignoreCase = true) -> "Web Browser"
-                    else -> "Utilities"
-                }
-
-                val pkgInfo = try { pm.getPackageInfo(app.packageName, 0) } catch (_: Exception) { null }
-                val lastUpdate = pkgInfo?.lastUpdateTime ?: System.currentTimeMillis()
-                val daysUnused = ((System.currentTimeMillis() - lastUpdate) / (1000L * 60 * 60 * 24)).toInt().coerceAtLeast(0)
-
-                result.add(
-                    AppCacheItem(
-                        id = app.packageName,
-                        appName = appLabel,
-                        packageName = app.packageName,
-                        appSizeBytes = appSize,
-                        cacheSizeBytes = cacheSize,
-                        category = category,
-                        daysUnused = daysUnused,
-                        isCleared = false
-                    )
-                )
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        val ownApkSize = try {
+            val apk = File(context.applicationInfo.sourceDir)
+            if (apk.exists()) apk.length() else 0L
+        } catch (_: Exception) {
+            0L
         }
+
+        fun dirSize(dir: File?): Long {
+            if (dir == null || !dir.exists()) return 0L
+            return try {
+                dir.walkTopDown().filter { it.isFile }.sumOf { it.length() }
+            } catch (_: Exception) {
+                0L
+            }
+        }
+
+        val imageCacheDir = File(context.cacheDir, "image_cache")
+        val videoTempDir = File(context.cacheDir, "compressed_videos")
+        val generalTempDir = File(context.cacheDir, "temp")
+        val imageCacheBytes = dirSize(imageCacheDir)
+        val videoTempBytes = dirSize(videoTempDir)
+        val generalTempBytes = dirSize(generalTempDir)
+        val totalInternalBytes = dirSize(context.cacheDir)
+        val coreCacheBytes = (totalInternalBytes - imageCacheBytes - videoTempBytes - generalTempBytes).coerceAtLeast(0L)
+        val codeCacheBytes = dirSize(context.codeCacheDir)
+        val externalCacheBytes = context.externalCacheDirs?.sumOf { dirSize(it) } ?: 0L
+
+        val buckets = listOf(
+            AppCacheItem(
+                id = "cache_internal_core",
+                appName = context.getString(R.string.cache_bucket_internal_name),
+                packageName = context.packageName,
+                appSizeBytes = ownApkSize,
+                cacheSizeBytes = coreCacheBytes + generalTempBytes,
+                category = context.getString(R.string.cache_cat_app_cache),
+                daysUnused = 0,
+                isCleared = (coreCacheBytes + generalTempBytes) == 0L
+            ),
+            AppCacheItem(
+                id = "cache_image_thumbs",
+                appName = context.getString(R.string.cache_bucket_thumbs_name),
+                packageName = "${context.packageName}.thumbnails",
+                appSizeBytes = ownApkSize,
+                cacheSizeBytes = imageCacheBytes,
+                category = context.getString(R.string.cache_cat_media_previews),
+                daysUnused = 0,
+                isCleared = imageCacheBytes == 0L
+            ),
+            AppCacheItem(
+                id = "cache_video_transcode",
+                appName = context.getString(R.string.cache_bucket_video_name),
+                packageName = "${context.packageName}.media3",
+                appSizeBytes = ownApkSize,
+                cacheSizeBytes = videoTempBytes,
+                category = context.getString(R.string.cache_cat_video_media),
+                daysUnused = 0,
+                isCleared = videoTempBytes == 0L
+            ),
+            AppCacheItem(
+                id = "cache_code_cache",
+                appName = context.getString(R.string.cache_bucket_code_name),
+                packageName = "${context.packageName}.codecache",
+                appSizeBytes = ownApkSize,
+                cacheSizeBytes = codeCacheBytes,
+                category = context.getString(R.string.cache_cat_system),
+                daysUnused = 0,
+                isCleared = codeCacheBytes == 0L
+            ),
+            AppCacheItem(
+                id = "cache_external",
+                appName = context.getString(R.string.cache_bucket_external_name),
+                packageName = "${context.packageName}.external",
+                appSizeBytes = ownApkSize,
+                cacheSizeBytes = externalCacheBytes,
+                category = context.getString(R.string.cache_cat_external),
+                daysUnused = 0,
+                isCleared = externalCacheBytes == 0L
+            )
+        )
+
+        result.addAll(buckets)
         result.sortedByDescending { it.cacheSizeBytes }
     }
 
-    suspend fun deleteMediaItems(items: List<MediaItem>): Long = withContext(Dispatchers.IO) {
+    suspend fun clearAppCacheBucket(bucketId: String): Long = withContext(Dispatchers.IO) {
+        fun deleteDirContents(dir: File?): Long {
+            if (dir == null || !dir.exists()) return 0L
+            var freed = 0L
+            dir.listFiles()?.forEach { child ->
+                val size = if (child.isDirectory) child.walkTopDown().filter { it.isFile }.sumOf { it.length() } else child.length()
+                val removed = try {
+                    if (child.isDirectory) child.deleteRecursively() else child.delete()
+                } catch (_: Exception) {
+                    false
+                }
+                if (removed) freed += size
+            }
+            return freed
+        }
+
+        when (bucketId) {
+            "cache_image_thumbs" -> deleteDirContents(File(context.cacheDir, "image_cache"))
+            "cache_video_transcode" -> deleteDirContents(File(context.cacheDir, "compressed_videos"))
+            "cache_code_cache" -> deleteDirContents(context.codeCacheDir)
+            "cache_external" -> context.externalCacheDirs?.sumOf { deleteDirContents(it) } ?: 0L
+            "cache_internal_core" -> {
+                var freed = deleteDirContents(File(context.cacheDir, "temp"))
+                context.cacheDir?.listFiles()?.forEach { child ->
+                    if (child.name != "image_cache" && child.name != "compressed_videos") {
+                        val size = if (child.isDirectory) child.walkTopDown().filter { it.isFile }.sumOf { it.length() } else child.length()
+                        val removed = try {
+                            if (child.isDirectory) child.deleteRecursively() else child.delete()
+                        } catch (_: Exception) {
+                            false
+                        }
+                        if (removed) freed += size
+                    }
+                }
+                freed
+            }
+            else -> 0L
+        }
+    }
+
+    /**
+     * Scoped Storage safe media deletion:
+     * - Attempts direct ContentResolver / File deletion for app-owned media.
+     * - On Android 11+ (API 30+), collects Uris that require user confirmation via
+     *   MediaStore.createDeleteRequest() instead of silently failing or fabricating freed bytes.
+     */
+    suspend fun deleteMediaItems(items: List<MediaItem>): MediaDeleteResult = withContext(Dispatchers.IO) {
         var freed = 0L
+        val deletedIds = mutableSetOf<Long>()
+        val pendingSystemUris = mutableListOf<String>()
+
         for (item in items) {
             var deleted = false
-            try {
-                if (item.uriString.isNotBlank()) {
-                    val count = context.contentResolver.delete(Uri.parse(item.uriString), null, null)
+            val parsedUri = if (item.uriString.isNotBlank()) Uri.parse(item.uriString) else null
+
+            if (parsedUri != null) {
+                try {
+                    val count = context.contentResolver.delete(parsedUri, null, null)
                     if (count > 0) deleted = true
+                } catch (_: SecurityException) {
+                    // Android 10/11+ Scoped Storage: owned by another app -> requires MediaStore.createDeleteRequest
+                } catch (_: Exception) {
                 }
-            } catch (e: Exception) {
-                // Ignore SecurityException in Scoped Storage
             }
 
-            if (!deleted && item.path.isNotBlank()) {
+            if (!deleted && Build.VERSION.SDK_INT < Build.VERSION_CODES.R && item.path.isNotBlank()) {
                 try {
                     val file = File(item.path)
                     if (file.exists() && file.delete()) {
                         deleted = true
                     }
-                } catch (e: Exception) {
-                    // Ignore
+                } catch (_: Exception) {
                 }
             }
 
-            // Count freed bytes for deleted items or items purged from app state
-            freed += item.sizeBytes
+            if (deleted) {
+                freed += item.sizeBytes
+                deletedIds.add(item.id)
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+                parsedUri != null &&
+                parsedUri.scheme == "content"
+            ) {
+                pendingSystemUris.add(item.uriString)
+            }
         }
-        freed
+
+        MediaDeleteResult(
+            freedBytes = freed,
+            deletedIds = deletedIds,
+            pendingSystemDeleteUris = pendingSystemUris
+        )
     }
 
     suspend fun deleteJunkCategories(categories: List<JunkCategory>): Long = withContext(Dispatchers.IO) {

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Shield outline -->
+    <path
+        android:pathData="M54,28 L76,37 V53 C76,66.5 66.5,77.5 54,82 C41.5,77.5 32,66.5 32,53 V37 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4.5"
+        android:strokeLineJoin="round" />
+    <!-- Center 4-point AI Sparkle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,41 L57.5,51.5 L68,55 L57.5,58.5 L54,69 L50.5,58.5 L40,55 L50.5,51.5 Z" />
+</vector>

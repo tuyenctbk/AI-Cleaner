@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.AutoMode
+import androidx.compose.material.icons.filled.BatteryChargingFull
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.PlayArrow
@@ -44,9 +45,24 @@ fun SmartSchedulerScreen(
     modifier: Modifier = Modifier
 ) {
     val settings = uiState.smartScheduleSettings
-    val daysOfWeek = remember { listOf("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday") }
+    val daysOfWeek = remember {
+        listOf(
+            "Sunday" to R.string.day_sunday,
+            "Monday" to R.string.day_monday,
+            "Tuesday" to R.string.day_tuesday,
+            "Wednesday" to R.string.day_wednesday,
+            "Thursday" to R.string.day_thursday,
+            "Friday" to R.string.day_friday,
+            "Saturday" to R.string.day_saturday
+        )
+    }
+    val selectedDayLabel = stringResource(
+        daysOfWeek.firstOrNull { it.first.equals(settings.dayOfWeek, ignoreCase = true) }?.second
+            ?: R.string.day_sunday
+    )
     val times = remember { listOf("01:00 AM", "02:00 AM", "03:00 AM", "06:00 AM", "08:00 AM", "11:00 PM") }
     val thresholds = remember { listOf(200, 500, 1000, 2000) } // in MB
+    val formattedSelectedTime = remember(settings.scanTime) { formatLocalizedScanTime(settings.scanTime) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -128,7 +144,7 @@ fun SmartSchedulerScreen(
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = if (settings.isEnabled) stringResource(R.string.scheduler_weekly_scan_on, settings.dayOfWeek, settings.scanTime) else stringResource(R.string.scheduler_weekly_scan_off),
+                                    text = if (settings.isEnabled) stringResource(R.string.scheduler_weekly_scan_on, selectedDayLabel, formattedSelectedTime) else stringResource(R.string.scheduler_weekly_scan_off),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -171,16 +187,16 @@ fun SmartSchedulerScreen(
                             }
 
                             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                items(daysOfWeek) { day ->
+                                items(daysOfWeek) { (dayKey, dayLabelRes) ->
                                     FilterChip(
-                                        selected = settings.dayOfWeek == day,
-                                        onClick = { onUpdateSettings(settings.copy(dayOfWeek = day)) },
-                                        label = { Text(day) },
+                                        selected = settings.dayOfWeek == dayKey,
+                                        onClick = { onUpdateSettings(settings.copy(dayOfWeek = dayKey)) },
+                                        label = { Text(stringResource(dayLabelRes)) },
                                         colors = FilterChipDefaults.filterChipColors(
                                             selectedContainerColor = MaterialTheme.colorScheme.primary,
                                             selectedLabelColor = Color.White
                                         ),
-                                        modifier = Modifier.testTag("scheduler_day_chip_$day")
+                                        modifier = Modifier.testTag("scheduler_day_chip_$dayKey")
                                     )
                                 }
                             }
@@ -214,10 +230,11 @@ fun SmartSchedulerScreen(
 
                             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 items(times) { time ->
+                                    val displayTime = remember(time) { formatLocalizedScanTime(time) }
                                     FilterChip(
                                         selected = settings.scanTime == time,
                                         onClick = { onUpdateSettings(settings.copy(scanTime = time)) },
-                                        label = { Text(time) },
+                                        label = { Text(displayTime) },
                                         colors = FilterChipDefaults.filterChipColors(
                                             selectedContainerColor = MaterialTheme.colorScheme.primary,
                                             selectedLabelColor = Color.White
@@ -314,6 +331,78 @@ fun SmartSchedulerScreen(
                     }
                 }
 
+                // WorkManager Battery / Charging Constraint Card
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        border = CardDefaults.outlinedCardBorder().copy(
+                            brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(
+                                    modifier = Modifier.weight(1f),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.BatteryChargingFull,
+                                        contentDescription = null,
+                                        tint = EmeraldGreen,
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                    Column {
+                                        Text(
+                                            text = stringResource(R.string.scheduler_charging_only_title),
+                                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = stringResource(R.string.scheduler_charging_only_desc),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                                Switch(
+                                    checked = settings.requiresCharging,
+                                    onCheckedChange = { onUpdateSettings(settings.copy(requiresCharging = it)) },
+                                    modifier = Modifier.testTag("scheduler_charging_only_switch")
+                                )
+                            }
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.CheckCircle,
+                                    contentDescription = null,
+                                    tint = EmeraldGreen,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Text(
+                                    text = stringResource(R.string.scheduler_workmanager_status),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                }
+
                 // Test Run Background Scan Button
                 item {
                     Button(
@@ -336,5 +425,15 @@ fun SmartSchedulerScreen(
                 }
             }
         }
+    }
+}
+
+private fun formatLocalizedScanTime(canonicalTime: String): String {
+    return try {
+        val parser = SimpleDateFormat("hh:mm a", Locale.US)
+        val parsed = parser.parse(canonicalTime) ?: return canonicalTime
+        java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT, Locale.getDefault()).format(parsed)
+    } catch (_: Exception) {
+        canonicalTime
     }
 }

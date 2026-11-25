@@ -56,7 +56,10 @@ fun CompressorScreen(
     val filteredCompressibleItems = remember(uiState.compressibleItems, mediaTypeFilter) {
         when (mediaTypeFilter) {
             "Videos" -> uiState.compressibleItems.filter { it.mediaItem.mimeType.startsWith("video/") || it.mediaItem.title.endsWith(".mp4", ignoreCase = true) }
-            "Photos" -> uiState.compressibleItems.filter { it.mediaItem.mimeType.startsWith("image/") || !it.mediaItem.title.endsWith(".mp4", ignoreCase = true) }
+            "Photos" -> uiState.compressibleItems.filter {
+                it.mediaItem.mimeType.startsWith("image/") ||
+                    (!it.mediaItem.mimeType.startsWith("video/") && !it.mediaItem.title.endsWith(".mp4", ignoreCase = true))
+            }
             else -> uiState.compressibleItems
         }
     }
@@ -66,11 +69,8 @@ fun CompressorScreen(
     val totalTargetBytes = (totalOriginalBytes * uiState.selectedCompressionQuality.factor).toLong()
     val estimatedSavings = totalOriginalBytes - totalTargetBytes
 
-    val videoSelectedCount = selectedItems.count { it.mediaItem.mimeType.startsWith("video/") || it.mediaItem.title.endsWith(".mp4", ignoreCase = true) }
-    val photoSelectedCount = selectedItems.size - videoSelectedCount
-
-    var activePreviewIndex by remember { mutableIntStateOf(0) }
-    val activeCompressible = filteredCompressibleItems.getOrNull(activePreviewIndex) ?: uiState.compressibleItems.firstOrNull()
+    var activePreviewIndex by remember(mediaTypeFilter) { mutableIntStateOf(0) }
+    val activeCompressible = filteredCompressibleItems.getOrNull(activePreviewIndex) ?: filteredCompressibleItems.firstOrNull() ?: uiState.compressibleItems.firstOrNull()
     val activeMedia = activeCompressible?.mediaItem
 
     val allSelectedInFilter = filteredCompressibleItems.isNotEmpty() && filteredCompressibleItems.all { it.isSelected }
@@ -153,7 +153,7 @@ fun CompressorScreen(
                                     color = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
-                                    text = "${(uiState.compressionProgress * 100).toInt()}%",
+                                    text = stringResource(R.string.format_percentage, (uiState.compressionProgress * 100).toInt()),
                                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -242,10 +242,14 @@ fun CompressorScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val videosCount = uiState.compressibleItems.count {
+                    it.mediaItem.mimeType.startsWith("video/") || it.mediaItem.title.endsWith(".mp4", ignoreCase = true)
+                }
+                val photosCount = uiState.compressibleItems.size - videosCount
                 listOf(
-                    "All" to "All (${uiState.compressibleItems.size})",
-                    "Videos" to "High-Res Videos (${uiState.compressibleItems.count { it.mediaItem.mimeType.startsWith("video/") || it.mediaItem.title.endsWith(".mp4", ignoreCase = true) }})",
-                    "Photos" to "Large Photos (${uiState.compressibleItems.count { !it.mediaItem.mimeType.startsWith("video/") && !it.mediaItem.title.endsWith(".mp4", ignoreCase = true) }})"
+                    "All" to stringResource(R.string.compressor_filter_all_fmt, uiState.compressibleItems.size),
+                    "Videos" to stringResource(R.string.compressor_filter_videos_fmt, videosCount),
+                    "Photos" to stringResource(R.string.compressor_filter_photos_fmt, photosCount)
                 ).forEach { (key, label) ->
                     val isSelected = mediaTypeFilter == key
                     FilterChip(
@@ -348,7 +352,7 @@ fun CompressorScreen(
                                 tint = if (isVideo) CoralRed else EmeraldGreen,
                                 modifier = Modifier.size(16.dp)
                             )
-                            val resText = if (activeMedia.width > 0) "${activeMedia.width}x${activeMedia.height}" else if (isVideo) "3840x2160" else "4032x3024"
+                            val resText = if (activeMedia.width > 0 && activeMedia.height > 0) stringResource(R.string.format_resolution, activeMedia.width, activeMedia.height) else stringResource(R.string.label_high_res)
                             Text(
                                 text = if (isVideo) stringResource(R.string.compressor_badge_video_fmt, resText)
                                 else stringResource(R.string.compressor_badge_image_fmt, resText),
@@ -364,18 +368,24 @@ fun CompressorScreen(
                         onClick = { isCompareMode = !isCompareMode },
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(12.dp)
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color.Black.copy(alpha = 0.7f))
+                            .padding(8.dp)
+                            .size(48.dp)
                             .testTag("toggle_compare_preview_button")
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Compare,
-                            contentDescription = stringResource(R.string.btn_compare),
-                            tint = if (isCompareMode) MaterialTheme.colorScheme.primary else Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .size(38.dp)
+                                .clip(CircleShape)
+                                .background(Color.Black.copy(alpha = 0.7f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Compare,
+                                contentDescription = stringResource(R.string.btn_compare),
+                                tint = if (isCompareMode) MaterialTheme.colorScheme.primary else Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -406,28 +416,6 @@ fun CompressorScreen(
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
-                                text = stringResource(R.string.compressor_estimated_output),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Text(
-                                text = formatFileSize(totalTargetBytes),
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    fontWeight = FontWeight.Black,
-                                    fontSize = 18.sp
-                                ),
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                        )
-
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
                                 text = stringResource(R.string.compressor_original_size),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -439,6 +427,28 @@ fun CompressorScreen(
                                     fontSize = 18.sp
                                 ),
                                 color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                        )
+
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = stringResource(R.string.compressor_estimated_output),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = formatFileSize(totalTargetBytes),
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Black,
+                                    fontSize = 18.sp
+                                ),
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
 
@@ -533,8 +543,11 @@ fun CompressorScreen(
                                 shape = RoundedCornerShape(14.dp)
                             )
                             .clickable {
-                                activePreviewIndex = index
-                                onToggleItem(item.id)
+                                if (isActivePreview) {
+                                    onToggleItem(item.id)
+                                } else {
+                                    activePreviewIndex = index
+                                }
                             }
                             .testTag("compressible_item_thumb_${item.id}")
                     ) {
@@ -543,14 +556,18 @@ fun CompressorScreen(
                             modifier = Modifier.fillMaxSize()
                         )
 
-                        // Top-Right Checkbox Indicator
+                        // Top-Right Checkbox Indicator (independent toggle)
                         Box(
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
+                                .clickable {
+                                    activePreviewIndex = index
+                                    onToggleItem(item.id)
+                                }
                                 .padding(4.dp)
-                                .size(20.dp)
+                                .size(22.dp)
                                 .clip(CircleShape)
-                                .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.Black.copy(alpha = 0.5f)),
+                                .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.Black.copy(alpha = 0.55f)),
                             contentAlignment = Alignment.Center
                         ) {
                             if (isSelected) {
@@ -558,7 +575,7 @@ fun CompressorScreen(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = null,
                                     tint = Color.White,
-                                    modifier = Modifier.size(13.dp)
+                                    modifier = Modifier.size(14.dp)
                                 )
                             }
                         }

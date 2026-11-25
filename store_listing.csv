@@ -1,439 +1,409 @@
-﻿Language,LanguageCode,AppName,ShortDescription,FullDescription
-English,en-US,AI Storage Cleaner,"Clean storage, remove duplicate photos, clear app cache, and optimize space.","AI Storage Cleaner helps you optimize your device storage and free up valuable space with smart file management tools.
+Language,LanguageCode,AppName,ShortDescription,FullDescription
+English,en-US,AI Storage Cleaner,"One-tap quick cleanup, duplicate photo finder, cache cleaner & storage charts.","AI Storage Cleaner helps you optimize your device storage and reclaim valuable space with fast, on-device file management tools.
 
 Key Features:
-• AI Smart Scan: Identify unnecessary system cache, temp files, and redundant residual data.
-• Swipe Gallery Cleaner: Swipe left to delete unwanted photos and swipe right to keep your best memories.
-• Duplicate Photo Detector: Find and remove duplicate photos and burst shots while automatically preserving the clearest picture.
-• Media Compressor: Compress large 4K videos and high-resolution photos without noticeable loss of quality.
-• App Cache Cleaner: Easily identify applications accumulating heavy cached files and manage app storage.
-• Safe Vault: Protect sensitive media and files by auto-sorting them into a secure local vault.
-• Smart Downloads Expiry: Automatically highlight outdated downloads and large files over 30, 60, or 90 days old.
-• Storage Analytics: Visual charts showing detailed storage distribution across photos, videos, apps, and documents.
+• One-Tap Quick Cleanup: Instantly detect large files (10 MB+) and cached data, filter by media type, and reclaim gigabytes in a single tap.
+• Visual Storage Analyzer: Interactive pie and donut charts break down your storage across Photos, Videos, Apps, and Documents, plus a Home Screen Storage Widget.
+• Perceptual Duplicate Photo Detector: Uses 8x8 dHash background scanning to detect exact and visually similar photos while preserving your sharpest shot.
+• Offline OCR Screenshot Triage: Locally scan screenshots to spot OTPs, receipts, and memes without sending data off your device.
+• Swipe Gallery Cleaner: Swipe left to remove unwanted photos and swipe right to keep your favorite memories with instant undo.
+• Media Compressor: Shrink large 4K videos and high-resolution photos with minimal visible quality loss.
+• App Cache Cleaner: Spot heavy app caches and clear residual temporary files safely.
+• Safe Vault & Smart Expiry: Protect sensitive files in a local vault and review aging downloads over 30, 60, or 90 days old.
 
 Privacy & Transparency:
-All file scans, calculations, and deletions happen locally on your device. Your photos and personal files are never uploaded or shared with external servers.
+All perceptual hashing, OCR triage, chart calculations, and file deletions happen 100% locally on your device using Android Scoped Storage. Personal photos and files are never uploaded to external servers.
 
 Permissions:
-- Storage access: Needed to scan, organize, and delete files selected by the user.
-- Notifications: Optional alerts for storage updates and completed cleanup tasks."
-Spanish,es-ES,Limpiador de Almacenamiento,"Limpia memoria, elimina fotos duplicadas, borra caché y optimiza espacio.","Limpiador de Almacenamiento con IA te ayuda a optimizar el espacio de tu dispositivo mediante herramientas inteligentes de gestión de archivos.
+- Photos, videos & media access: Needed to scan, analyze, compress, and delete files selected by the user.
+- Notifications: Optional alerts for background duplicate reviews and completed cleanup tasks."
+Spanish,es-ES,Limpiador de Almacenamiento,"Limpieza rápida en un toque, fotos duplicadas, caché y gráficos de espacio.","Limpiador de Almacenamiento con IA te ayuda a optimizar el espacio de tu dispositivo con herramientas rápidas y locales de gestión de archivos.
 
 Funciones clave:
-• Escaneo Inteligente: Identifica caché del sistema, archivos temporales y datos residuales redundantes.
-• Limpiador de Galería por Deslizar: Desliza a la izquierda para eliminar fotos no deseadas y a la derecha para conservar recuerdos.
-• Detector de Fotos Duplicadas: Encuentra y elimina fotos duplicadas manteniendo automáticamente la toma con mejor claridad.
-• Compresor de Archivos: Comprime vídeos 4K y fotos de alta resolución sin pérdida visible de calidad.
-• Limpiador de Caché de Aplicaciones: Identifica fácilmente las aplicaciones que acumulan caché pesado.
-• Bóveda Segura: Protege fotos y archivos sensibles organizándolos en una bóveda local segura.
-• Caducidad de Descargas: Detecta descargas antiguas de más de 30, 60 o 90 días.
-• Análisis de Almacenamiento: Gráficos intuitivos con la distribución de fotos, vídeos, aplicaciones y documentos.
+• Limpieza Rápida en 1 Toque: Detecta archivos grandes (10 MB+) y datos en caché al instante y libera gigabytes con un solo toque.
+• Analizador Visual de Espacio: Gráficos circulares y de anillo interactivos para Fotos, Videos, Apps y Documentos, además de widget en pantalla.
+• Detector Perceptual de Duplicados: Escaneo dHash en segundo plano para hallar fotos idénticas o similares conservando la toma más nítida.
+• Clasificación OCR sin Conexión: Organiza capturas con códigos OTP, recibos o memes totalmente en tu dispositivo.
+• Limpiador por Deslizar: Desliza a la izquierda para borrar fotos no deseadas y a la derecha para conservar tus recuerdos.
+• Compresor de Medios: Reduce videos 4K y fotos de alta resolución sin pérdida visible de calidad.
+• Limpiador de Caché y Bóveda Segura: Limpia cachés pesados, protege archivos en tu bóveda local y revisa descargas antiguas de 30, 60 o 90 días.
 
 Privacidad:
-Todos los análisis y eliminaciones de archivos se realizan localmente en tu dispositivo. Tus archivos personales nunca se suben a servidores externos."
-French,fr-FR,Nettoyeur de Stockage AI,"Nettoyez le stockage, supprimez les doublons et videz le cache facilement.","Nettoyeur de Stockage AI vous aide à optimiser l'espace de votre appareil grâce à des outils intelligents de gestion de fichiers.
+Todos los análisis, OCR, dHash y eliminaciones se ejecutan 100% localmente mediante almacenamiento con alcance. Tus archivos nunca se suben a servidores externos."
+French,fr-FR,Nettoyeur de Stockage AI,"Nettoyage rapide en 1 clic, photos en double, cache et graphiques d'espace.","Nettoyeur de Stockage AI optimise la mémoire de votre appareil grâce à des outils rapides et 100 % locaux de gestion des fichiers.
 
-Fonctionnalités principales:
-• Analyse Intelligente par IA: Identifiez le cache système, les fichiers temporaires et les données résiduelles.
-• Nettoyage de Galerie par Balayage: Balayez vers la gauche pour supprimer les photos inutiles et à droite pour conserver les meilleures.
-• Détecteur de Photos Similaires: Trouvez et supprimez les doublons en conservant automatiquement la photo la plus nette.
-• Compresseur Média: Compressez les vidéos 4K et photos haute résolution sans perte visible de qualité.
-• Nettoyeur de Cache d'Applications: Repérez facilement les applications accumulant un cache volumineux.
-• Coffre Sécurisé: Protégez vos médias et fichiers sensibles dans un coffre local sécurisé.
-• Expiration des Téléchargements: Identifiez automatiquement les téléchargements datant de plus de 30, 60 ou 90 jours.
-• Graphiques d'Analyse: Visualisez la répartition précise de vos photos, vidéos, applications et documents.
+Fonctionnalités principales :
+• Nettoyage Rapide en 1 Clic : Repérez les gros fichiers (10 Mo+) et les données en cache, filtrez par type et libérez de l'espace d'un geste.
+• Analyseur Visuel de Stockage : Graphiques interactifs en camembert et anneau pour Photos, Vidéos, Applis et Documents, avec widget d'accueil.
+• Détecteur Perceptuel dHash : Analyse en arrière-plan pour trouver les photos identiques ou similaires tout en gardant le cliché le plus net.
+• Tri OCR Hors Ligne : Classez captures d'écran, reçus et codes OTP localement sans connexion.
+• Nettoyage par Balayage : Balayez à gauche pour supprimer et à droite pour garder vos souvenirs avec annulation immédiate.
+• Compresseur Média : Réduisez vos vidéos 4K et photos haute résolution sans perte visuelle notable.
+• Cache, Coffre Sécurisé & Expiration : Videz le cache superflu, protégez vos fichiers sensibles et repérez les téléchargements de plus de 30, 60 ou 90 jours.
 
-Confidentialité:
-Toutes les analyses et suppressions sont effectuées localement sur votre appareil. Vos photos et fichiers personnels ne sont jamais transférés sur des serveurs externes."
-German,de-DE,KI Speicher Reiniger,"Bereinigen Sie Speicherplatz, entfernen Sie doppelte Fotos und App-Cache.","KI Speicher Reiniger hilft Ihnen, den Speicherplatz Ihres Geräts mit intelligenten Dateiverwaltungstools zu optimieren.
+Confidentialité :
+Toutes les analyses dHash, OCR et suppressions s'effectuent localement sur votre appareil. Vos fichiers personnels ne quittent jamais votre téléphone."
+German,de-DE,KI Speicher Reiniger,"Schnellbereinigung per Tipp, doppelte Fotos, Cache & Speicherdiagramme.","KI Speicher Reiniger optimiert Ihren Gerätespeicher mit schnellen, vollständig lokalen Werkzeugen für die Dateiverwaltung.
 
 Hauptfunktionen:
-• KI-Intelligenter Scan: Erkennt System-Cache, temporäre Dateien und verbleibende Datenmüll-Dateien.
-• Wisch-Reinigung für Galerie: Wischen Sie nach links zum Löschen und nach rechts zum Behalten Ihrer Fotos.
-• Erkennung doppelter Fotos: Findet und entfernt doppelte Fotos und behält automatisch die klarste Aufnahme.
-• Medien-Komprimierung: Komprimiert 4K-Videos und hochauflösende Fotos ohne spürbaren Qualitätsverlust.
-• App-Cache-Reiniger: Erkennt Anwendungen mit großem Cache-Speicher auf einen Blick.
-• Sicherer Tresor: Schützt vertrauliche Fotos und Dateien in einem sicheren lokalen Tresor.
-• Automatische Download-Ablaufzeit: Markiert alte Downloads, die älter als 30, 60 oder 90 Tage sind.
-• Speicher-Analyse: Übersichtliche Diagramme zur Verteilung von Fotos, Videos, Apps und Dokumenten.
+• Schnellbereinigung mit 1 Tipp: Findet große Dateien (10 MB+) und Cache-Daten in Sekunden und schafft sofort freien Speicherplatz.
+• Visueller Speicher-Analysator: Interaktive Kreis- und Ringdiagramme für Fotos, Videos, Apps und Dokumente inklusive Startbildschirm-Widget.
+• Perzeptueller dHash-Duplikatscanner: Erkennt im Hintergrund exakte und ähnliche Fotos und behält automatisch die schärfste Aufnahme.
+• Offline-OCR für Screenshots: Sortiert Belege, Einmalcodes und Memes lokal ohne Cloud-Upload.
+• Wisch-Reinigung: Wischen Sie nach links zum Löschen und nach rechts zum Behalten mit direktem Rückgängig.
+• Medien-Komprimierung: Verkleinert 4K-Videos und hochauflösende Fotos ohne sichtbaren Qualitätsverlust.
+• App-Cache, Tresor & Ablaufprüfung: Leert unnötigen Cache, schützt Dateien im lokalen Tresor und markiert alte Downloads (30/60/90 Tage).
 
 Datenschutz:
-Alle Überprüfungen und Löschvorgänge werden lokal auf Ihrem Gerät durchgeführt. Ihre persönlichen Dateien werden niemals auf externe Server hochgeladen."
-Japanese,ja-JP,AIストレージクリーナー,写真の重複削除、アプリキャッシュの消去、空き容量の最適化を簡単に実行。,"AIストレージクリーナーは、スマートなファイル管理ツールで端末のストレージ容量を最適化します。
+Alle Scans, dHash-Berechnungen, OCR-Analysen und Löschvorgänge erfolgen zu 100 % lokal auf Ihrem Gerät."
+Japanese,ja-JP,AIストレージクリーナー,ワンタップ高速クリーン、重複写真検出、キャッシュ削除、視覚的な容量グラフ。,"AIストレージクリーナーは、高速かつ端末内完結のファイル管理機能で空き容量を最適化します。
 
 主な機能：
-・AIスマートスキャン：不要なシステムキャッシュや一時ファイルを自動検出。
-・スワイプ写真クリーン：左スワイプで不要な写真を削除、右スワイプでお気に入りを保存。
-・重複写真検出：似ている写真や連写グループから最も鮮明な1枚を自動選択し、重複分を削除。
-・メディア圧縮：品質を損なわずに大容量の4K動画や高解像度写真を圧縮。
-・アプリキャッシュクリーナー：蓄積された不要なアプリキャッシュを一覧表示して簡単整理。
-・安全な金庫フォルダ：重要なファイルやプライベート写真を安全なローカルフォルダに保護。
-・ダウンロード自動期限切れ：30日・60日・90日以上経過した古いファイルを検出し整理を提案。
-・ストレージ統計チャート：写真、動画、アプリ、ドキュメントの使用割合を分かりやすくグラフ表示。
+・ワンタップ高速クリーン：10 MB以上の大容量ファイルとキャッシュデータを即座に検出し、ワンタップで容量を解放。
+・ビジュアル容量分析：インタラクティブな円グラフ・ドーナツグラフで写真、動画、アプリ、文書の内訳を表示。ホーム画面ウィジェットにも対応。
+・知覚dHash重複写真検出：バックグラウンドで類似写真や連写を検出し、最も鮮明な1枚を自動保持。
+・オフラインOCRスクショ整理：レシート、認証コード、メモを端末内で自動分類。
+・スワイプ整理：左スワイプで削除、右スワイプで保存。すぐに取り消し可能。
+・メディア圧縮：4K動画や高解像度写真を画質を保ったまま軽量化。
+・キャッシュ削除・金庫・期限チェック：不要キャッシュの整理、ローカル金庫での保護、30/60/90日経過した古いダウンロードの抽出に対応。
 
 プライバシー保護：
-すべてのファイルスキャンおよび削除処理は端末内でローカルに実行されます。写真や個人データが外部サーバーへ送信されることはありません。"
-Chinese (Simplified),zh-CN,AI 存储空间清理器,轻松清理系统缓存、删除重复照片、整理大文件并优化手机存储空间。,"AI 存储空间清理器运用智能文件管理工具，帮助您轻松优化手机存储空间并释放宝贵容量。
+すべてのスキャン、dHash解析、OCR、削除処理は端末内で100%ローカルに実行され、個人データが外部へ送信されることはありません。"
+Chinese (Simplified),zh-CN,AI 存储空间清理器,一键快速清理大文件与缓存、查找重复照片及可视化存储图表。,"AI 存储空间清理器通过快速、完全本地化的智能文件管理工具，帮助您安全释放手机存储空间。
 
 核心功能：
-• AI 智能扫描：一键精准检测系统缓存、临时文件及无用残留数据。
-• 滑动相册清理：左滑快速清理无用废片，右滑轻松保留美好记忆。
-• 重复照片检测：自动识别相似照片与连拍，智能保留清晰度最高的一张并清理冗余副本。
-• 媒体文件压缩：无损视觉质量无缝压缩 4K 大视频与高解析度照片。
-• 应用缓存清理：清晰直观呈现各大应用占用的缓存数据并便捷清理。
-• 加密安全保险箱：将重要照片与隐私文件保存在本地加密保险箱中。
-• 下载文件自动过期：自动筛选存放超过 30、60 或 90 天的旧下载文件。
-• 存储空间可视化分析：图形化图表直观展示照片、视频、应用与文档的占用比例。
+• 一键快速清理：秒速扫描 10 MB+ 大文件与缓存数据，支持按类型筛选并一键释放空间。
+• 存储空间可视化分析：交互式饼图与环形图清晰呈现照片、视频、应用和文档占比，并支持桌面微件实时查看。
+• 感知哈希 (dHash) 重复检测：后台智能识别完全相同与视觉相似照片，自动保留最清晰画质。
+• 离线 OCR 截图整理：本地识别验证码、票据与表情包截图，无需联网即可分类清理。
+• 滑动相册清理：左滑清理废片、右滑保留回忆，支持一键撤回误删。
+• 媒体无损压缩：高效压缩 4K 视频与高清图片，显著节省空间。
+• 应用缓存与安全保险箱：清理应用冗余缓存、本地加密保护私密文件并提醒 30/60/90 天过期下载。
 
 隐私承诺：
-所有文件扫描、计算与清理均在本地设备完成，您的个人照片与隐私文件绝不会上传至任何外部服务器。"
-Vietnamese,vi-VN,Dọn Dẹp Bộ Nhớ AI,"Dọn dẹp bộ nhớ, xóa ảnh trùng lặp, xóa cache ứng dụng và tối ưu dung lượng.","Dọn Dẹp Bộ Nhớ AI giúp bạn tối ưu hóa dung lượng thiết bị và giải phóng bộ nhớ hiệu quả với công cụ quản lý tệp thông minh.
+所有哈希计算、OCR 识别与文件删除均在您的设备本地完成，个人照片与文件绝不上传至任何外部服务器。"
+Vietnamese,vi-VN,Dọn Dẹp Bộ Nhớ AI,"Dọn nhanh một chạm, tìm ảnh trùng lặp, xóa cache và biểu đồ dung lượng.","Dọn Dẹp Bộ Nhớ AI giúp tối ưu bộ nhớ thiết bị nhanh chóng với các công cụ quản lý tệp xử lý hoàn toàn trên máy.
 
 Tính năng nổi bật:
-• Quét Thông Minh AI: Nhận diện bộ nhớ đệm hệ thống, tệp tạm và dữ liệu thừa nhanh chóng.
-• Vuốt Dọn Dẹp Thư Viện Ảnh: Vuốt sang trái để xóa ảnh thừa, vuốt sang phải để giữ lại ảnh đẹp.
-• Nhận Diện Ảnh Trùng Lặp: Tự động phát hiện ảnh trùng lặp, tự động chọn tấm ảnh nét nhất và đề xuất xóa bản sao.
-• Nén Video & Ảnh Mới: Nén video 4K và ảnh dung lượng lớn mà không làm giảm chất lượng hình ảnh.
-• Dọn Cache Ứng Dụng: Quản lý và giải phóng bộ nhớ đệm chiếm dụng bởi các ứng dụng.
-• Két An Toàn Bảo Mật: Di chuyển các ảnh và tệp riêng tư vào thư mục két an toàn trên thiết bị.
-• Cảnh Báo Tệp Cũ: Tự động nhắc nhở dọn dẹp các tệp tải về đã quá 30, 60 hoặc 90 ngày.
-• Biểu Đồ Thống Kê Dung Lượng: Hiển thị trực quan tỷ lệ bộ nhớ của ảnh, video, ứng dụng và tài liệu.
+• Dọn Nhanh Một Chạm: Phát hiện tức thì tệp lớn (10 MB+) và dữ liệu bộ nhớ đệm, lọc theo loại tệp và giải phóng hàng GB chỉ với một chạm.
+• Phân Tích Bộ Nhớ Trực Quan: Biểu đồ tròn và vành khuyên tương tác chi tiết Ảnh, Video, Ứng dụng, Tài liệu cùng tiện ích màn hình chính.
+• Quét Ảnh Trùng dHash: Tự động quét nền bằng thuật toán tri giác dHash để tìm ảnh giống nhau và giữ lại tấm nét nhất.
+• Phân Loại Ảnh Chụp Màn Hình OCR Ngoại Tuyến: Tự động nhận diện mã OTP, hóa đơn và meme ngay trên thiết bị.
+• Vuốt Dọn Thư Viện Ảnh: Vuốt trái để xóa, vuốt phải để giữ với nút hoàn tác tức thì.
+• Nén Video 4K & Ảnh: Giảm dung lượng tệp media lớn mà vẫn giữ độ sắc nét.
+• Dọn Cache & Két An Toàn: Quản lý bộ nhớ đệm, bảo mật tệp riêng tư và lọc tệp tải xuống quá 30, 60 hoặc 90 ngày.
 
-Bảo mật & Quyền riêng tư:
-Tất cả quá trình quét và xóa tệp được thực hiện hoàn toàn cục bộ trên điện thoại của bạn. Dữ liệu cá nhân không bao giờ bị tải lên máy chủ bên ngoài."
-Arabic,ar-SA,منظف المساحة الذكي,تنظيف ذاكرة التخزين، إزالة الصور المكررة، مسح التخزين المؤقت وتحسين المساحة.,"يساعدك منظف المساحة الذكي على تحسين مساحة التخزين في جهازك وتحرير المساحة باستخدام أدوات إدارة الملفات الذكية.
+Bảo mật:
+Mọi thao tác quét dHash, OCR và xóa tệp diễn ra 100% cục bộ trên điện thoại của bạn."
+Arabic,ar-SA,منظف المساحة الذكي,تنظيف سريع بنقرة واحدة، كشف الصور المكررة، مسح المؤقت والرسوم البيانية.,"يساعدك منظف المساحة الذكي على تحسين تخزين جهازك وتحرير المساحة بأدوات سريعة تعمل محليًا بالكامل.
 
 الميزات الرئيسية:
-• الفحص الذكي: التعرف على ذاكرة التخزين المؤقت للنظام والملفات المؤقتة والبيانات المتبقية.
-• تنظيف الصور بالسحب: اسحب لليسار لحذف الصور غير المرغوب فيها واسحب لليمين للاحتفاظ بالذكريات.
-• كاشف الصور المكررة: العثور على الصور المكررة وحذفها مع الاحتفاظ بالصورة الأكثر وضوحًا تلقائيًا.
-• ضغط الوسائط: ضغط مقاطع الفيديو بدقة 4K والصور عالية الدقة دون فقدان ملحوظ في الجودة.
-• منظف التخزين المؤقت للتطبيقات: التعرف بسهولة على التطبيقات التي تستهلك مساحة كبيرة.
-• الخزنة الآمنة: حماية الصور والملفات الحساسة عن طريق نقلها إلى خزنة محلية آمنة.
-• انتهاء صلاحية التنزيلات: اكتشاف التنزيلات القديمة التي مر عليها أكثر من 30 أو 60 أو 90 يومًا.
-• تحليلات التخزين: رسوم بيانية توضح توزيع المساحة بين الصور ومقاطع الفيديو والتطبيقات والمستندات.
+• التنظيف السريع بنقرة واحدة: اكتشف الملفات الكبيرة (10 ميجابايت+) والبيانات المؤقتة فورًا وحرر المساحة بنقرة واحدة.
+• محلل التخزين المرئي: مخططات دائرية وحلقية تفاعلية تعرض توزيع الصور والفيديوهات والتطبيقات والمستندات مع أداة للشاشة الرئيسية.
+• كاشف التكرار بالبصمة الإدراكية dHash: فحص خلفي لاكتشاف الصور المتطابقة والمتشابهة مع الإبقاء على الصورة الأوضح تلقائيًا.
+• فرز لقطات الشاشة بتقنية OCR دون اتصال: تصنيف الإيصالات ورموز التحقق والصور الملتقطة محليًا على الجهاز.
+• تنظيف الصور بالسحب: اسحب لليسار للحذف ولليمين للاحتفاظ مع إمكانية التراجع الفوري.
+• ضغط الوسائط: تقليص حجم فيديوهات 4K والصور عالية الدقة مع الحفاظ على الوضوح.
+• منظف الذاكرة المؤقتة والخزنة الآمنة: مسح الكاش الزائد وحماية الملفات الحساسة واكتشاف التنزيلات الأقدم من 30 أو 60 أو 90 يومًا.
 
-الخصوصية والأمان:
-تتم جميع عمليات الفحص والحذف محليًا على جهازك. لا يتم تحميل صورك أو ملفاتك الشخصية إلى أي خوادم خارجية."
-Hindi,hi-IN,AI स्टोरेज क्लीनर,"स्टोरेज साफ करें, डुप्लिकेट फोटो हटाएं, ऐप कैश साफ़ करें और जगह बचाएं।","AI स्टोरेज क्लीनर आपके डिवाइस के स्टोरेज को मैनेज करने और खाली जगह बनाने में मदद करता है।
+الخصوصية:
+تتم جميع عمليات الفحص والتحليل والحذف محليًا 100% على جهازك دون رفع ملفاتك إلى خوادم خارجية."
+Hindi,hi-IN,AI स्टोरेज क्लीनर,"वन-टैप क्विक क्लीनअप, डुप्लिकेट फोटो, कैश और स्टोरेज चार्ट देखें।","AI स्टोरेज क्लीनर आपके डिवाइस के स्टोरेज को तेज़ और पूरी तरह ऑन-डिवाइस टूल्स के साथ ऑप्टिमाइज़ करता है।
 
 मुख्य विशेषताएं:
-• AI स्मार्ट स्कैन: सिस्टम कैश, टेम्पररी फाइलों और अनावश्यक डेटा को पहचानें।
-• स्वाइप फोटो क्लीनर: अवांछित फोटो हटाने के लिए बाएं स्वाइप करें और अच्छी फोटो रखने के लिए दाएं स्वाइप करें।
-• डुप्लिकेट फोटो डिटेक्टर: डुप्लिकेट फोटो ढूंढें और साफ़ करें, जबकि सबसे साफ़ फोटो अपने आप सुरक्षित रहती है।
-• मीडिया कंप्रेसर: 4K वीडियो और फोटो की क्वालिटी घटाए बिना साइज कम करें।
-• ऐप कैश क्लीनर: ऐप्स द्वारा ली गई अनावश्यक कैश मेमोरी को आसानी से साफ़ करें।
-• सुरक्षित वॉल्ट: अपनी निजी फोटो और फाइलों को सुरक्षित लोकल वॉल्ट में रखें।
-• पुरानी फाइलों की समाप्ति: 30, 60 या 90 दिनों से पुरानी डाउनलोड फाइलों की पहचान करें।
-• स्टोरेज एनालिटिक्स: फोटो, वीडियो, ऐप और डॉक्यूमेंट्स के स्टोरेज उपयोग का ग्राफ देखें।
+• वन-टैप क्विक क्लीनअप: 10 MB+ बड़ी फ़ाइलों और कैश डेटा को तुरंत पहचानें, फ़िल्टर करें और एक टैप में जगह खाली करें।
+• विज़ुअल स्टोरेज विश्लेषक: इंटरैक्टिव पाई और डोनट चार्ट से फ़ोटो, वीडियो, ऐप्स व दस्तावेज़ देखें, साथ ही होम स्क्रीन विजेट पाएं।
+• परसेप्चुअल dHash डुप्लिकेट डिटेक्टर: बैकग्राउंड स्कैन से मिलती-जुलती व डुप्लिकेट फ़ोटो ढूंढें और सबसे स्पष्ट तस्वीर सुरक्षित रखें।
+• ऑफ़लाइन OCR स्क्रीनशॉट छँटाई: बिना इंटरनेट रसीद, OTP और मीम्स को लोकल पहचानकर व्यवस्थित करें।
+• स्वाइप गैलरी क्लीनर: अनडू विकल्प के साथ बाएं स्वाइप से हटाएं और दाएं स्वाइप से सहेजें।
+• मीडिया कंप्रेसर: 4K वीडियो और बड़ी फ़ोटो की गुणवत्ता बचाते हुए साइज कम करें।
+• ऐप कैश और सुरक्षित वॉल्ट: भारी कैश साफ़ करें, निजी फ़ाइलें वॉल्ट में रखें और 30/60/90 दिन पुराने डाउनलोड जांचें।
 
-गोपनीयता और सुरक्षा:
-सभी फाइलों की जांच और सफाई पूरी तरह से आपके फोन पर होती है। आपकी निजी फाइलें कभी भी बाहरी सर्वर पर अपलोड नहीं की जाती हैं।"
-Portuguese,pt-BR,Limpador de Armazenamento,"Limpe o armazenamento, remova fotos duplicadas e apague o cachê de apps.","O Limpador de Armazenamento ajuda você a otimizar o espaço do seu dispositivo com ferramentas inteligentes de gerenciamento de arquivos.
+गोपनीयता:
+सभी स्कैन, OCR और डिलीट प्रक्रिया 100% आपके फ़ोन पर होती है और कोई फ़ाइल बाहर अपलोड नहीं होती।"
+Portuguese,pt-BR,Limpador de Armazenamento,"Limpeza rápida em 1 toque, fotos duplicadas, cache e gráficos de espaço.","O Limpador de Armazenamento otimiza a memória do seu dispositivo com ferramentas rápidas que funcionam localmente.
 
 Recursos principais:
-• Varredura Inteligente com IA: Identifique cache do sistema, arquivos temporários e dados residuais.
-• Limpeza por Deslize: Deslize para a esquerda para apagar fotos indesejadas e para a direita para manter as melhores.
-• Detector de Fotos Duplicadas: Encontre e remova fotos duplicadas mantendo automaticamente a imagem mais nítida.
-• Compressor de Mídia: Comprima vídeos 4K e fotos de alta resolução sem perda visível de qualidade.
-• Limpador de Cache de Apps: Identifique facilmente os aplicativos que acumulam arquivos de cache pesados.
-• Cofre Seguro: Proteja fotos e arquivos confidenciais organizando-os em um cofre local seguro.
-• Expiração de Downloads: Identifique downloads antigos com mais de 30, 60 ou 90 dias.
-• Gráficos de Armazenamento: Visualize a distribuição de espaço ocupado por fotos, vídeos, apps e documentos.
+• Limpeza Rápida em 1 Toque: Encontre arquivos grandes (10 MB+) e dados em cache em segundos e libere espaço com um único toque.
+• Analisador Visual de Espaço: Gráficos interativos de pizza e rosca com o uso de Fotos, Vídeos, Apps e Documentos, além de widget na tela inicial.
+• Detector Perceptual dHash: Varredura em segundo plano para achar fotos duplicadas ou parecidas mantendo a mais nítida.
+• Triagem OCR Offline: Classifique capturas de tela, recibos e códigos OTP localmente no aparelho.
+• Limpeza por Deslize: Deslize para a esquerda para apagar e para a direita para manter, com desfazer imediato.
+• Compressor de Mídia: Reduza vídeos 4K e fotos grandes sem perda visual relevante.
+• Cache, Cofre Seguro e Expiração: Limpe caches pesados, proteja arquivos no cofre local e revise downloads com mais de 30, 60 ou 90 dias.
 
 Privacidade:
-Todas as verificações e exclusões ocorrem localmente no seu dispositivo. Suas fotos e arquivos pessoais nunca são enviados para servidores externos."
-Russian,ru-RU,Очистка памяти AI,"Очищайте память, удаляйте дубликаты фото и кэш приложений быстро и легко.","Очистка памяти AI помогает оптимизировать свободное место на вашем устройстве с помощью умных инструментов управления файлами.
+Todas as análises e exclusões acontecem 100% no seu dispositivo usando Armazenamento com Escopo."
+Russian,ru-RU,Очистка памяти AI,"Быстрая очистка в 1 касание, дубликаты фото, кэш и диаграммы памяти.","Очистка памяти AI помогает мгновенно освободить место на устройстве с помощью локальных инструментов управления файлами.
 
 Основные функции:
-• Умное сканирование AI: Находите системный кэш, временные файлы и остаточный мусор в один клик.
-• Свайп-очистка галереи: Смахивайте влево для удаления ненужных фото и вправо для сохранения лучших снимков.
-• Поиск дубликатов фото: Находите и удаляйте похожие снимки, автоматически сохраняя самый четкий кадр.
-• Сжатие медиафайлов: Сжимайте 4K-видео и фото высокого разрешения без видимой потери качества.
-• Очистка кэша приложений: Удобно просматривайте и очищайте накопившийся кэш приложений.
-• Защищенное хранилище: Храните личные фото и важные файлы в безопасной локальной папке.
-• Срок службы загрузок: Находите устаревшие файлы в папке загрузок старше 30, 60 или 90 дней.
-• Аналитика памяти: Наглядные диаграммы распределения памяти между фото, видео, приложениями и документами.
+• Быстрая очистка в 1 касание: Находите крупные файлы (10 МБ+) и кэш за секунды и освобождайте гигабайты одним нажатием.
+• Визуальный анализатор памяти: Интерактивные круговые и кольцевые диаграммы для фото, видео, приложений и документов, плюс виджет экрана.
+• Поиск дубликатов по dHash: Фоновое перцептивное сканирование находит точные и похожие снимки, сохраняя самый четкий кадр.
+• Офлайн OCR-сортировка скриншотов: Распознает чеки, коды и мемы локально без отправки данных в сеть.
+• Свайп-очистка галереи: Смахивайте влево для удаления и вправо для сохранения с мгновенной отменой.
+• Сжатие медиафайлов: Уменьшайте 4K-видео и фото без заметной потери качества.
+• Кэш, сейф и контроль загрузок: Удаляйте лишний кэш, храните важные файлы в сейфе и проверяйте загрузки старше 30, 60 или 90 дней.
 
 Конфиденциальность:
-Все процессы сканирования и удаления выполняются локально на вашем устройстве. Ваши личные файлы никогда не передаются на сторонние серверы."
-Korean,ko-KR,AI 저장공간 정리,"중복 사진 삭제, 앱 캐시 정리, 저장공간 최적화를 손쉽게 실행하세요.","AI 저장공간 정리는 스마트한 파일 관리 도구를 통해 기기의 저장공간을 효율적으로 최적화합니다.
+Все вычисления dHash, OCR и удаление файлов выполняются 100% локально на вашем устройстве."
+Korean,ko-KR,AI 저장공간 정리,"원탭 빠른 정리, 중복 사진 탐지, 캐시 삭제 및 저장공간 차트를 한곳에서.","AI 저장공간 정리는 기기 내부에서 빠르게 작동하는 스마트 파일 관리 도구로 소중한 저장공간을 확보해 줍니다.
 
 주요 기능:
-• AI 스마트 스캔: 불필요한 시스템 캐시, 임시 파일 및 잔여 데이터를 원터치로 감지합니다.
-• 스와이프 갤러리 정리: 왼쪽으로 스와이프하여 ненужные 사진을 삭제하고, 오른쪽으로 스와이프하여 소중한 추억을 보관하세요.
-• 중복 사진 탐지: 유사한 사진과 연속 촬영 중 가장 선명한 사진을 자동으로 남기고 중복본을 정리합니다.
-• 미디어 압축: 화질 손상 없이 4K 동영상 및 고해상도 사진의 용량을 줄입니다.
-• 앱 캐시 정리: 용량을 많이 차지하는 앱 캐시를 쉽게 확인하고 정리할 수 있습니다.
-• 안전 보관함: 중요한 사진과 파일을 기기 내 암호화된 안전 보관함에 보관하세요.
-• 다운로드 만료 알림: 30일, 60일, 90일 이상 지난 오래된 다운로드 파일을 감지합니다.
-• 저장공간 통계 차트: 사진, 동영상, 앱, 문서별 용량 점유율을 한눈에 그래프로 확인하세요.
+• 원탭 빠른 정리: 10MB 이상의 대용량 파일과 캐시 데이터를 즉시 찾아내고 탭 한 번으로 용량을 확보하세요.
+• 시각적 저장공간 분석: 사진, 동영상, 앱, 문서별 사용량을 원형 및 도넛 차트와 홈 화면 위젯으로 한눈에 확인하세요.
+• 지각적 dHash 중복 탐지: 백그라운드 스캔으로 동일하거나 유사한 사진을 찾아 가장 선명한 원본을 자동 보존합니다.
+• 오프라인 OCR 스크린샷 분류: 영수증, 인증번호, 밈 스크린샷을 서버 전송 없이 기기 내에서 자동 분류합니다.
+• 스와이프 갤러리 정리: 왼쪽으로 스와이프하여 불필요한 사진을 삭제하고, 오른쪽으로 스와이프하여 추억을 보관하세요.
+• 미디어 압축: 화질 손실을 최소화하며 4K 동영상과 고해상도 사진 용량을 줄입니다.
+• 앱 캐시 및 안전 보관함: 불필요한 캐시 정리, 로컬 안전 보관함 보호, 30/60/90일 경과 다운로드 알림을 제공합니다.
 
 개인정보 보호:
-모든 파일 스캔 및 정리 작업은 사용자의 기기 내부에서만 로컬로 처리됩니다. 사진과 개인 데이터는 외부 서버로 전송되지 않습니다."
-Italian,it-IT,Pulizia Memoria AI,"Pulisci memoria, rimuovi foto duplicate, svuota la cache e ottimizza spazio.","Pulizia Memoria AI ti aiuta a ottimizzare lo spazio sul tuo dispositivo con strumenti intelligenti di gestione dei file.
+모든 스캔, 해시 계산, OCR 및 삭제 작업은 100% 사용자 기기 내부에서만 처리됩니다."
+Italian,it-IT,Pulizia Memoria AI,"Pulizia rapida in 1 tocco, foto duplicate, cache e grafici dello spazio.","Pulizia Memoria AI ti aiuta a liberare spazio sul dispositivo in sicurezza con strumenti rapidi che lavorano interamente in locale.
 
 Funzionalità principali:
-• Scansione Intelligente AI: Individua cache di sistema, file temporanei e dati residui in un tocco.
-• Pulizia Galleria con Swipe: Scorri a sinistra per eliminare le foto indesiderate e a destra per conservare i ricordi migliori.
-• Rilevatore Foto Duplicate: Trova ed elimina i duplicati mantenendo automaticamente lo scatto più nitido.
-• Compressione File Multimediali: Comprimi video 4K e foto ad alta risoluzione senza perdita visibile di qualità.
-• Pulizia Cache App: Gestisci facilmente le applicazioni che accumulano file di cache pesanti.
-• Cassaforte Sicura: Proteggi foto e file personali organizzandoli in una cassaforte locale sicura.
-• Scadenza Download: Rileva automaticamente i download vecchi di oltre 30, 60 o 90 giorni.
-• Statistiche sullo Spazio: Grafici chiari che mostrano la distribuzione dello spazio tra foto, video, app e documenti.
+• Pulizia Rapida in 1 Tocco: Individua subito file pesanti (10 MB+) e dati in cache, filtra per tipo e libera spazio in un tocco.
+• Analizzatore Visivo dello Spazio: Grafici interattivi a torta e ad anello per Foto, Video, App e Documenti, con widget per la schermata Home.
+• Rilevatore Percettivo dHash: Scansione in background per trovare foto identiche o simili conservando lo scatto più nitido.
+• Smistamento Screenshot OCR Offline: Riconosci ricevute, codici OTP e meme direttamente sul telefono.
+• Pulizia Galleria con Swipe: Scorri a sinistra per eliminare e a destra per conservare con annullamento istantaneo.
+• Compressione Media: Riduci video 4K e foto ad alta risoluzione senza perdita visibile di qualità.
+• Cache App, Cassaforte e Scadenza Download: Svuota la cache superflua, proteggi file nella cassaforte locale e controlla i download di oltre 30, 60 o 90 giorni.
 
 Privacy:
-Tutte le scansioni e le eliminazioni avvengono localmente sul tuo dispositivo. I tuoi file personali non vengono mai inviati a server esterni."
-Dutch,nl-NL,AI Opslag Opschonen,"Schoon opslagruimte op, verwijder dubbele foto's en wis app-cache snel.","AI Opslag Opschonen helpt u de opslagruimte van uw apparaat te optimaliseren met slimme bestandsbeheertools.
+Tutte le scansioni, i calcoli OCR e le eliminazioni avvengono al 100% sul tuo dispositivo."
+Dutch,nl-NL,AI Opslag Opschonen,"Snel opschonen in 1 tik, dubbele foto's, cache en opslaggrafieken.","AI Opslag Opschonen optimaliseert uw apparaatgeheugen met snelle hulpmiddelen die volledig lokaal op uw telefoon werken.
 
 Belangrijkste functies:
-• Slimme AI-scan: Detecteer systeemcache, tijdelijke bestanden en resterende data met één tik.
-• Galerij Opschonen via Vegen: Veeg naar links om ongewenste foto's te verwijderen en naar rechts om herinneringen te bewaren.
-• Dubbele Foto's Detecteren: Vind en verwijder dubbele foto's terwijl automatisch de scherpste foto wordt behouden.
-• Media Comprimeren: Comprimeer 4K-video's en foto's zonder merkbaar kwaliteitsverlies.
-• App Cache Opschonen: Zie direct welke apps grote hoeveelheden cachegeheugen in beslag nemen.
-• Veilige Kluis: Bescherm gevoelige foto's en bestanden in een veilige lokale kluis.
-• Downloads Vervaldatum: Detecteer oude downloads die ouder zijn dan 30, 60 of 90 dagen.
-• Opslaganalyse: Overzichtelijke grafieken van het geheugengebruik per categorie.
+• Snel Opschonen in 1 Tik: Vind direct grote bestanden (10 MB+) en cachegegevens, filter op bestandstype en maak direct ruimte vrij.
+• Visuele Opslaganalyse: Interactieve cirkel- en ringdiagrammen voor Foto's, Video's, Apps en Documenten, inclusief startschermwidget.
+• Perceptuele dHash Duplicaatscanner: Achtergrondscan herkent exacte en lijkende foto's en bewaart automatisch de scherpste opname.
+• Offline OCR Screenshotbeheer: Sorteer bonnetjes, verificatiecodes en memes volledig lokaal.
+• Galerij Opschonen via Vegen: Veeg naar links om te wissen en naar rechts om te bewaren met direct ongedaan maken.
+• Media Comprimeren: Verklein 4K-video's en foto's zonder merkbaar kwaliteitsverlies.
+• App-cache, Kluis & Vervaldatum: Ruim zware cache op, beveilig bestanden in uw kluis en vind downloads ouder dan 30, 60 of 90 dagen.
 
 Privacy:
-Alle scans en verwijderingen worden lokaal op uw apparaat uitgevoerd. Uw persoonlijke bestanden worden nooit geüpload naar externe servers."
-Polish,pl-PL,Czyszczenie Pamięci AI,"Usuwaj duplikaty zdjęć, czyść pamięć podręczną aplikacji i zwalniaj miejsce.","Czyszczenie Pamięci AI pomaga zoptymalizować miejsce w pamięci urządzenia za pomocą inteligentnych narzędzi do zarządzania plikami.
+Alle scans, OCR-herkenning en verwijderingen gebeuren 100% lokaal op uw eigen apparaat."
+Polish,pl-PL,Czyszczenie Pamięci AI,"Szybkie czyszczenie 1 kliknięciem, duplikaty zdjęć, cache i wykresy pamięci.","Czyszczenie Pamięci AI pozwala błyskawicznie odzyskać miejsce na urządzeniu dzięki narzędziom działającym w pełni lokalnie.
 
-Główne funkcja:
-• Inteligentne skanowanie AI: Wykrywaj pamięć podręczną systemu, pliki tymczasowe i zbędne dane.
-• Czyszczenie galerii gestem: Przesuń w lewo, aby usunąć niechciane zdjęcia, lub w prawo, aby zachować najlepsze ujęcia.
-• Wykrywanie duplikatów zdjęć: Znajduj i usuwaj powtarzające się zdjęcia, automatycznie zachowując najostrzeższą fotografię.
-• Kompresja multimediów: Kompresuj wideo 4K i zdjęcia w wysokiej rozdzielczości bez widocznej utraty jakości.
-• Czyszczenie pamięci podręcznej aplikacji: Łatwo identyfikuj aplikacje gromadzące duże ilości pamięci cache.
-• Bezpieczny sejf: Chroń prywatne zdjęcia i pliki w bezpiecznym lokalnym sejfie.
-• Automatyczne wygasanie pobranych plików: Wykrywaj pliki pobrane starsze niż 30, 60 lub 90 dni.
-• Analiza pamięci: Czytelne wykresy przedstawiające podział pamięci na zdjęcia, wideo, aplikacje i dokumenty.
+Główne funkcje:
+• Szybkie Czyszczenie 1 Kliknięciem: Natychmiast wykrywaj duże pliki (10 MB+) oraz dane cache, filtruj je i zwalniaj gigabajty jednym dotknięciem.
+• Wizualna Analiza Pamięci: Interaktywne wykresy kołowe i pierścieniowe dla Zdjęć, Wideo, Aplikacji i Dokumentów oraz widżet ekranu głównego.
+• Percepcyjny Skaner Duplikatów dHash: Skanuje w tle podobne ujęcia i automatycznie zachowuje najostrzejsze zdjęcie.
+• Sortowanie Zrzutów Ekranu OCR Offline: Rozpoznawaj paragony, kody OTP i memy lokalnie na telefonie.
+• Czyszczenie Galerii Gestem: Przesuwaj w lewo, aby usunąć, i w prawo, aby zachować z natychmiastowym cofnięciem.
+• Kompresja Multimediów: Zmniejszaj wideo 4K i zdjęcia bez zauważalnej utraty jakości.
+• Pamięć Cache, Sejf i Wygasanie Pobranych: Usuwaj zbędny cache, chroń pliki w sejfie i przeglądaj pobrane starsze niż 30, 60 lub 90 dni.
 
 Prywatność:
-Wszystkie skany i usunięcia plików odbywają się lokalnie na Twoim urządzeniu. Twoje prywatne pliki nigdy nie są wysyłane na zewnętrzne serwery."
-Turkish,tr-TR,AI Depolama Temizleyici,"Depolama alanını temizleyin, yinelenen fotoğrafları ve önbelleği silin.","AI Depolama Temizleyici, akıllı dosya yönetimi araçlarıyla cihazınızın depolama alanını optimize etmenize yardımcı olur.
+Wszystkie analizy i operacje usuwania odbywają się w 100% lokalnie na Twoim urządzeniu."
+Turkish,tr-TR,AI Depolama Temizleyici,"Tek dokunuşla hızlı temizlik, yinelenen fotoğraf, önbellek ve alan grafikleri.","AI Depolama Temizleyici, tamamen cihaz üzerinde çalışan hızlı dosya araçlarıyla depolama alanınızı güvenle optimize eder.
 
 Ana Özellikler:
-• AI Akıllı Tarama: Sistem önbelleğini, geçici dosyaları ve artık verileri tek dokunuşla tespit edin.
-• Kaydırarak Galeri Temizleme: İstenmeyen fotoğrafları silmek için sola, anılarınızı saklamak için sağa kaydırın.
-• Yinelenen Fotoğraf Tespiti: En net fotoğrafı otomatik olarak korurken benzer fotoğrafları bulun ve silin.
-• Medya Sıkıştırma: Kalite kaybı yaşamadan 4K videoları ve yüksek çözünürlüklü fotoğrafları sıkıştırın.
-• Uygulama Önbellek Temizleyici: Yüksek miktarda önbellek biriktiren uygulamaları kolayca temizleyin.
-• Güvenli Kasa: Hassas fotoğrafları ve dosyaları güvenli bir yerel kasada koruyun.
-• İndirme Süresi Sınırı: 30, 60 veya 90 günden eski indirmeleri otomatik olarak tespit edin.
-• Depolama Analizi: Fotoğraflar, videolar, uygulamalar ve belgeler arasındaki alan dağılımını grafiklerle görün.
+• Tek Dokunuşla Hızlı Temizlik: Büyük dosyaları (10 MB+) ve önbellek verilerini saniyeler içinde tespit edin, tek dokunuşla alan açın.
+• Görsel Depolama Analizi: Fotoğraflar, Videolar, Uygulamalar ve Belgeler için etkileşimli pasta ve halka grafikler ile ana ekran widget'ı.
+• Algısal dHash Yinelenen Tarama: Arka plan taramasıyla birebir veya benzer fotoğrafları bulur ve en net kareyi otomatik korur.
+• Çevrimdışı OCR Ekran Görüntüsü Sıralama: Fişleri, doğrulama kodlarını ve görselleri cihazınızdan çıkmadan düzenleyin.
+• Kaydırarak Galeri Temizleme: Silmek için sola, saklamak için sağa kaydırın ve anında geri alın.
+• Medya Sıkıştırma: 4K videoları ve yüksek çözünürlüklü fotoğrafları kalite kaybı olmadan küçültün.
+• Uygulama Önbelleği, Kasa ve Süre Takibi: Ağır önbellekleri temizleyin, gizli dosyaları kasada koruyun ve 30/60/90 günü geçen indirmeleri görün.
 
 Gizlilik:
-Tüm tarama ve silme işlemleri cihazınızda yerel olarak gerçekleşir. Kişisel dosyalarınız asla harici sunuculara yüklenmez."
-Swedish,sv-SE,AI Lagringsrensare,"Rensa lagringsutrymme, ta bort dubbeltecknade foton och töm appcache.","AI Lagringsrensare hjälper dig att optimera enhetens utrymme med smarta filhanteringsverktyg.
+Tüm taramalar, OCR işlemleri ve silmeler %100 cihazınızda yerel olarak gerçekleştirilir."
+Swedish,sv-SE,AI Lagringsrensare,"Snabbrensning med 1 tryck, dubblettfoton, cache och lagringsdiagram.","AI Lagringsrensare hjälper dig att frigöra utrymme med snabba filverktyg som körs helt lokalt på din enhet.
 
 Huvudfunktioner:
-• AI Smartskanning: Hitta systemcache, temporära filer och skräpfiler med ett tryck.
-• Svep-galleri Rensing: Svep till vänster för att radera foton och till höger för att behålla dem.
-• Detektera Dubblettfoton: Hitta och ta bort liknande foton medan den skarpaste bilden behålls automatiskt.
-• Mediekomprimering: Komprimera 4K-videor och högupplösta foton utan synbar kvalitetsförlust.
-• App-cache Rensa: Hitta enkelt appar som samlar på sig stor mängd cacheminne.
-• Säkert Valv: Skydda kännsliga foton och filer i ett säkert lokalt valv.
-• Utgångsdatum för Nedladdningar: Hitta gamla nedladdade filer som är äldre än 30, 60 eller 90 dagar.
-• Lagringsanalys: Tydliga diagram som visar fördelningen mellan foton, videor, appar och dokument.
+• Snabbrensning med 1 Tryck: Hitta stora filer (10 MB+) och cachedata direkt, filtrera efter filtyp och frigör utrymme i ett svep.
+• Visuell Lagringsanalys: Interaktiva cirkel- och ringdiagram för Foton, Videor, Appar och Dokument samt startskärmswidget.
+• Perceptuell dHash Dubblettskanning: Bakgrundsskanning hittar lika foton och behåller automatiskt den skarpaste bilden.
+• Offline OCR för Skärmdumpar: Sortera kvitton, engångskoder och memes lokalt utan uppladdning.
+• Svep-galleri: Svep åt vänster för att radera och åt höger för att spara med snabb ångra-knapp.
+• Mediekomprimering: Komprimera 4K-videor och foton utan märkbar kvalitetsförlust.
+• Appcache, Säkert Valv & Utgångskontroll: Rensa tung cache, skydda känsliga filer i lokalt valv och granska nedladdningar äldre än 30, 60 eller 90 dagar.
 
 Integritet:
-Alla skanningar och raderingar sker lokalt på din enhet. Dina personliga filer överförs aldrig till externa servrar."
-Danish,da-DK,AI Lagerrenser,"Rens lagerplads, fjern dubletfotos og ryd app-cache nemt og hurtigt.","AI Lagerrenser hjælper dig med at optimere din enheds lagerplads med intelligente filhåndteringsværktøjer.
+All analys, dHash-skanning och radering sker till 100 % lokalt på din enhet."
+Danish,da-DK,AI Lagerrenser,"Hurtig oprydning med ét tryk, dubletfotos, cache og lagerdiagrammer.","AI Lagerrenser optimerer din enheds lagerplads med hurtige værktøjer, der kører 100 % lokalt på telefonen.
 
 Nøglefunktioner:
-• AI Smart-scanning: Identificer system-cache, midlertidige filer og resterende data.
-• Stryg-gallerirenser: Stryg til venstre for at slette fotos og til højre for at gemme dine minder.
-• Registrering af Dubletfotos: Find og fjern dublerede billeder, mens det skarpeste foto automatisk gemmes.
-• Mediekomprimering: Komprimer 4K-videoer og fotos i høj opløsning uden synligt kvalitetstab.
-• App-cache Rensning: Se nemt hvilke apps der optager meget cache-lagerplads.
-• Sikker Boks: Beskyt følsomme billeder og filer i en sikker lokal boks.
-• Udløb af Downloads: Identificer automatisk downloads der er ældre end 30, 60 eller 90 dage.
-• Lageranalyse: Overskuelige diagrammer over pladsfordelingen mellem fotos, videoer, apps og dokumenter.
+• Hurtig Oprydning med 1 Tryk: Find store filer (10 MB+) og cachedata på få sekunder, og frigør plads med ét enkelt tryk.
+• Visuel Lageranalyse: Interaktive cirkel- og kransdiagrammer for Fotos, Videoer, Apps og Dokumenter samt startskærms-widget.
+• Perceptuel dHash Dubletscanner: Baggrundsscanning finder ens eller lignende fotos og bevarer det skarpeste billede automatisk.
+• Offline OCR-sortering: Organiser skærmbilleder som kvitteringer, engangskoder og memes lokalt på enheden.
+• Stryg-gallerirenser: Stryg til venstre for at slette og til højre for at gemme med øjeblikkelig fortrydelse.
+• Mediekomprimering: Gør 4K-videoer og store fotos mindre uden synligt kvalitetstab.
+• App-cache, Sikker Boks & Download-udløb: Ryd overflødig cache, beskyt filer i lokal boks og gennemgå downloads ældre end 30, 60 eller 90 dage.
 
 Privatliv:
-Alle scanninger og sletninger udføres lokalt på din enhed. Dine personlige filer uploades aldrig til eksterne servere."
-Finnish,fi-FI,AI Tallennustilan Puhdistus,"Puhdista tallennustila, poista kaksoiskuvat ja tyhjennä sovellusvälimuisti.","AI Tallennustilan Puhdistus auttaa optimoimaan laitteesi tallennustilan älykkäillä tiedostojenhallintatyökaluilla.
+Alle scanninger, OCR-beregninger og sletninger sker lokalt på din egen enhed."
+Finnish,fi-FI,AI Tallennustilan Puhdistus,"Pikasiivous yhdellä napautuksella, kaksoiskuvat, välimuisti ja tilakaaviot.","AI Tallennustilan Puhdistus auttaa vapauttamaan tilaa nopeilla ja täysin laitteella toimivilla tiedostotyökaluilla.
 
 Tärkeimmät ominaisuudet:
-• AI Älykäs Skannaus: Tunnista järjestelmän välimuisti, väliaikaistiedostot ja turha data yhdellä napautuksella.
-• Pyyhkäisypuhdistus Galleria: Pyyhkäise vasemmalle poistaaksesi kuvat ja oikealle säilyttääksesi ne.
-• Kaksoiskuvien Tunnistus: Löydä ja poista samankaltaiset kuvat säilyttäen automaattisesti terävimmän otoksen.
-• Median Tiivistys: Tiivistä 4K-videot ja korkearesoluutioiset kuvat ilman näkyvää laadun heikkenemistä.
-• Sovellusvälimuistin Puhdistus: Tunnista helposti sovellukset, jotka kerryttävät suurta välimuistia.
-• Turvaholvi: Suojaa yksityiset kuvat ja tiedostot turvallisessa paikallisessa holvissa.
-• Latausten Vanheneminen: Tunnista yli 30, 60 tai 90 päivää vanhat ladatut tiedostot.
-• Tallennustilan Analysi: Selkeät kaaviot kuvien, videoiden, sovellusten ja dokumenttien viemästä tilasta.
+• Pikasiivous Yhdellä Napautuksella: Tunnista suuret tiedostot (10 Mt+) ja välimuisti heti, suodata tyypin mukaan ja vapauta tilaa kerralla.
+• Visuaalinen Tallennustila-analyysi: Vuorovaikutteiset ympyrä- ja rengaskaaviot kuville, videoille, sovelluksille ja asiakirjoille sekä aloitusnäyttöwidget.
+• Perseptuaalinen dHash-kaksoiskuvatunnistus: Taustaskannaus etsii samankaltaiset kuvat ja säilyttää terävimmän otoksen automaattisesti.
+• Offline-OCR Kuvakaappauksille: Lajittele kuitit, kertakäyttökoodit ja meemit paikallisesti ilman pilvipalvelua.
+• Pyyhkäisyhallinta: Pyyhkäise vasemmalle poistaaksesi ja oikealle säilyttääksesi kumoa-toiminnolla.
+• Median Tiivistys: Pienennä 4K-videoita ja kuvia laadun kärsimättä.
+• Välimuisti, Turvaholvi & Latausmuistutus: Tyhjennä välimuisti, suojaa arkaluontoiset tiedostot ja tarkista 30, 60 tai 90 päivää vanhat lataukset.
 
 Tietosuoja:
-Kaikki skannaukset ja poistot tapahtuvat paikallisesti laitteellasi. Yksityisiä tiedostojasi ei koskaan lähetetä ulkoisille palvelimille."
-Norwegian,nb-NO,AI Lagringsrenser,"Rydd lagringsplass, slett dupliserte bilder og tøm app-buffer enkelt.","AI Lagringsrenser hjelper deg med å optimalisere enhetens lagringsplass med smarte filhåndteringsverktøy.
+Kaikki skannaukset ja poistot suoritetaan 100 % paikallisesti omalla laitteellasi."
+Norwegian,nb-NO,AI Lagringsrenser,"Hurtigrydding med ett trykk, duplikatbilder, buffer og lagringsdiagrammer.","AI Lagringsrenser optimaliserer lagringsplassen din med raske verktøy som fungerer helt lokalt på enheten.
 
 Hovedfunksjoner:
-• AI Smartskanning: Identifiser systembuffer, midlertidige filer og ubrukte data med ett trykk.
-• Sveisegalleri-renser: Sveip til venstre for å slette bilder og til høyre for å ta vare på minnene.
-• Duplikatbilde-detektor: Finn og slett like bilder mens det skarpeste bildet automatisk bevares.
-• Mediekomprimering: Komprimer 4K-videoer og høyoppløselige bilder uten synlig kvalitetstap.
-• Tøm App-buffer: Identifiser enkelt apper som samler opp store mengder bufferdata.
-• Sikker Hvelv: Beskytt følsomme bilder og filer i et sikkert lokalt hvelv.
-• Utløp for Nedlastinger: Oppdag automatisk nedlastede filer som er eldre enn 30, 60 eller 90 dager.
-• Lagringsanalyse: Oversiktlige diagrammer som viser fordelingen mellom bilder, videoer, apper og dokumenter.
+• Hurtigrydding med 1 Trykk: Finn store filer (10 MB+) og bufferdata på sekunder, filtrer etter filtype og frigjør plass med ett trykk.
+• Visuell Lagringsanalyse: Interaktive kake- og smultringdiagrammer for Bilder, Videoer, Apper og Dokumenter samt startskjermwidget.
+• Perseptuell dHash Duplikatskanner: Bakgrunnsskanning finner like bilder og tar automatisk vare på det skarpeste bildet.
+• Frakoblet OCR-sortering: Klassifiser skjermbilder, kvitteringer og engangskoder lokalt uten opplasting.
+• Sveipegalleri: Sveip til venstre for å slette og til høyre for å lagre med umiddelbar angring.
+• Mediekomprimering: Krymp 4K-videoer og bilder uten synlig kvalitetstap.
+• App-buffer, Hvelv & Utløpstid: Tøm tung buffer, beskytt filer i lokalt hvelv og sjekk nedlastinger eldre enn 30, 60 eller 90 dager.
 
 Personvern:
-Alle skanninger og slettinger skjer lokalt på enheten din. Dine personlige filer blir aldri sendt til eksterne servere."
-Czech,cs-CZ,AI Čistič Úložiště,"Vyčistěte úložiště, odstraňte duplicitní fotky a smažte mezipaměť aplikací.","AI Čistič Úložiště vám pomůže optimalizovat prostor v zařízení pomocí chytrých nástrojů pro správu souborů.
+All skanning, bildeanalyse og sletting skjer 100 % lokalt på telefonen din."
+Czech,cs-CZ,AI Čistič Úložiště,"Rychlé čištění 1 klepnutím, duplicitní fotky, mezipaměť a grafy úložiště.","AI Čistič Úložiště optimalizuje úložiště vašeho telefonu pomocí rychlých nástrojů pracujících kompletně v zařízení.
 
 Hlavní funkce:
-• AI Chytré Skenování: Rozpozná systémovou mezipaměť, dočasné soubory a zbytková data.
-• Čištění Galerie Tažením: Přejetím dolevá smažete nežádoucí fotky, přejetím doprava je uložíte.
-• Detekce Duplicitních Fotek: Najde a odstraní duplicitní snímky, přičemž automaticky zachová nejostřejší fotku.
-• Komprese Médií: Zmenšete velikost 4K videí a fotek ve vysokém rozlišení bez viditelné ztráty kvality.
-• Čistič Mezipaměti Aplikací: Snadno identifikuje aplikace zabírající velké množství mezipaměti.
-• Bezpečný Trezor: Chraňte citlivé fotky a soubory v bezpečném lokálním trezoru.
-• Expirace Stažených Souborů: Detekujte staré stažené soubory starší než 30, 60 nebo 90 dní.
-• Analýza Úložiště: Přehledné grafy zobrazující rozdělení prostoru mezi fotky, videa, aplikace a dokumenty.
+• Rychlé Čištění 1 Klepnutím: Okamžitě najděte velké soubory (10 MB+) a mezipaměť, filtrujte podle typu a uvolněte místo jedním klepnutím.
+• Vizuální Analyzátor Úložiště: Interaktivní koláčové a prstencové grafy pro Fotky, Videa, Aplikace a Dokumenty i widget plochy.
+• Percepční dHash Detekce Duplicit: Skenování na pozadí vyhledá podobné fotky a automaticky ponechá nejostřejší snímek.
+• Offline OCR Třídění Snímků: Roztřiďte účtenky, OTP kódy a memy lokálně bez připojení.
+• Čištění Přejetím: Přejetím doleva smažete a doprava uložíte s možností okamžitě vrátit zpět.
+• Komprese Médií: Zmenšete 4K videa a fotky ve vysokém rozlišení bez viditelné ztráty kvality.
+• Mezipaměť, Bezpečný Trezor a Expirace: Uvolněte mezipaměť aplikací, zamkněte soubory do trezoru a zkontrolujte stažené soubory starší 30, 60 nebo 90 dnů.
 
 Soukromí:
-Všechna skenování a mazání probíhají lokálně ve vašem zařízení. Vaše osobní soubory se nikdy neodesílají na externí servery."
-Slovak,sk-SK,AI Čistič Úložiska,"Vyčistite úložisko, odstráňte duplicitné fotky a vymažte vyrovnávaciu pamäť.","AI Čistič Úložiska vám pomôže optimalizovať priestor v zariadení pomocou inteligentných nástrojov na správu súborov.
+Veškeré analýzy a mazání probíhají 100% lokálně přímo ve vašem zařízení."
+Slovak,sk-SK,AI Čistič Úložiska,"Rýchle čistenie 1 klepnutím, duplicitné fotky, vyrovnávacia pamäť a grafy.","AI Čistič Úložiska optimalizuje priestor v zariadení rýchlymi nástrojmi, ktoré pracujú priamo v telefóne.
 
 Hlavné funkcie:
-• AI Inteligentné Skenovanie: Rozpozná systémovú vyrovnávaciu pamäť, dočasné súbory a zvyškové dáta.
-• Čistenie Galérie Gestom: Potiahnutím doľava vymažete neželané fotky, potiahnutím doprava ich uložíte.
-• Detekcia Duplicitných Fotiek: Nájde a odstráni duplicitné zábery, pričom automaticky zachová najostrejšiu fotku.
+• Rýchle Čistenie 1 Klepnutím: Okamžite nájdite veľké súbory (10 MB+) a vyrovnávaciu pamäť, filtrujte podľa typu a uvoľnite miesto naraz.
+• Vizuálny Analyzátor Úložiska: Interaktívne koláčové a prstencové grafy pre Fotky, Videá, Aplikácie a Dokumenty plus widget plochy.
+• Percepčný dHash Detektor Duplicít: Kontrola na pozadí nájde podobné zábery a automaticky zachová najostrejšiu fotku.
+• Offline OCR Triedenie Snímok: Lokálne roztrieďte účtenky, OTP kódy a snímky bez nahrávania do cloudu.
+• Čistenie Gestom: Potiahnutím doľava vymažete a doprava uložíte s okamžitým vrátením.
 • Kompresia Médií: Zmenšite veľkosť 4K videí a fotiek bez viditeľnej straty kvality.
-• Čistič Vyrovnávacej Pamäte Aplikácií: Ľahko identifikuje aplikácie zaberajúce veľa pamäte.
-• Bezpečný Trezor: Chráňte citlivé fotky a súbory v bezpečnom lokálnom trezore.
-• Expirácia Stiahnutých Súborov: Detegujte staré stiahnuté súbory staršie ako 30, 60 alebo 90 dní.
-• Analýza Úložiska: Prehľadné grafy zobrazujúce rozdelenie priestoru medzi fotky, videá, aplikácie a dokumenty.
+• Vyrovnávacia Pamäť, Trezor a Expirácia: Vyčistite cache, chráňte súbory v lokálnom trezore a skontrolujte stiahnuté súbory staršie ako 30, 60 či 90 dní.
 
 Súkromie:
-Všetky skenovania a mazania prebiehajú lokálne vo vašom zariadení. Vaše osobné súbory sa nikdy neodesielajú na externé servery."
-Hungarian,hu-HU,AI Tárhely Tisztító,"Tisztítsa meg a tárhelyet, törölje a duplikált fotókat és a gyorsítótárat.","Az AI Tárhely Tisztító segít optimalizálni a készülék tárhelyét az intelligens fájlkezelő eszközök segítségével.
+Všetky skenovania a mazania prebiehajú 100 % lokálne vo vašom zariadení."
+Hungarian,hu-HU,AI Tárhely Tisztító,"Gyors tisztítás 1 érintéssel, duplikált fotók, gyorsítótár és tárhelydiagramok.","Az AI Tárhely Tisztító teljesen az eszközön működő, gyors fájlkezelő eszközökkel segít értékes tárhelyet felszabadítani.
 
 Fő funkciók:
-• AI Okos Scan: Felismeri a rendszer gyorsítótárat, az ideiglenes fájlokat és a maradék adatokat.
-• Húzással Történő Tárhelytisztítás: Húzza balra a nem kívánt fotók törléséhez, és jobbra a képek megőrzéséhez.
-• Duplikált Fotók Észlelése: Megkeresi és törli a duplikált fényképeket, miközben automatikusa megőrzi a legélesebb képet.
-• Média Tömörítés: Tömörítse a 4K videókat és a nagy felbontású képeket látható minőségromlás nélkül.
-• Alkalmazás Gyorsítótár Tisztító: Könnyen azonosítja a nagy gyorsítótárat felhalmozó alkalmazásokat.
-• Biztonságos Széf: Védje a bizalmas fotókat és fájlokat egy biztonságos helyi széfben.
-• Letöltések Lejárata: Automatikusan észleli a 30, 60 vagy 90 napnál régebbi letöltött fájlokat.
-• Tárhely Elemzés: Átlátható diagramok a fotók, videók, alkalmazások és dokumentumok tárhelyhasználatáról.
+• Gyors Tisztítás 1 Érintéssel: Azonnal megtalálja a nagy fájlokat (10 MB+) és a gyorsítótár-adatokat, és egyetlen koppintással felszabadítja a helyet.
+• Vizuális Tárhelyelemző: Interaktív kör- és gyűrűdiagramok a Fotók, Videók, Appok és Dokumentumok megoszlásáról, valamint kezdőképernyő-widget.
+• Perceptuális dHash Duplikátumkereső: Háttérvizsgálattal megkeresi a hasonló fotókat, miközben megőrzi a legélesebb képet.
+• Offline OCR Képernyőkép-válogatás: Helyileg rendszerezi a nyugtákat, OTP kódokat és mémeket.
+• Húzással Történő Tisztítás: Húzza balra a törléshez és jobbra a megőrzéshez azonnali visszavonással.
+• Média Tömörítés: Csökkentse a 4K videók és fotók méretét látható minőségromlás nélkül.
+• Gyorsítótár, Széf és Letöltés-lejárat: Törölje a felesleges gyorsítótárat, védje fájljait a helyi széfben, és ellenőrizze a 30, 60 vagy 90 napnál régebbi letöltéseket.
 
 Adatvédelem:
-Minden elemzés és törlés helyileg történik a készülékén. Személyes fájljait soha nem töltjük fel külső szerverekre."
-Romanian,ro-RO,Curățare Stocare AI,"Curățați spațiul de stocare, eliminați pozele duplicate și ștergeți cache-ul.","Curățare Stocare AI vă ajută să optimizați spațiul de stocare al dispozitivului cu instrumente inteligente de gestionare a fișierelor.
+Minden elemzés és törlés 100%-ban helyileg történik az Ön készülékén."
+Romanian,ro-RO,Curățare Stocare AI,"Curățare rapidă cu 1 atingere, poze duplicate, cache și grafice de stocare.","Curățare Stocare AI optimizează spațiul telefonului cu instrumente rapide care rulează integral local pe dispozitiv.
 
 Caracteristici principale:
-• Scanare Inteligentă AI: Identificați cache-ul de sistem, fișierele temporare și datele reziduale.
-• Curățare Galerie prin Glisare: Glisați spre stânga pentru a șterge pozele nedorite și spre dreapta pentru a le păstra.
-• Detector de Poze Duplicate: Găsiți și eliminați pozele duplicate păstrând automat cea mai clară imagine.
-• Compresie Media: Comprimați videoclipurile 4K și pozele de înaltă rezoluție fără pierderi vizibile de calitate.
-• Curățare Cache Aplicații: Identificați ușor aplicațiile care acumulează un cache mare.
-• Seif Securizat: Protejați pozele și fișierele confidențiale într-un seif local securizat.
-• Expirare Descărcări: Detectați automat fișierele descărcate mai vechi de 30, 60 sau 90 de zile.
-• Analiză Stocare: Grafice clare care arată distribuția spațiului între poze, videoclipuri, aplicații și documente.
+• Curățare Rapidă cu 1 Atingere: Găsiți instantaneu fișiere mari (10 MB+) și date cache, filtrați după tip și eliberați spațiu imediat.
+• Analizor Vizual de Stocare: Diagrame interactive circulare și inelare pentru Poze, Videoclipuri, Aplicații și Documente, plus widget pe ecran.
+• Detector Perceptual dHash: Scanare în fundal care găsește poze identice sau similare, păstrând automat imaginea cea mai clară.
+• Sortare OCR Offline pentru Capturi: Organizați chitanțe, coduri OTP și meme-uri direct pe telefon.
+• Curățare prin Glisare: Glisați spre stânga pentru ștergere și spre dreapta pentru păstrare cu anulare instantanee.
+• Compresie Media: Comprimați videoclipuri 4K și poze fără pierderi vizibile de calitate.
+• Cache, Seif Securizat și Expirare Descărcări: Goliți cache-ul inutil, protejați fișierele sensibile și verificați descărcările mai vechi de 30, 60 sau 90 de zile.
 
 Confidențialitate:
-Toate scanările și ștergerile au loc local pe dispozitivul dvs. Fișierele personale nu sunt niciodată încărcate pe servere externe."
-Greek,el-GR,Καθαριστής Χώρου AI,"Καθαρίστε το χώρο αποθήκευσης, διαγράψτε διπλότυπες φωτογραφίες και cache.","Ο Καθαριστής Χώρου AI σας βοηθά να βελτιστοποιήσετε το χώρο αποθήκευσης της συσκευής σας με έξυπνα εργαλεία διαχείρισης αρχείων.
+Toate scanările și ștergerile se desfășoară 100% local pe dispozitivul dvs."
+Greek,el-GR,Καθαριστής Χώρου AI,"Γρήγορος καθαρισμός με 1 πάτημα, διπλότυπες φωτογραφίες, cache και γραφήματα.","Ο Καθαριστής Χώρου AI βελτιστοποιεί τον αποθηκευτικό χώρο με γρήγορα εργαλεία που λειτουργούν εξ ολοκλήρου τοπικά στη συσκευή.
 
 Κύρια Χαρακτηριστικά:
-• Έξυπνη Σάρωση AI: Εντοπίστε την προσωρινή μνήμη συστήματος, τα προσωρινά αρχεία και τα υπολειμματικά δεδομένα.
-• Καθαρισμός Συλλογής με Σύρσιμο: Σύρετε αριστερά για διαγραφή ανεπιθύμητων φωτογραφιών και δεξιά για διατήρηση.
-• Εντοπισμός Διπλότυπων Φωτογραφιών: Βρείτε και διαγράψτε διπλότυπες φωτογραφίες διατηρώντας αυτόματα την πιο καθαρή λήψη.
-• Συμπίεση Πολυμέσων: Συμπιέστε βίντεο 4K και φωτογραφίες υψηλής ανάλυσης χωρίς ορατή απώλεια ποιότητας.
-• Καθαρισμός Cache Εφαρμογών: Εντοπίστε εύκολα εφαρμογές που συσσωρεύουν μεγάλη προσωρινή μνήμη.
-• Ασφαλές Χρηματοκιβώτιο: Προστατέψτε ιδιωτικές φωτογραφίες και αρχεία σε ένα ασφαλές τοπικό χρηματοκιβώτιο.
-• Λήξη Λήψεων: Εντοπίστε αυτόματα ληφθέντα αρχεία παλαιότερα των 30, 60 ή 90 ημερών.
-• Αναλυτικά Στοιχεία Αποθήκευσης: Σαφή γραφήματα που δείχνουν την κατανομή χώρου σε φωτογραφίες, βίντεο, εφαρμογές και έγγραφα.
+• Γρήγορος Καθαρισμός με 1 Πάτημα: Εντοπίστε μεγάλα αρχεία (10 MB+) και δεδομένα cache σε δευτερόλεπτα και ελευθερώστε χώρο άμεσα.
+• Οπτικός Αναλυτής Χώρου: Διαδραστικά γραφήματα πίτας και δακτυλίου για Φωτογραφίες, Βίντεο, Εφαρμογές και Έγγραφα, μαζί με widget αρχικής οθόνης.
+• Εντοπισμός Διπλότυπων dHash: Σάρωση παρασκηνίου για παρόμοιες λήψεις με αυτόματη διατήρηση της πιο καθαρής φωτογραφίας.
+• Ταξινόμηση Στιγμιότυπων OCR Εκτός Σύνδεσης: Οργανώστε αποδείξεις, κωδικούς OTP και εικόνες τοπικά χωρίς αποστολή δεδομένων.
+• Καθαρισμός με Σύρσιμο: Σύρετε αριστερά για διαγραφή και δεξιά για διατήρηση με άμεση αναίρεση.
+• Συμπίεση Πολυμέσων: Μειώστε βίντεο 4K και φωτογραφίες χωρίς ορατή απώλεια ποιότητας.
+• Cache, Ασφαλές Θησαυροφυλάκιο & Λήξεις: Εκκαθαρίστε την cache, προστατέψτε αρχεία τοπικά και ελέγξτε λήψεις άνω των 30, 60 ή 90 ημερών.
 
 Ιδιωτικότητα:
-Όλες οι σαρώσεις και διαγραφές πραγματοποιούνται τοπικά στη συσκευή σας. Τα προσωπικά σας αρχεία δεν μεταφορτώνονται ποτέ σε εξωτερικούς διακομιστές."
-Bulgarian,bg-BG,Почистване на памет AI,"Почистете паметта, изтрийте дублиращите се снимки и кеша на приложенията.","Почистване на памет AI ви помага да оптимизирате дисковото пространство на вашето устройство с интелигентни инструменти за управление на файлове.
+Όλες οι σαρώσεις και διαγραφές εκτελούνται 100% τοπικά στη συσκευή σας."
+Bulgarian,bg-BG,Почистване на памет AI,"Бързо почистване с 1 докосване, дубликати, кеш и диаграми на паметта.","Почистване на памет AI освобождава пространство с бързи инструменти, работещи изцяло локално на вашето устройство.
 
 Основни функции:
-• AI Интелигентно Сканиране: Откривайте системния кеш, временните файлове и остатъчните данни с едно докосване.
-• Почистване на Галерията с Плъзгане: Плъзнете наляво за изтриване на снимки и надясно за запазване на спомените.
-• Откриване на Дублиращи се Снимки: Намерете и премахнете повторените снимки, като автоматично запазвате най-ясния кадър.
-• Компресиране на Медия: Компресирайте 4K видеа и снимки с висока резолюция без видима загуба на качество.
-• Почистване Кеша на Приложенията: Лесно идентифицирайте приложенията, натрупващи голям кеш.
-• Защитена Сейф Папка: Защитете поверителни снимки и файлове в локален защитен сейф.
-• Изтичане на Срок на Изтеглянията: Откривайте изтеглени файлове по-стари от 30, 60 или 90 дни.
-• Анализ на Паметта: Ясни графики, показващи разпределението на паметта между снимки, видеа, приложения и документи.
+• Бързо Почистване с 1 Докосване: Открийте големи файлове (10 MB+) и кеширани данни за секунди и освободете гигабайти веднага.
+• Визуален Анализатор на Паметта: Интерактивни кръгови диаграми за Снимки, Видео, Приложения и Документи, плюс уиджет за началния екран.
+• Перцептуален dHash Скенер: Фоново сканиране открива повтарящи се снимки и автоматично пази най-ясния кадър.
+• Офлайн OCR Сортиране: Подрежда бележки, кодове и скрийншоти локално без интернет.
+• Почистване с Плъзгане: Плъзнете наляво за изтриване и надясно за запазване с мигновена отмяна.
+• Компресиране на Медия: Намалете размера на 4K видео и снимки без видима загуба на качество.
+• Кеш, Сейф и Стари Изтегляния: Изчистете излишния кеш, пазете лични файлове в сейф и преглеждайте изтегляния над 30, 60 или 90 дни.
 
 Поверителност:
-Всички сканирания и изтривания се извършват локално на вашето устройство. Вашите лични файлове никога не се качват на външни сървъри."
-Thai,th-TH,AI ล้างพื้นที่จัดเก็บ,ล้างพื้นที่จัดเก็บ ลบรูปภาพซ้ำ ล้างแคชแอป และคืนพื้นที่ให้โทรศัพท์,"AI ล้างพื้นที่จัดเก็บ ช่วยคุณเพิ่มพื้นที่ว่างในโทรศัพท์และจัดการไฟล์อย่างมีประสิทธิภาพด้วยเครื่องมืออัจฉริยะ
+Всички проверки и изтривания се извършват 100% локално на вашето устройство."
+Thai,th-TH,AI ล้างพื้นที่จัดเก็บ,ล้างด่วนในแตะเดียว ลบรูปซ้ำ ล้างแคช และดูกราฟพื้นที่จัดเก็บแบบโต้ตอบได้,"AI ล้างพื้นที่จัดเก็บ ช่วยคุณคืนพื้นที่ว่างในโทรศัพท์อย่างรวดเร็วด้วยเครื่องมือจัดการไฟล์ที่ประมวลผลบนอุปกรณ์ทั้งหมด
 
 คุณสมบัติหลัก:
-• สแกนอัจฉริยะ AI: ตรวจหาแคชระบบ ไฟล์ชั่วคราว และไฟล์ขยะที่ค้างอยู่ในเครื่อง
-• ล้างรูปภาพด้วยการปัด: ปัดซ้ายเพื่อลบรูปที่ไม่ต้องการ และปัดขวาเพื่อเก็บรูปภาพความทรงจำ
-• ตรวจจับรูปภาพซ้ำ: ค้นหาและลบรูปภาพที่ซ้ำกัน โดยระบบจะเลือกเก็บรูปที่คมชัดที่สุดให้อัตโนมัติ
-• บีบอัดไฟล์สื่อ: บีบอัดวิดีโอ 4K และรูปภาพความละเอียดสูงโดยไม่เสียความคมชัด
-• ล้างแคชแอปพลิเคชัน: ตรวจสอบและล้างไฟล์แคชที่สะสมในแต่ละแอปได้อย่างง่ายดาย
-• ตู้เซฟส่วนตัว: ปกป้องรูปภาพและไฟล์สำคัญไว้ในตู้เซฟในเครื่องที่ปลอดภัย
-• จัดการไฟล์ดาวน์โหลดเก่า: ตรวจหาไฟล์ดาวน์โหลดที่มีอายุเกิน 30, 60 หรือ 90 วัน
-• วิเคราะห์การใช้พื้นที่: กราฟแสดงสัดส่วนการใช้พื้นที่ของรูปภาพ วิดีโอ แอป และเอกสารอย่างชัดเจน
+• ล้างด่วนในแตะเดียว: ตรวจจับไฟล์ขนาดใหญ่ (10 MB+) และข้อมูลแคชในไม่กี่วินาที กรองตามประเภท แล้วล้างพื้นที่ได้ทันที
+• วิเคราะห์พื้นที่แบบเห็นภาพ: กราฟวงกลมและโดนัทแบบโต้ตอบสำหรับรูปภาพ วิดีโอ แอป และเอกสาร พร้อมวิดเจ็ตหน้าจอหลัก
+• ตรวจจับภาพซ้ำด้วย dHash: สแกนเบื้องหลังเพื่อหารูปที่เหมือนกันหรือคล้ายกัน โดยเก็บภาพที่คมชัดที่สุดไว้ให้อัตโนมัติ
+• จัดหมวดภาพหน้าจอด้วย OCR ออฟไลน์: แยกใบเสร็จ รหัส OTP และมีมได้บนเครื่องโดยไม่ต้องส่งข้อมูลออกนอกเครื่อง
+• ปัดเพื่อล้างแกลเลอรี: ปัดซ้ายเพื่อลบ ปัดขวาเพื่อเก็บ พร้อมปุ่มเลิกทำทันที
+• บีบอัดสื่อ: ลดขนาดวิดีโอ 4K และรูปความละเอียดสูงโดยไม่เสียความคมชัด
+• ล้างแคช ตู้เซฟ และการหมดอายุไฟล์ดาวน์โหลด: จัดการแคช ปกป้องไฟล์สำคัญ และตรวจไฟล์เก่าเกิน 30, 60 หรือ 90 วัน
 
 ความเป็นส่วนตัว:
-การสแกนและการลบไฟล์ทั้งหมดดำเนินการภายในเครื่องของคุณเท่านั้น รูปภาพและไฟล์ส่วนตัวของคุณจะไม่มีวันถูกอัปโหลดไปยังเซิร์ฟเวอร์ภายนอก"
-Indonesian,id-ID,Pembersih Penyimpanan AI,"Bersihkan penyimpanan, hapus foto duplikat, dan bersihkan cache aplikasi.","Pembersih Penyimpanan AI membantu Anda mengoptimalkan ruang penyimpanan perangkat dengan alat manajemen file cerdas.
+การสแกนและการลบทั้งหมดทำงานบนเครื่องของคุณ 100% ไม่มีการอัปโหลดไฟล์ส่วนตัว"
+Indonesian,id-ID,Pembersih Penyimpanan AI,"Bersih cepat sekali ketuk, cari foto duplikat, hapus cache & grafik ruang.","Pembersih Penyimpanan AI membantu mengoptimalkan ruang penyimpanan perangkat dengan alat cepat yang berjalan sepenuhnya secara lokal.
 
 Fitur Utama:
-• Pemindaian Pintar AI: Deteksi cache sistem, file sementara, dan sisa data sampah dalam satu ketukan.
-• Pembersih Galeri Geser: Geser ke kiri untuk menghapus foto dan geser ke kanan untuk menyimpan kenangan terbaik.
-• Detektor Foto Duplikat: Temukan dan hapus foto duplikat dengan otomatis mempertahankan foto yang paling jernih.
-• Kompresi Media: Kompres video 4K dan foto resolusi tinggi tanpa penurunan kualitas yang terlihat.
-• Pembersih Cache Aplikasi: Identifikasi aplikasi yang menumpuk file cache besar dengan mudah.
-• Brankas Aman: Lindungi foto dan file pribadi di brankas lokal yang aman.
-• Kedaluwarsa Unduhan: Deteksi file unduhan lama yang berusia lebih dari 30, 60, atau 90 hari.
-• Analisis Penyimpanan: Grafik jelas yang menampilkan distribusi ruang antara foto, video, aplikasi, dan dokumen.
+• Pembersihan Cepat 1 Ketuk: Deteksi file besar (10 MB+) dan data cache dalam sekejap, filter berdasarkan jenis, dan bebaskan ruang langsung.
+• Penganalisis Penyimpanan Visual: Diagram lingkaran dan donat interaktif untuk Foto, Video, Aplikasi, dan Dokumen, serta widget layar utama.
+• Detektor Duplikat dHash Perseptual: Pemindaian latar belakang menemukan foto mirip dan otomatis mempertahankan gambar paling jernih.
+• Sortir Tangkapan Layar OCR Offline: Klasifikasikan struk, kode OTP, dan meme secara lokal tanpa unggah ke server.
+• Pembersih Galeri Geser: Geser ke kiri untuk menghapus dan ke kanan untuk menyimpan dengan batal instan.
+• Kompresi Media: Perkecil video 4K dan foto beresolusi tinggi tanpa penurunan kualitas yang terlihat.
+• Cache, Brankas Aman & Kedaluwarsa Unduhan: Bersihkan cache menumpuk, lindungi file di brankas lokal, dan tinjau unduhan berusia 30, 60, atau 90 hari.
 
 Privasi:
-Semua pemindaian dan penghapusan dilakukan secara lokal di perangkat Anda. File pribadi Anda tidak pernah diunggah ke server luar."
-Malay,ms-MY,Pembersih Storan AI,"Bersihkan storan, padam foto pendua dan padam sampel cache aplikasi.","Pembersih Storan AI membantu anda mengoptimumkan ruang storan peranti dengan alat pengurusan fail pintar.
+Semua pemindaian, analisis OCR, dan penghapusan dilakukan 100% secara lokal di perangkat Anda."
+Malay,ms-MY,Pembersih Storan AI,"Bersih pantas satu ketik, foto pendua, padam cache aplikasi dan carta storan.","Pembersih Storan AI membantu mengoptimumkan ruang storan peranti anda dengan alat pengurusan fail pantas yang diproses secara tempatan.
 
 Ciri-ciri Utama:
-• Imbasan Pintar AI: Kesan cache sistem, fail sementara dan data sisa dalam satu ketikan.
-• Pembersih Galeri Leret: Leret ke kiri untuk memadam foto dan leret ke kanan untuk menyimpan foto terbaik.
-• Pengesan Foto Pendua: Cari dan padam foto pendua sambil mengekalkan gambar yang paling jelas secara automatik.
-• Pemampatan Media: Mampatkan video 4K dan foto resolusi tinggi tanpa kehilangan kualiti yang ketara.
-• Pembersih Cache Aplikasi: Kenal pasti aplikasi yang mengumpul fail cache yang besar dengan mudah.
-• Peti Besi Selamat: Lindungi foto dan fail peribadi dalam peti besi tempatan yang selamat.
-• Tamat Tempoh Muat Turun: Kesan fail muat turun lama yang melebihi 30, 60 atau 90 hari.
-• Analisis Storan: Graf jelas yang menunjukkan taburan ruang antara foto, video, aplikasi dan dokumen.
+• Pembersihan Pantas 1 Ketik: Kesan fail besar (10 MB+) dan data cache dalam beberapa saat, tapis mengikut jenis fail dan kosongkan ruang serta-merta.
+• Penganalisis Storan Visual: Carta pai dan donat interaktif untuk Foto, Video, Aplikasi dan Dokumen, berserta widget skrin utama.
+• Pengesan Foto Pendua dHash: Imbasan latar belakang mencari gambar serupa sambil mengekalkan foto paling tajam secara automatik.
+• Pengisihan Tangkapan Skrin OCR Luar Talian: Kenal pasti resit, kod OTP dan meme terus pada peranti tanpa muat naik.
+• Pembersih Galeri Leret: Leret ke kiri untuk memadam dan ke kanan untuk menyimpan dengan buat asal pantas.
+• Pemampatan Media: Kecilkan saiz video 4K dan foto beresolusi tinggi tanpa kehilangan kualiti ketara.
+• Cache, Peti Besi & Tamat Tempoh Muat Turun: Padam cache berlebihan, lindungi fail sensitif dan semak muat turun melebihi 30, 60 atau 90 hari.
 
 Privasi:
-Semua imbasan dan pemadaman berlaku secara tempatan pada peranti anda. Fail peribadi anda tidak pernah dimuat naik ke pelayan luar."
-Hebrew,he-IL,מנקה אחסון AI,"נקה את שטח האחסון, הסר תמונות כפולות ומחק את המטמון של האפליקציות.","מנקה אחסון AI עוזר לך למטב את שטח האחסון במכשיר ולפנות מקום יקר באמצעות כלי ניהול קבצים חכמים.
+Semua imbasan, pemprosesan dan pemadaman berlaku 100% secara tempatan pada peranti anda."
+Hebrew,he-IL,מנקה אחסון AI,"ניקוי מהיר בלחיצה, איתור תמונות כפולות, מטמון ותרשימי אחסון.","מנקה אחסון AI עוזר לך למטב את שטח האחסון ולפנות מקום יקר בעזרת כלים מהירים הפועלים מקומית על המכשיר.
 
 תכונות עיקריות:
-• סריקה חכמה בטכנולוגיית AI: זיהוי מטמון מערכת, קבצים זמניים ונתונים מיוותרים בלחיצה אחת.
-• ניקוי גלריה בהחלקה: החלק שמאלה כדי למחוק תמונות לא רצויות והחלק ימינה כדי לשמור את התמונות הטובות ביותר.
-• גילוי תמונות כפולות: איתור ומחיקת תמונות כפולות תוך שמירה אוטומטית של התמונה הברורה ביותר.
-• דחיסת מדיה: דחיסת סרטוני 4K ותמונות ברזולוציה גבוהה ללא איבוד איכות מורגש.
-• ניקוי מטמון אפליקציות: זיהוי קל של אפליקציות שצוברות קבצי מטמון כבדים.
-• כספת מאובטחת: הגנה על תמונות וקבצים רגישים בכספת מקומית מאובטחת.
-• תפוגת הורדות ישנות: זיהוי אוטומטי של קבצים שהורדו לפני יותר מ-30, 60 או 90 ימים.
-• ניתוח אחסון: תרשימים ברורים המציגים את התפלגות השטח בין תמונות, סרטונים, אפליקציות ומסמכים.
+• ניקוי מהיר בלחיצה אחת: אתר קבצים גדולים (10 MB+) ונתוני מטמון בשניות ופנה ג'יגה-בייטים בלחיצה אחת.
+• מנתח אחסון חזותי: תרשימי עוגה וטבעת אינטראקטיביים לתמונות, סרטונים, אפליקציות ומסמכים, כולל ווידג'ט למסך הבית.
+• זיהוי כפילויות dHash: סריקת רקע לאיתור תמונות דומות תוך שמירה אוטומטית על התמונה החדה ביותר.
+• מיון צילומי מסך ב-OCR לא מקוון: סיווג קבלות, קודי אימות וממים מקומית ללא העלאה לענן.
+• ניקוי גלריה בהחלקה: החלק שמאלה למחיקה וימינה לשמירה עם ביטול מיידי.
+• דחיסת מדיה: כווץ סרטוני 4K ותמונות ללא אובדן איכות מורגש.
+• ניקוי מטמון, כספת והורדות ישנות: נקה מטמון כבד, הגן על קבצים בכספת מקומית ובדוק הורדות בנות 30, 60 או 90 יום.
 
 פרטיות:
-כל הסריקות והמחיקות מתבצעות באופן מקומי במכשיר שלך. הקבצים האישיים שלך אינם מועלים לעולם לשרתים חיצוניים."
-Ukrainian,uk-UA,Очищення пам'яті AI,"Очищайте пам'ять, видаляйте дублікати фото та кеш додатків легко й швидко.","Очищення пам'яті AI допомагає оптимізувати простір на вашому пристрої за допомогою розумних інструментів управління файлами.
+כל הסריקות, הזיהוי והמחיקות מתבצעים 100% מקומית במכשיר שלך."
+Ukrainian,uk-UA,Очищення пам'яті AI,"Швидке очищення в 1 дотик, дублікати фото, кеш та діаграми пам'яті.","Очищення пам'яті AI допомагає оптимізувати простір на пристрої за допомогою швидких інструментів, що працюють локально.
 
 Основні функції:
-• AI Розумне Сканування: Виявляйте системний кеш, тимчасові файли та залишкове сміття в один дотик.
-• Свайп-очищення галереї: Змахуйте ліворуч для видалення непотрібних фото та праворуч для збереження найкращих кадрів.
-• Пошук дублікатів фото: Знаходьте та видаляйте схожі знімки, автоматично зберігаючи найчіткіше фото.
-• Стиснення медіафайлів: Стискайте 4K-відео та фото високої роздільної здатності без помітної втрати якості.
-• Очищення кешу додатків: Зручно переглядайте та очищайте накопичений кеш додатків.
-• Захищене сховище: Зберігайте приватні фото та важливі файли в безпечній локальній папці.
-• Термін служби завантажень: Знаходьте застарілі файли в папці завантажень старіші за 30, 60 або 90 днів.
-• Аналітика пам'яті: Наочні діаграми розподілу пам'яті між фото, відео, додатками та документами.
+• Швидке Очищення в 1 Дотик: Знаходьте великі файли (10 МБ+) та кеш за секунди й звільняйте гігабайти одним дотиком.
+• Візуальний Аналізатор Пам'яті: Інтерактивні кругові та кільцеві діаграми для фото, відео, додатків і документів, а також віджет екрана.
+• Пошук Дублікатів dHash: Фонове перцептивне сканування знаходить схожі знімки та автоматично зберігає найчіткіший кадр.
+• Офлайн OCR-сортування Скріншотів: Локально розпізнавайте чеки, коди OTP і меми без завантаження на сервери.
+• Свайп-очищення Галереї: Змахуйте ліворуч для видалення та праворуч для збереження з миттєвим скасуванням.
+• Стиснення Медіафайлів: Зменшуйте 4K-відео та фото без помітної втрати якості.
+• Кеш, Сховище та Завантаження: Видаляйте зайвий кеш, захищайте файли в локальному сховищі та перевіряйте файли, старіші за 30, 60 або 90 днів.
 
 Конфіденційність:
-Усі процеси сканування та видалення виконуються локально на вашому пристрої. Ваші особисті файли ніколи не передаються на сторонні сервери."
+Усі сканування, OCR та видалення файлів виконуються 100% локально на вашому пристрої."

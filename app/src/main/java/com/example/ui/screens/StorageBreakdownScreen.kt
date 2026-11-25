@@ -50,13 +50,15 @@ fun StorageBreakdownScreen(
     uiState: CleanerUiState,
     onBack: () -> Unit,
     onDeleteLargeFiles: (List<MediaItem>) -> Unit,
+    initialExtensionFilter: String = "All",
+    onOpenStorageAnalyzer: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val stats = uiState.storageStats
     val haptic = LocalHapticFeedback.current
 
     var searchQuery by remember { mutableStateOf("") }
-    var selectedExtensionFilter by remember { mutableStateOf("All") }
+    var selectedExtensionFilter by remember(initialExtensionFilter) { mutableStateOf(initialExtensionFilter) }
     var selectedDateFilter by remember { mutableStateOf(StorageDateFilter.ALL_TIME) }
 
     val rawLargeFiles = uiState.allMedia.filter { it.isLarge || it.sizeBytes > 10 * 1024 * 1024 }
@@ -107,7 +109,7 @@ fun StorageBreakdownScreen(
                     Text(
                         text = stringResource(R.string.title_storage_explorer),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
-                        color = PolishTextPrimary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -115,19 +117,40 @@ fun StorageBreakdownScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.btn_back),
-                            tint = PolishTextPrimary
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
+                actions = {
+                    if (onOpenStorageAnalyzer != null) {
+                        TextButton(
+                            onClick = onOpenStorageAnalyzer,
+                            modifier = Modifier
+                                .defaultMinSize(minHeight = 48.dp)
+                                .testTag("explorer_open_analyzer_button")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.PieChart,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = stringResource(R.string.btn_open_storage_analyzer),
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                            )
+                        }
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = PolishBackground
+                    containerColor = MaterialTheme.colorScheme.background
                 )
             )
         },
         bottomBar = {
             if (selectedItemIds.isNotEmpty()) {
                 Surface(
-                    color = PolishSurface,
+                    color = MaterialTheme.colorScheme.surface,
                     tonalElevation = 8.dp,
                     shadowElevation = 16.dp,
                     modifier = Modifier.fillMaxWidth()
@@ -143,8 +166,8 @@ fun StorageBreakdownScreen(
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = PolishPrimary.copy(alpha = 0.1f)),
-                            border = CardDefaults.outlinedCardBorder().copy(brush = SolidColor(PolishPrimary.copy(alpha = 0.4f)))
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
+                            border = CardDefaults.outlinedCardBorder().copy(brush = SolidColor(MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)))
                         ) {
                             Row(
                                 modifier = Modifier
@@ -160,7 +183,7 @@ fun StorageBreakdownScreen(
                                     Icon(
                                         imageVector = Icons.Default.CheckCircle,
                                         contentDescription = null,
-                                        tint = PolishPrimary,
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(20.dp)
                                     )
                                     Column {
@@ -171,7 +194,7 @@ fun StorageBreakdownScreen(
                                                 stringResource(R.string.storage_selected_files_fmt, selectedItemsList.size)
                                             },
                                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                            color = PolishTextPrimary
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
                                         Text(
                                             text = stringResource(R.string.storage_total_saved_fmt, formatFileSize(selectedBytes)),
@@ -184,7 +207,7 @@ fun StorageBreakdownScreen(
                                 TextButton(
                                     onClick = { selectedItemIds = emptySet() }
                                 ) {
-                                    Text(stringResource(R.string.btn_clear), color = PolishPrimary, fontWeight = FontWeight.Bold)
+                                    Text(stringResource(R.string.btn_clear), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
@@ -256,9 +279,9 @@ fun StorageBreakdownScreen(
                         .fillMaxWidth()
                         .shadow(2.dp, RoundedCornerShape(24.dp), ambientColor = Color.Black.copy(alpha = 0.03f)),
                     shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = PolishSurface),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     border = CardDefaults.outlinedCardBorder().copy(
-                        brush = SolidColor(PolishOutline.copy(alpha = 0.6f))
+                        brush = SolidColor(MaterialTheme.colorScheme.outline.copy(alpha = 0.6f))
                     )
                 ) {
                     Column(
@@ -276,19 +299,20 @@ fun StorageBreakdownScreen(
                                 Text(
                                     text = stringResource(R.string.storage_status_title),
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 16.sp),
-                                    color = PolishTextPrimary
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = stringResource(R.string.stat_used_of_total, stats.formattedUsed, stats.formattedTotal),
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = PolishTextSecondary
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
+                            val usedPct = if (stats.totalBytes > 0L) ((stats.usedBytes.toFloat() / stats.totalBytes.toFloat()) * 100).toInt().coerceIn(0, 100) else 0
                             Text(
-                                text = "${((stats.usedBytes.toFloat() / stats.totalBytes.toFloat()) * 100).toInt()}%",
+                                text = stringResource(R.string.format_percentage, usedPct),
                                 style = MaterialTheme.typography.headlineMedium.copy(
                                     fontWeight = FontWeight.Black,
-                                    color = PolishPrimary
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             )
                         }
@@ -319,7 +343,7 @@ fun StorageBreakdownScreen(
                         Text(
                             text = stringResource(R.string.storage_large_files_title),
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 16.sp),
-                            color = PolishTextPrimary
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         TextButton(
                             onClick = {
@@ -338,7 +362,7 @@ fun StorageBreakdownScreen(
                                     stringResource(R.string.storage_select_all_count_fmt, filteredLargeFiles.size)
                                 },
                                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                color = PolishPrimary
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -350,24 +374,24 @@ fun StorageBreakdownScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("file_search_input"),
-                        placeholder = { Text(stringResource(R.string.search_files_hint), color = PolishTextSecondary) },
+                        placeholder = { Text(stringResource(R.string.search_files_hint), color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         leadingIcon = {
-                            Icon(imageVector = Icons.Default.Search, contentDescription = null, tint = PolishTextSecondary)
+                            Icon(imageVector = Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         },
                         trailingIcon = {
                             if (searchQuery.isNotEmpty()) {
                                 IconButton(onClick = { searchQuery = "" }) {
-                                    Icon(imageVector = Icons.Default.Close, contentDescription = stringResource(R.string.btn_clear), tint = PolishTextSecondary)
+                                    Icon(imageVector = Icons.Default.Close, contentDescription = stringResource(R.string.btn_clear), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             }
                         },
                         shape = RoundedCornerShape(16.dp),
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = PolishSurface,
-                            unfocusedContainerColor = PolishSurface,
-                            focusedBorderColor = PolishPrimary,
-                            unfocusedBorderColor = PolishOutline.copy(alpha = 0.5f)
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
                         )
                     )
 
@@ -388,10 +412,10 @@ fun StorageBreakdownScreen(
                                 },
                                 label = { Text(if (ext == "All") stringResource(R.string.storage_filter_all) else ext) },
                                 colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = PolishPrimary,
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
                                     selectedLabelColor = Color.White,
-                                    containerColor = PolishSurface,
-                                    labelColor = PolishTextPrimary
+                                    containerColor = MaterialTheme.colorScheme.surface,
+                                    labelColor = MaterialTheme.colorScheme.onSurface
                                 )
                             )
                         }
@@ -415,8 +439,8 @@ fun StorageBreakdownScreen(
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = ElectricBlue,
                                     selectedLabelColor = Color.White,
-                                    containerColor = PolishSurface,
-                                    labelColor = PolishTextPrimary
+                                    containerColor = MaterialTheme.colorScheme.surface,
+                                    labelColor = MaterialTheme.colorScheme.onSurface
                                 )
                             )
                         }
@@ -428,7 +452,7 @@ fun StorageBreakdownScreen(
                                 .fillMaxWidth()
                                 .padding(vertical = 12.dp),
                             shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = PolishSurface)
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                         ) {
                             Column(
                                 modifier = Modifier
@@ -440,19 +464,19 @@ fun StorageBreakdownScreen(
                                 Icon(
                                     imageVector = Icons.Default.FindInPage,
                                     contentDescription = null,
-                                    tint = PolishTextSecondary,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(36.dp)
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
                                     text = stringResource(R.string.storage_no_matching_files),
                                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = PolishTextPrimary
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
                                     text = stringResource(R.string.storage_no_matching_files_desc),
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = PolishTextSecondary
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -524,13 +548,13 @@ private fun CategoryProgressItem(
                 Text(
                     text = label,
                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
-                    color = PolishTextPrimary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
             Text(
                 text = formatFileSize(categoryBytes),
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                color = PolishTextPrimary
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
         LinearProgressIndicator(
@@ -540,7 +564,7 @@ private fun CategoryProgressItem(
                 .height(6.dp)
                 .clip(RoundedCornerShape(3.dp)),
             color = color,
-            trackColor = PolishSurfaceVariant
+            trackColor = MaterialTheme.colorScheme.surfaceVariant
         )
     }
 }
@@ -557,9 +581,9 @@ private fun LargeFileRowItem(
             .clickable(onClick = onToggleSelect)
             .shadow(1.dp, RoundedCornerShape(18.dp), ambientColor = Color.Black.copy(alpha = 0.02f)),
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = PolishSurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = CardDefaults.outlinedCardBorder().copy(
-            brush = SolidColor(if (isSelected) CoralRed else PolishOutline.copy(alpha = 0.5f))
+            brush = SolidColor(if (isSelected) CoralRed else MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
         )
     ) {
         Row(
@@ -586,13 +610,17 @@ private fun LargeFileRowItem(
                 Text(
                     text = media.title,
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                    color = PolishTextPrimary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1
                 )
                 Text(
-                    text = "${media.formattedSize} • ${media.mimeType.substringAfter('/')}",
+                    text = stringResource(
+                        R.string.storage_media_subtitle_fmt,
+                        media.formattedSize,
+                        media.mimeType.substringAfter('/')
+                    ),
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                    color = PolishTextSecondary
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Checkbox(
@@ -618,9 +646,9 @@ private fun FolderHeatmapSection(
             .shadow(2.dp, RoundedCornerShape(24.dp), ambientColor = Color.Black.copy(alpha = 0.03f))
             .testTag("folder_heatmap_card"),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = PolishSurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = CardDefaults.outlinedCardBorder().copy(
-            brush = SolidColor(PolishOutline.copy(alpha = 0.5f))
+            brush = SolidColor(MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
         )
     ) {
         Column(
@@ -638,12 +666,12 @@ private fun FolderHeatmapSection(
                     Text(
                         text = stringResource(R.string.storage_heatmap_title),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 16.sp),
-                        color = PolishTextPrimary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = stringResource(R.string.storage_heatmap_subtitle),
                         style = MaterialTheme.typography.bodySmall,
-                        color = PolishTextSecondary
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -653,7 +681,7 @@ private fun FolderHeatmapSection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
-                    .background(PolishSurfaceVariant)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
                     .padding(vertical = 8.dp, horizontal = 10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -661,13 +689,13 @@ private fun FolderHeatmapSection(
                 Text(
                     text = stringResource(R.string.storage_heatmap_intensity),
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                    color = PolishTextSecondary
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    HeatmapLegendChip(">15GB", Color(0xFFE53935))
-                    HeatmapLegendChip("5-15GB", Color(0xFFFB8C00))
-                    HeatmapLegendChip("1-5GB", Color(0xFFFFB300))
-                    HeatmapLegendChip("<1GB", Color(0xFF00ACC1))
+                    HeatmapLegendChip(stringResource(R.string.storage_heatmap_legend_gt_15gb), Color(0xFFE53935))
+                    HeatmapLegendChip(stringResource(R.string.storage_heatmap_legend_5_15gb), Color(0xFFFB8C00))
+                    HeatmapLegendChip(stringResource(R.string.storage_heatmap_legend_1_5gb), Color(0xFFFFB300))
+                    HeatmapLegendChip(stringResource(R.string.storage_heatmap_legend_lt_1gb), Color(0xFF00ACC1))
                 }
             }
 
@@ -727,7 +755,7 @@ private fun FolderHeatmapSection(
                                         Text(
                                             text = folder.name,
                                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold, fontSize = 13.sp),
-                                            color = PolishTextPrimary,
+                                            color = MaterialTheme.colorScheme.onSurface,
                                             maxLines = 1
                                         )
                                         Text(
@@ -738,9 +766,9 @@ private fun FolderHeatmapSection(
                                     }
 
                                     Text(
-                                        text = folder.sampleFileTypes,
+                                        text = folder.previewFileTypes,
                                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
-                                        color = PolishTextSecondary,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         maxLines = 1
                                     )
                                 }
@@ -771,7 +799,7 @@ private fun HeatmapLegendChip(label: String, color: Color) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
-            color = PolishTextSecondary
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

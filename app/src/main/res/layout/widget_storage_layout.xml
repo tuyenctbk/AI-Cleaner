@@ -16,9 +16,8 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:contentDescription="Storage Icon"
-            android:src="@android:drawable/ic_menu_compass"
-            android:tint="#0052FF" />
+            android:contentDescription="@string/app_name"
+            android:src="@mipmap/ic_launcher_round" />
 
         <TextView
             android:layout_width="0dp"
@@ -26,7 +25,7 @@
             android:layout_weight="1"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:text="Storage Cleaner AI"
+            android:text="@string/app_name"
             android:textColor="#191C1E"
             android:textSize="13sp"
             android:textStyle="bold" />
@@ -35,9 +34,9 @@
             android:id="@+id/widget_txt_percent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="84% Used"
+            android:text="@string/widget_free_space_label"
             android:textColor="#0052FF"
-            android:textSize="13sp"
+            android:textSize="11sp"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -49,7 +48,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="6dp"
         android:max="100"
-        android:progress="84"
+        android:progress="0"
         android:progressDrawable="@android:drawable/progress_horizontal" />
 
     <LinearLayout
@@ -63,7 +62,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="18.5 GB Free of 128 GB"
+            android:text="@string/widget_ai_title"
             android:textColor="#43474E"
             android:textSize="11sp" />
 
@@ -74,7 +73,7 @@
             android:background="#0052FF"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
-            android:text="⚡ One-Tap Scan"
+            android:text="@string/title_quick_cleanup"
             android:textColor="#FFFFFF"
             android:textSize="11sp"
             android:textStyle="bold" />

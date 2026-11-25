@@ -1,6 +1,7 @@
 package com.example.data.ai
 
-import com.example.BuildConfig
+import android.content.Context
+import com.example.R
 import com.example.data.model.AiInsightRoutine
 import com.example.data.model.AiRoutineAction
 import com.example.data.model.StorageStats
@@ -13,9 +14,22 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
+import java.security.MessageDigest
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
-class GeminiCleanerService {
+/**
+ * 3-Tier Model-Agnostic AI Engine for AI Cleaner:
+ * - Tier 1: Primary Standard Cloud (AiModelConfig.PRIMARY_REASONING_MODEL)
+ * - Tier 2: High-Efficiency Economy Lite (AiModelConfig.ECONOMY_LITE_MODEL) — auto-activated on >=80% quota, Eco Lite Mode, or HTTP 429
+ * - Tier 3: Zero-Cost On-Device Deterministic Analyzer (works offline, enriched with ML Kit OCR & Face stats)
+ *
+ * Includes 45-second fingerprint deduplication cache and atomic credit deduct-with-refund via AiQuotaManager.
+ */
+class GeminiCleanerService(
+    private val context: Context,
+    private val quotaManager: AiQuotaManager = AiQuotaManager(context)
+) {
 
     private val okHttpClient = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
@@ -23,75 +37,301 @@ class GeminiCleanerService {
         .writeTimeout(15, TimeUnit.SECONDS)
         .build()
 
+    private data class CachedEntry(
+        val timestampMillis: Long,
+        val routines: List<AiInsightRoutine>
+    )
+
+    private val fingerprintCache = ConcurrentHashMap<String, CachedEntry>()
+
+    private data class CloudCallOutcome(
+        val routines: List<AiInsightRoutine>?,
+        val httpCode: Int
+    )
+
     suspend fun generateStorageRoutines(
         stats: StorageStats,
         cloudPhotosCount: Int,
-        customQuery: String = ""
-    ): List<AiInsightRoutine> = withContext(Dispatchers.IO) {
-        val apiKey = BuildConfig.GEMINI_API_KEY
-        if (apiKey.isNotBlank() && apiKey != "MY_GEMINI_API_KEY") {
-            try {
-                val prompt = """
-                    You are an expert AI Storage Cleaner Assistant for Android.
-                    Analyze the following device storage metrics:
-                    - Total Storage: ${stats.formattedTotal}
-                    - Used Storage: ${stats.formattedUsed} (${stats.usedPercent}% used)
-                    - Free Storage: ${stats.formattedFree}
-                    - Junk Caches: ${stats.formattedJunk}
-                    - Photos: ${stats.photoCount} files (${formatFileSize(stats.photoBytes)})
-                    - Videos: ${stats.videoCount} files (${formatFileSize(stats.videoBytes)})
-                    - Cloud Backed Up Local Photos: $cloudPhotosCount files
-                    - Duplicate Groups: ${stats.duplicateCount}
-                    - Large Files: ${stats.largeFileCount} files
-                    - User Custom Query: "$customQuery"
+        cloudPhotosBytes: Long = 0L,
+        duplicateBytes: Long = 0L,
+        screenshotBytes: Long = 0L,
+        safeScreenshotCount: Int = 0,
+        safeScreenshotBytes: Long = 0L,
+        largeMediaBytes: Long = 0L,
+        customQuery: String = "",
+        forceEcoLite: Boolean = false,
+        forceLocal: Boolean = false,
+        bypassCache: Boolean = false
+    ): AiGenerationResult = withContext(Dispatchers.IO) {
+        val fingerprint = buildRequestFingerprint(
+            stats = stats,
+            cloudPhotosCount = cloudPhotosCount,
+            safeScreenshotCount = safeScreenshotCount,
+            customQuery = customQuery,
+            forceEcoLite = forceEcoLite,
+            forceLocal = forceLocal
+        )
 
-                    Generate 3 smart, actionable cleanup routines for the user.
-                    Return ONLY a valid JSON array with objects containing:
-                    [
-                      {
-                        "id": "routine_1",
-                        "title": "Short catchy title",
-                        "summary": "1 sentence description",
-                        "potentialSavingsBytes": 1200000000,
-                        "confidenceScore": 98,
-                        "categoryTag": "Cloud Sync / Media / System",
-                        "actionType": "DELETE_CLOUD_BACKUPS",
-                        "explanation": "Why this is safe and effective"
-                      }
-                    ]
-                """.trimIndent()
-
-                val requestJson = JSONObject().apply {
-                    val contentsArr = JSONArray().apply {
-                        val partsArr = JSONArray().apply {
-                            put(JSONObject().put("text", prompt))
-                        }
-                        put(JSONObject().put("parts", partsArr))
-                    }
-                    put("contents", contentsArr)
-                }
-
-                val request = Request.Builder()
-                    .url("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey")
-                    .post(requestJson.toString().toRequestBody("application/json".toMediaType()))
-                    .build()
-
-                val response = okHttpClient.newCall(request).execute()
-                val responseBodyStr = response.body?.string()
-
-                if (response.isSuccessful && !responseBodyStr.isNullOrBlank()) {
-                    val routines = parseGeminiResponse(responseBodyStr)
-                    if (routines.isNotEmpty()) {
-                        return@withContext routines
-                    }
-                }
-            } catch (e: Exception) {
-                // Fallback to local AI engine on network/API exception
+        // Token Hygiene: 45-second Fingerprint Deduplication Cache (0 extra cloud tokens)
+        if (!bypassCache) {
+            val cached = fingerprintCache[fingerprint]
+            if (cached != null && (System.currentTimeMillis() - cached.timestampMillis) <= AiModelConfig.FINGERPRINT_CACHE_TTL_MS) {
+                quotaManager.recordValueRoutineGenerated(fromCache = true)
+                return@withContext AiGenerationResult(
+                    routines = cached.routines,
+                    executionTier = AiExecutionTier.CACHED,
+                    fromCache = true
+                )
             }
         }
 
-        // Local Smart AI Fallback Engine
-        return@withContext generateLocalSmartFallbackRoutines(stats, cloudPhotosCount, customQuery)
+        val (apiKey, keySource) = quotaManager.resolveActiveApiKey()
+
+        // Explicit local request or no cloud key configured -> Tier 3 On-Device Zero-Cost Engine
+        if (forceLocal || keySource == AiKeySource.NONE || apiKey.isBlank()) {
+            val localRoutines = generateLocalSmartFallbackRoutines(
+                stats = stats,
+                cloudPhotosCount = cloudPhotosCount,
+                cloudPhotosBytes = cloudPhotosBytes,
+                duplicateBytes = duplicateBytes,
+                screenshotBytes = screenshotBytes,
+                safeScreenshotCount = safeScreenshotCount,
+                safeScreenshotBytes = safeScreenshotBytes,
+                largeMediaBytes = largeMediaBytes,
+                customQuery = customQuery
+            )
+            cacheResult(fingerprint, localRoutines)
+            quotaManager.recordValueRoutineGenerated(fromCache = false)
+            return@withContext AiGenerationResult(
+                routines = localRoutines,
+                executionTier = AiExecutionTier.ON_DEVICE_LOCAL
+            )
+        }
+
+        // Check Quota Ledger (atomic deduct-with-refund; BYOK passes through directly)
+        val snapshotBefore = quotaManager.getSnapshot()
+        if (!quotaManager.tryConsumeCloudCredit()) {
+            val localRoutines = generateLocalSmartFallbackRoutines(
+                stats = stats,
+                cloudPhotosCount = cloudPhotosCount,
+                cloudPhotosBytes = cloudPhotosBytes,
+                duplicateBytes = duplicateBytes,
+                screenshotBytes = screenshotBytes,
+                safeScreenshotCount = safeScreenshotCount,
+                safeScreenshotBytes = safeScreenshotBytes,
+                largeMediaBytes = largeMediaBytes,
+                customQuery = customQuery
+            )
+            quotaManager.recordValueRoutineGenerated(fromCache = false)
+            return@withContext AiGenerationResult(
+                routines = localRoutines,
+                executionTier = AiExecutionTier.ON_DEVICE_LOCAL,
+                hitRateLimit = true
+            )
+        }
+
+        val prompt = buildStoragePrompt(
+            stats = stats,
+            cloudPhotosCount = cloudPhotosCount,
+            cloudPhotosBytes = cloudPhotosBytes,
+            duplicateBytes = duplicateBytes,
+            screenshotBytes = screenshotBytes,
+            safeScreenshotCount = safeScreenshotCount,
+            safeScreenshotBytes = safeScreenshotBytes,
+            largeMediaBytes = largeMediaBytes,
+            customQuery = customQuery
+        )
+
+        // Decide starting tier: Tier 2 (Economy Lite) if Eco Lite mode, forced, or >=80% quota used
+        val startWithLite = forceEcoLite ||
+            snapshotBefore.ecoLiteMode ||
+            (!snapshotBefore.hasUserByokKey && snapshotBefore.usageRatio >= AiModelConfig.SOFT_NUDGE_THRESHOLD_RATIO)
+
+        var hitRateLimit = false
+        var cascadedToLite = false
+
+        if (!startWithLite) {
+            val primaryOutcome = executeCloudCall(AiModelConfig.PRIMARY_REASONING_MODEL, apiKey, prompt)
+            if (!primaryOutcome.routines.isNullOrEmpty()) {
+                cacheResult(fingerprint, primaryOutcome.routines)
+                quotaManager.recordValueRoutineGenerated(fromCache = false)
+                return@withContext AiGenerationResult(
+                    routines = primaryOutcome.routines,
+                    executionTier = AiExecutionTier.PRIMARY_CLOUD
+                )
+            }
+            if (primaryOutcome.httpCode == 429) {
+                hitRateLimit = true
+            }
+            // Auto-Cascade Tier 1 -> Tier 2 Economy Lite
+            cascadedToLite = true
+            quotaManager.recordFallbackCascade()
+        }
+
+        // Tier 2: High-Efficiency Economy Lite
+        val liteOutcome = executeCloudCall(AiModelConfig.ECONOMY_LITE_MODEL, apiKey, prompt)
+        if (!liteOutcome.routines.isNullOrEmpty()) {
+            cacheResult(fingerprint, liteOutcome.routines)
+            quotaManager.recordValueRoutineGenerated(fromCache = false)
+            return@withContext AiGenerationResult(
+                routines = liteOutcome.routines,
+                executionTier = AiExecutionTier.ECONOMY_LITE,
+                cascadedToLite = cascadedToLite,
+                hitRateLimit = hitRateLimit
+            )
+        }
+
+        if (liteOutcome.httpCode == 429) {
+            hitRateLimit = true
+        }
+
+        // Atomic Refund: network/API failure must NEVER burn user quota
+        quotaManager.refundCloudCredit()
+        quotaManager.recordFallbackCascade()
+
+        // Tier 3: Zero-Cost On-Device Deterministic Fallback
+        val localRoutines = generateLocalSmartFallbackRoutines(
+            stats = stats,
+            cloudPhotosCount = cloudPhotosCount,
+            cloudPhotosBytes = cloudPhotosBytes,
+            duplicateBytes = duplicateBytes,
+            screenshotBytes = screenshotBytes,
+            safeScreenshotCount = safeScreenshotCount,
+            safeScreenshotBytes = safeScreenshotBytes,
+            largeMediaBytes = largeMediaBytes,
+            customQuery = customQuery
+        )
+        cacheResult(fingerprint, localRoutines)
+        quotaManager.recordValueRoutineGenerated(fromCache = false)
+        return@withContext AiGenerationResult(
+            routines = localRoutines,
+            executionTier = AiExecutionTier.ON_DEVICE_LOCAL,
+            cascadedToLite = cascadedToLite,
+            hitRateLimit = hitRateLimit
+        )
+    }
+
+    /**
+     * Live connection verifier for Settings BYOK API key input using the Economy Lite tier.
+     */
+    suspend fun testApiKeyConnection(apiKey: String): Boolean = withContext(Dispatchers.IO) {
+        val trimmed = apiKey.trim()
+        if (trimmed.length < 16) return@withContext false
+        try {
+            val requestJson = JSONObject().apply {
+                put("contents", JSONArray().put(
+                    JSONObject().put("parts", JSONArray().put(JSONObject().put("text", "Reply with OK")))
+                ))
+                put("generationConfig", JSONObject().put("maxOutputTokens", 4))
+            }
+            val request = Request.Builder()
+                .url(AiModelConfig.endpointForModel(AiModelConfig.ECONOMY_LITE_MODEL, trimmed))
+                .post(requestJson.toString().toRequestBody("application/json".toMediaType()))
+                .build()
+            okHttpClient.newCall(request).execute().use { response ->
+                response.isSuccessful
+            }
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun executeCloudCall(modelId: String, apiKey: String, prompt: String): CloudCallOutcome {
+        return try {
+            val requestJson = JSONObject().apply {
+                val contentsArr = JSONArray().apply {
+                    val partsArr = JSONArray().apply {
+                        put(JSONObject().put("text", prompt))
+                    }
+                    put(JSONObject().put("parts", partsArr))
+                }
+                put("contents", contentsArr)
+            }
+
+            val request = Request.Builder()
+                .url(AiModelConfig.endpointForModel(modelId, apiKey))
+                .post(requestJson.toString().toRequestBody("application/json".toMediaType()))
+                .build()
+
+            okHttpClient.newCall(request).execute().use { response ->
+                val code = response.code
+                val responseBodyStr = response.body?.string()
+                if (response.isSuccessful && !responseBodyStr.isNullOrBlank()) {
+                    val routines = parseGeminiResponse(responseBodyStr)
+                    CloudCallOutcome(routines = routines.ifEmpty { null }, httpCode = code)
+                } else {
+                    CloudCallOutcome(routines = null, httpCode = code)
+                }
+            }
+        } catch (_: Exception) {
+            CloudCallOutcome(routines = null, httpCode = -1)
+        }
+    }
+
+    private fun buildStoragePrompt(
+        stats: StorageStats,
+        cloudPhotosCount: Int,
+        cloudPhotosBytes: Long,
+        duplicateBytes: Long,
+        screenshotBytes: Long,
+        safeScreenshotCount: Int,
+        safeScreenshotBytes: Long,
+        largeMediaBytes: Long,
+        customQuery: String
+    ): String {
+        return """
+            You are an expert AI Storage Cleaner Assistant for Android.
+            Analyze the following real device storage metrics:
+            - Total Storage: ${stats.formattedTotal}
+            - Used Storage: ${stats.formattedUsed} (${stats.usedPercent}% used)
+            - Free Storage: ${stats.formattedFree}
+            - Junk Caches: ${stats.formattedJunk}
+            - Photos: ${stats.photoCount} files (${formatFileSize(stats.photoBytes)})
+            - Videos: ${stats.videoCount} files (${formatFileSize(stats.videoBytes)})
+            - Cloud Backed Up Local Photos: $cloudPhotosCount files (${formatFileSize(cloudPhotosBytes)})
+            - Duplicate Photos: ${stats.duplicateCount} files (${formatFileSize(duplicateBytes)})
+            - Screenshots: ${stats.screenshotCount} files (${formatFileSize(screenshotBytes)})
+            - Safe-to-Clean OTP/Meme Screenshots (ML Kit OCR): $safeScreenshotCount files (${formatFileSize(safeScreenshotBytes)})
+            - Large Files: ${stats.largeFileCount} files (${formatFileSize(largeMediaBytes)})
+            - User Custom Query: "$customQuery"
+
+            Generate up to 3 smart, actionable cleanup routines using ONLY the actual byte sizes above.
+            Valid actionType values: DELETE_CLOUD_BACKUPS, DELETE_DUPLICATES, DELETE_SAFE_SCREENSHOTS, DELETE_SCREENSHOTS, COMPRESS_4K_VIDEOS, CLEAR_WHATSAPP_CACHE, SAFE_QUICK_CLEAN.
+            Return ONLY a valid JSON array with objects containing:
+            [
+              {
+                "id": "routine_1",
+                "title": "Short catchy title",
+                "summary": "1 sentence description",
+                "potentialSavingsBytes": 0,
+                "confidenceScore": 95,
+                "categoryTag": "Category",
+                "actionType": "SAFE_QUICK_CLEAN",
+                "explanation": "Why this is safe and effective",
+                "itemCount": 1
+              }
+            ]
+        """.trimIndent()
+    }
+
+    private fun buildRequestFingerprint(
+        stats: StorageStats,
+        cloudPhotosCount: Int,
+        safeScreenshotCount: Int,
+        customQuery: String,
+        forceEcoLite: Boolean,
+        forceLocal: Boolean
+    ): String {
+        val raw = "${stats.usedBytes}|${stats.junkBytes}|${stats.duplicateCount}|${stats.screenshotCount}|$safeScreenshotCount|$cloudPhotosCount|${customQuery.trim().lowercase()}|$forceEcoLite|$forceLocal"
+        val digest = MessageDigest.getInstance("SHA-256").digest(raw.toByteArray(Charsets.UTF_8))
+        return digest.joinToString("") { "%02x".format(it) }
+    }
+
+    private fun cacheResult(fingerprint: String, routines: List<AiInsightRoutine>) {
+        if (fingerprintCache.size > 16) {
+            fingerprintCache.clear()
+        }
+        fingerprintCache[fingerprint] = CachedEntry(System.currentTimeMillis(), routines)
     }
 
     private fun parseGeminiResponse(jsonStr: String): List<AiInsightRoutine> {
@@ -112,25 +352,29 @@ class GeminiCleanerService {
                 for (i in 0 until jsonArr.length()) {
                     val item = jsonArr.optJSONObject(i) ?: continue
                     val actionStr = item.optString("actionType", "SAFE_QUICK_CLEAN")
-                    val action = try { AiRoutineAction.valueOf(actionStr) } catch (e: Exception) { AiRoutineAction.SAFE_QUICK_CLEAN }
+                    val action = try {
+                        AiRoutineAction.valueOf(actionStr)
+                    } catch (_: Exception) {
+                        AiRoutineAction.SAFE_QUICK_CLEAN
+                    }
 
                     list.add(
                         AiInsightRoutine(
                             id = item.optString("id", "routine_$i"),
-                            title = item.optString("title", "AI Smart Routine"),
-                            summary = item.optString("summary", "Custom cleanup routine generated by Gemini AI."),
-                            potentialSavingsBytes = item.optLong("potentialSavingsBytes", 1_200_000_000L),
-                            confidenceScore = item.optInt("confidenceScore", 95),
-                            categoryTag = item.optString("categoryTag", "Gemini AI"),
+                            title = item.optString("title", context.getString(R.string.ai_fallback_title)),
+                            summary = item.optString("summary", context.getString(R.string.ai_fallback_summary)),
+                            potentialSavingsBytes = item.optLong("potentialSavingsBytes", 0L).coerceAtLeast(0L),
+                            confidenceScore = item.optInt("confidenceScore", 95).coerceIn(0, 100),
+                            categoryTag = item.optString("categoryTag", context.getString(R.string.ai_fallback_tag)),
                             actionType = action,
-                            explanation = item.optString("explanation", "Safe automated routine based on storage analysis."),
-                            itemCount = 10
+                            explanation = item.optString("explanation", context.getString(R.string.ai_fallback_explanation)),
+                            itemCount = item.optInt("itemCount", 0).coerceAtLeast(0)
                         )
                     )
                 }
             }
-        } catch (e: Exception) {
-            // Ignore parsing errors
+        } catch (_: Exception) {
+            // Ignore malformed JSON responses
         }
         return list
     }
@@ -138,108 +382,171 @@ class GeminiCleanerService {
     fun generateLocalSmartFallbackRoutines(
         stats: StorageStats,
         cloudPhotosCount: Int,
+        cloudPhotosBytes: Long = 0L,
+        duplicateBytes: Long = 0L,
+        screenshotBytes: Long = 0L,
+        safeScreenshotCount: Int = 0,
+        safeScreenshotBytes: Long = 0L,
+        largeMediaBytes: Long = 0L,
         customQuery: String = ""
     ): List<AiInsightRoutine> {
         val routines = mutableListOf<AiInsightRoutine>()
 
-        if (cloudPhotosCount > 0) {
-            val estimatedCloudBytes = (cloudPhotosCount * 3_500_000L)
+        // 1. On-Device ML Kit Safe OTP/Meme Screenshot Routine (keeps receipts & documents!)
+        if (safeScreenshotCount > 0 && safeScreenshotBytes > 0L) {
+            val formattedSafe = formatFileSize(safeScreenshotBytes)
+            routines.add(
+                AiInsightRoutine(
+                    id = "routine_mlkit_safe_screenshots",
+                    title = context.getString(R.string.ai_local_safe_screenshots_title_fmt, safeScreenshotCount, formattedSafe),
+                    summary = context.getString(R.string.ai_local_safe_screenshots_summary),
+                    potentialSavingsBytes = safeScreenshotBytes,
+                    confidenceScore = 99,
+                    categoryTag = context.getString(R.string.ai_local_safe_screenshots_tag),
+                    actionType = AiRoutineAction.DELETE_SAFE_SCREENSHOTS,
+                    explanation = context.getString(R.string.ai_local_safe_screenshots_explanation_fmt, safeScreenshotCount, formattedSafe),
+                    itemCount = safeScreenshotCount
+                )
+            )
+        }
+
+        if (cloudPhotosCount > 0 && cloudPhotosBytes > 0L) {
+            val formattedCloud = formatFileSize(cloudPhotosBytes)
             routines.add(
                 AiInsightRoutine(
                     id = "routine_cloud_backup",
-                    title = "Purge local copies of $cloudPhotosCount backed-up photos",
-                    summary = "Safe 1-click delete of photos already backed up to Google Photos cloud.",
-                    potentialSavingsBytes = estimatedCloudBytes,
+                    title = context.getString(R.string.ai_local_cloud_title_fmt, cloudPhotosCount),
+                    summary = context.getString(R.string.ai_local_cloud_summary),
+                    potentialSavingsBytes = cloudPhotosBytes,
                     confidenceScore = 99,
-                    categoryTag = "Cloud Backup Routine",
+                    categoryTag = context.getString(R.string.ai_local_cloud_tag),
                     actionType = AiRoutineAction.DELETE_CLOUD_BACKUPS,
-                    explanation = "These $cloudPhotosCount photos have verified cloud copies. Purging local device copies frees ${formatFileSize(estimatedCloudBytes)}.",
+                    explanation = context.getString(R.string.ai_local_cloud_explanation_fmt, cloudPhotosCount, formattedCloud),
                     itemCount = cloudPhotosCount
                 )
             )
         }
 
-        if (stats.junkBytes > 0) {
+        if (stats.junkBytes > 0L) {
             routines.add(
                 AiInsightRoutine(
                     id = "routine_safe_quick_clean",
-                    title = "Safe Quick Clean (${stats.formattedJunk})",
-                    summary = "Flush system temp files, thumbnail caches, and leftover directory fragments.",
+                    title = context.getString(R.string.ai_local_quick_title_fmt, stats.formattedJunk),
+                    summary = context.getString(R.string.ai_local_quick_summary),
                     potentialSavingsBytes = stats.junkBytes,
                     confidenceScore = 100,
-                    categoryTag = "System Cache",
+                    categoryTag = context.getString(R.string.ai_local_quick_tag),
                     actionType = AiRoutineAction.SAFE_QUICK_CLEAN,
-                    explanation = "Identified ${stats.formattedJunk} in safe recoverable caches and temporary files.",
+                    explanation = context.getString(R.string.ai_local_quick_explanation_fmt, stats.formattedJunk),
                     itemCount = 1
                 )
             )
         }
 
-        if (stats.duplicateCount > 0) {
-            val dupSavings = if (stats.photoBytes > 0) (stats.photoBytes * 0.2f).toLong().coerceAtLeast(1024 * 1024L) else 50L * 1024 * 1024L
+        if (stats.duplicateCount > 0 && duplicateBytes > 0L) {
+            val formattedDup = formatFileSize(duplicateBytes)
             routines.add(
                 AiInsightRoutine(
                     id = "routine_duplicates",
-                    title = "Purge ${stats.duplicateCount} duplicate photos (${formatFileSize(dupSavings)})",
-                    summary = "Keep the best shot in each cluster and remove redundant copies.",
-                    potentialSavingsBytes = dupSavings,
+                    title = context.getString(R.string.ai_local_dup_title_fmt, stats.duplicateCount, formattedDup),
+                    summary = context.getString(R.string.ai_local_dup_summary),
+                    potentialSavingsBytes = duplicateBytes,
                     confidenceScore = 98,
-                    categoryTag = "Duplicate Detection",
-                    actionType = AiRoutineAction.SAFE_QUICK_CLEAN,
-                    explanation = "Found ${stats.duplicateCount} redundant duplicate photos across burst shots in gallery.",
+                    categoryTag = context.getString(R.string.ai_local_dup_tag),
+                    actionType = AiRoutineAction.DELETE_DUPLICATES,
+                    explanation = context.getString(R.string.ai_local_dup_explanation_fmt, stats.duplicateCount),
                     itemCount = stats.duplicateCount
                 )
             )
         }
 
-        if (stats.largeFileCount > 0 && stats.videoBytes > 0) {
-            val compressSavings = (stats.videoBytes * 0.5f).toLong().coerceAtLeast(1024 * 1024L)
+        val heavySourceBytes = if (largeMediaBytes > 0L) largeMediaBytes else stats.videoBytes
+        if (stats.largeFileCount > 0 && heavySourceBytes > 0L) {
+            val compressSavings = (heavySourceBytes * 0.5f).toLong()
             routines.add(
                 AiInsightRoutine(
                     id = "routine_4k_compress",
-                    title = "Batch Compress ${stats.largeFileCount} Large Media Files (${formatFileSize(compressSavings)})",
-                    summary = "Shrink heavy camera videos by up to 65% with lossless visual quality.",
+                    title = context.getString(R.string.ai_local_compress_title_fmt, stats.largeFileCount, formatFileSize(compressSavings)),
+                    summary = context.getString(R.string.ai_local_compress_summary),
                     potentialSavingsBytes = compressSavings,
                     confidenceScore = 96,
-                    categoryTag = "Media Optimization",
+                    categoryTag = context.getString(R.string.ai_local_compress_tag),
                     actionType = AiRoutineAction.COMPRESS_4K_VIDEOS,
-                    explanation = "Found ${stats.largeFileCount} heavy media files totaling ${formatFileSize(stats.videoBytes)}. Compression reclaims ${formatFileSize(compressSavings)}.",
+                    explanation = context.getString(
+                        R.string.ai_local_compress_explanation_fmt,
+                        stats.largeFileCount,
+                        formatFileSize(heavySourceBytes),
+                        formatFileSize(compressSavings)
+                    ),
                     itemCount = stats.largeFileCount
                 )
             )
         }
 
-        if (stats.screenshotCount > 0) {
-            val screenshotSavings = if (stats.photoBytes > 0) (stats.photoBytes * 0.1f).toLong().coerceAtLeast(1024 * 1024L) else 20L * 1024 * 1024L
+        if (stats.screenshotCount > 0 && screenshotBytes > 0L && safeScreenshotCount == 0) {
+            val formattedShots = formatFileSize(screenshotBytes)
             routines.add(
                 AiInsightRoutine(
                     id = "routine_old_screenshots",
-                    title = "Purge ${stats.screenshotCount} Old Screenshots (${formatFileSize(screenshotSavings)})",
-                    summary = "Remove obsolete receipts, temporary screenshots, and screen grabs.",
-                    potentialSavingsBytes = screenshotSavings,
+                    title = context.getString(R.string.ai_local_screenshots_title_fmt, stats.screenshotCount, formattedShots),
+                    summary = context.getString(R.string.ai_local_screenshots_summary),
+                    potentialSavingsBytes = screenshotBytes,
                     confidenceScore = 94,
-                    categoryTag = "Screenshot Cleanup",
+                    categoryTag = context.getString(R.string.ai_local_screenshots_tag),
                     actionType = AiRoutineAction.DELETE_SCREENSHOTS,
-                    explanation = "Identified ${stats.screenshotCount} screenshots on device. Purging them reclaims ${formatFileSize(screenshotSavings)}.",
+                    explanation = context.getString(R.string.ai_local_screenshots_explanation_fmt, stats.screenshotCount, formattedShots),
                     itemCount = stats.screenshotCount
                 )
             )
         }
 
         if (customQuery.isNotBlank()) {
-            val querySavings = if (stats.junkBytes > 0) stats.junkBytes else 100L * 1024 * 1024L
+            val lower = customQuery.lowercase()
+            val (matchedAction, querySavings, itemCount) = when {
+                lower.contains("otp") || lower.contains("meme") || lower.contains("code") -> Triple(
+                    if (safeScreenshotCount > 0) AiRoutineAction.DELETE_SAFE_SCREENSHOTS else AiRoutineAction.DELETE_SCREENSHOTS,
+                    if (safeScreenshotCount > 0) safeScreenshotBytes else screenshotBytes,
+                    if (safeScreenshotCount > 0) safeScreenshotCount else stats.screenshotCount
+                )
+                lower.contains("screenshot") || lower.contains("receipt") -> Triple(
+                    AiRoutineAction.DELETE_SCREENSHOTS,
+                    screenshotBytes,
+                    stats.screenshotCount
+                )
+                lower.contains("duplicate") || lower.contains("similar") || lower.contains("blur") || lower.contains("blink") -> Triple(
+                    AiRoutineAction.DELETE_DUPLICATES,
+                    duplicateBytes,
+                    stats.duplicateCount
+                )
+                lower.contains("video") || lower.contains("compress") || lower.contains("4k") -> Triple(
+                    AiRoutineAction.COMPRESS_4K_VIDEOS,
+                    (heavySourceBytes * 0.5f).toLong(),
+                    stats.largeFileCount
+                )
+                lower.contains("cloud") || lower.contains("backup") || lower.contains("google photo") -> Triple(
+                    AiRoutineAction.DELETE_CLOUD_BACKUPS,
+                    cloudPhotosBytes,
+                    cloudPhotosCount
+                )
+                lower.contains("whatsapp") || lower.contains("cache") || lower.contains("app") -> Triple(
+                    AiRoutineAction.CLEAR_WHATSAPP_CACHE,
+                    stats.junkBytes,
+                    if (stats.junkBytes > 0L) 1 else 0
+                )
+                else -> Triple(AiRoutineAction.SAFE_QUICK_CLEAN, stats.junkBytes, if (stats.junkBytes > 0L) 1 else 0)
+            }
             routines.add(
                 0,
                 AiInsightRoutine(
                     id = "routine_custom_query",
-                    title = "Tailored Routine for: \"$customQuery\"",
-                    summary = "Custom Gemini AI rule targeted specifically at your search context.",
+                    title = context.getString(R.string.ai_local_custom_title_fmt, customQuery),
+                    summary = context.getString(R.string.ai_local_custom_summary),
                     potentialSavingsBytes = querySavings,
                     confidenceScore = 97,
-                    categoryTag = "Custom Gemini Query",
-                    actionType = AiRoutineAction.SAFE_QUICK_CLEAN,
-                    explanation = "Gemini analyzed your custom intent: '$customQuery' and assembled a non-destructive cleanup pass.",
-                    itemCount = 1
+                    categoryTag = context.getString(R.string.ai_local_custom_tag),
+                    actionType = matchedAction,
+                    explanation = context.getString(R.string.ai_local_custom_explanation_fmt, customQuery),
+                    itemCount = itemCount
                 )
             )
         }
@@ -248,13 +555,13 @@ class GeminiCleanerService {
             routines.add(
                 AiInsightRoutine(
                     id = "routine_system_optimized",
-                    title = "Storage Healthy & Fully Optimized",
-                    summary = "No clutter, residual junk caches, or duplicate files found on device.",
+                    title = context.getString(R.string.ai_local_healthy_title),
+                    summary = context.getString(R.string.ai_local_healthy_summary),
                     potentialSavingsBytes = 0L,
                     confidenceScore = 100,
-                    categoryTag = "Storage Health",
+                    categoryTag = context.getString(R.string.ai_local_healthy_tag),
                     actionType = AiRoutineAction.SAFE_QUICK_CLEAN,
-                    explanation = "Your device storage is in optimal health. All scans report zero residual junk.",
+                    explanation = context.getString(R.string.ai_local_healthy_explanation),
                     itemCount = 0
                 )
             )

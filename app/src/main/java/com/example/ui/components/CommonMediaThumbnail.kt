@@ -65,15 +65,16 @@ fun CommonMediaThumbnail(
                 contentScale = contentScale
             )
         } else {
-            // High aesthetic photo placeholder based on index
-            val gradient = placeholderGradients[mediaItem.visualPlaceholderIndex % placeholderGradients.size]
+            // Deterministic fallback gradient when media thumbnail cannot be decoded
+            val gradientIndex = (mediaItem.id.hashCode() and Int.MAX_VALUE) % placeholderGradients.size
+            val gradient = placeholderGradients[gradientIndex]
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(gradient),
                 contentAlignment = Alignment.Center
             ) {
-                if (mediaItem.isLarge) {
+                if (mediaItem.isLarge || mediaItem.mimeType.startsWith("video/")) {
                     Icon(
                         imageVector = Icons.Default.Videocam,
                         contentDescription = null,
@@ -88,34 +89,34 @@ fun CommonMediaThumbnail(
                         modifier = Modifier.padding(12.dp)
                     )
                 }
-
-                // Small badge
-                if (mediaItem.isBlurry) {
-                    Text(
-                        text = stringResource(R.string.badge_blur),
-                        color = Color.White,
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .padding(4.dp)
-                            .background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(4.dp))
-                            .padding(horizontal = 4.dp, vertical = 2.dp)
-                    )
-                } else if (mediaItem.isScreenshot) {
-                    Text(
-                        text = stringResource(R.string.badge_screenshot),
-                        color = Color.White,
-                        fontSize = 8.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .padding(4.dp)
-                            .background(Color(0xFF0F47D0).copy(alpha = 0.7f), RoundedCornerShape(4.dp))
-                            .padding(horizontal = 4.dp, vertical = 2.dp)
-                    )
-                }
             }
+        }
+
+        // Overlay status badges (Blurry / Screenshot / Video)
+        if (mediaItem.isBlurry) {
+            Text(
+                text = stringResource(R.string.badge_blur),
+                color = Color.White,
+                fontSize = 9.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(4.dp)
+                    .background(Color.Black.copy(alpha = 0.55f), RoundedCornerShape(4.dp))
+                    .padding(horizontal = 4.dp, vertical = 2.dp)
+            )
+        } else if (mediaItem.isScreenshot) {
+            Text(
+                text = stringResource(R.string.badge_screenshot),
+                color = Color.White,
+                fontSize = 8.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(4.dp)
+                    .background(Color(0xFF0F47D0).copy(alpha = 0.78f), RoundedCornerShape(4.dp))
+                    .padding(horizontal = 4.dp, vertical = 2.dp)
+            )
         }
     }
 }

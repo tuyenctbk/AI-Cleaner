@@ -1,6 +1,8 @@
 package com.example
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -9,6 +11,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.compose.BackHandler
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -43,29 +46,75 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalConfiguration
 
 class MainActivity : ComponentActivity() {
+    private val latestIntentState = mutableStateOf<Intent?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        latestIntentState.value = intent
+        val launchedFromWidgetShortcut = intent?.getBooleanExtra(
+            com.example.widget.StorageGlanceWidget.EXTRA_QUICK_CLEAN,
+            false
+        ) == true || intent?.getBooleanExtra(
+            com.example.widget.StorageGlanceWidget.EXTRA_OPEN_QUICK_CLEANUP,
+            false
+        ) == true || intent?.getStringExtra(
+            com.example.widget.StorageGlanceWidget.EXTRA_TARGET_TAB
+        ) == com.example.widget.StorageGlanceWidget.TARGET_TAB_QUICK_CLEANUP
         enableEdgeToEdge()
         setContent {
             val viewModel: CleanerViewModel = viewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-            var showSplash by remember { mutableStateOf(true) }
+            var showSplash by remember { mutableStateOf(!launchedFromWidgetShortcut) }
+            val activeIntent by latestIntentState
+
+            LaunchedEffect(activeIntent) {
+                if (activeIntent?.getBooleanExtra(
+                        com.example.widget.StorageGlanceWidget.EXTRA_QUICK_CLEAN,
+                        false
+                    ) == true || activeIntent?.getBooleanExtra(
+                        com.example.widget.StorageGlanceWidget.EXTRA_OPEN_QUICK_CLEANUP,
+                        false
+                    ) == true || activeIntent?.getStringExtra(
+                        com.example.widget.StorageGlanceWidget.EXTRA_TARGET_TAB
+                    ) == com.example.widget.StorageGlanceWidget.TARGET_TAB_QUICK_CLEANUP
+                ) {
+                    showSplash = false
+                }
+            }
 
             AICleanerTheme(themeMode = uiState.themeMode) {
-                if (showSplash) {
-                    com.example.ui.screens.SplashScreen(
-                        onSplashFinished = { showSplash = false }
-                    )
-                } else {
-                    MainApp(viewModel = viewModel)
+                Crossfade(
+                    targetState = showSplash,
+                    animationSpec = tween(durationMillis = 380),
+                    label = "SplashToAppCrossfade"
+                ) { splashing ->
+                    if (splashing) {
+                        com.example.ui.screens.SplashScreen(
+                            onSplashFinished = { showSplash = false }
+                        )
+                    } else {
+                        MainApp(
+                            viewModel = viewModel,
+                            activeIntent = activeIntent
+                        )
+                    }
                 }
             }
         }
     }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        latestIntentState.value = intent
+    }
 }
 
 @Composable
-fun MainApp(viewModel: CleanerViewModel = viewModel()) {
+fun MainApp(
+    viewModel: CleanerViewModel = viewModel(),
+    activeIntent: Intent? = null
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
@@ -96,6 +145,22 @@ fun MainApp(viewModel: CleanerViewModel = viewModel()) {
         viewModel.setPermissionGranted(isMediaGranted)
     }
 
+    // Android 11+ (API 30+) Scoped Storage Batch Delete System Sheet Launcher
+    val systemDeleteLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        viewModel.onSystemDeleteResult(result.resultCode == Activity.RESULT_OK)
+    }
+
+    LaunchedEffect(uiState.pendingDeleteIntentSender) {
+        val sender = uiState.pendingDeleteIntentSender ?: return@LaunchedEffect
+        try {
+            systemDeleteLauncher.launch(IntentSenderRequest.Builder(sender).build())
+        } catch (_: Exception) {
+            viewModel.onSystemDeleteResult(false)
+        }
+    }
+
     // Track whether we have shown the rationale screen
     var showPermissionRationale by remember { mutableStateOf(false) }
 
@@ -122,18 +187,40 @@ fun MainApp(viewModel: CleanerViewModel = viewModel()) {
             showPermissionRationale = true
         }
 
-        // Handle intent extras from Widget or Local Notification
-        val activity = context as? ComponentActivity
-        val intent = activity?.intent
-        if (intent != null) {
-            if (intent.getBooleanExtra("EXTRA_START_SCAN", false)) {
+        // Handle intent extras from Glance Widget or Local Notification
+    }
+
+    LaunchedEffect(activeIntent) {
+        val intent = activeIntent ?: (context as? ComponentActivity)?.intent ?: return@LaunchedEffect
+        when {
+            intent.getBooleanExtra(com.example.widget.StorageGlanceWidget.EXTRA_OPEN_QUICK_CLEANUP, false) -> {
+                intent.removeExtra(com.example.widget.StorageGlanceWidget.EXTRA_OPEN_QUICK_CLEANUP)
+                intent.removeExtra(com.example.widget.StorageGlanceWidget.EXTRA_TARGET_TAB)
+                viewModel.openQuickCleanup()
+            }
+            intent.getBooleanExtra(com.example.widget.StorageGlanceWidget.EXTRA_QUICK_CLEAN, false) -> {
+                intent.removeExtra(com.example.widget.StorageGlanceWidget.EXTRA_QUICK_CLEAN)
+                viewModel.openQuickCleanup()
+            }
+            intent.getBooleanExtra("EXTRA_START_SCAN", false) -> {
+                intent.removeExtra("EXTRA_START_SCAN")
                 viewModel.startSmartScan()
-            } else {
+            }
+            else -> {
                 val targetTabStr = intent.getStringExtra("EXTRA_TARGET_TAB")
-                if (targetTabStr == "SMART_CLEAN") {
-                    viewModel.navigateTo(MainScreenTab.SMART_CLEAN)
-                } else if (targetTabStr == "BATTERY_PERFORMANCE") {
-                    viewModel.navigateTo(MainScreenTab.BATTERY_PERFORMANCE)
+                if (targetTabStr != null) {
+                    intent.removeExtra("EXTRA_TARGET_TAB")
+                    if (targetTabStr == "SMART_CLEAN") {
+                        viewModel.navigateTo(MainScreenTab.SMART_CLEAN)
+                    } else if (targetTabStr == "BATTERY_PERFORMANCE") {
+                        viewModel.navigateTo(MainScreenTab.BATTERY_PERFORMANCE)
+                    } else if (targetTabStr == "DUPLICATES") {
+                        viewModel.navigateTo(MainScreenTab.DUPLICATES)
+                    } else if (targetTabStr == "STORAGE_ANALYZER") {
+                        viewModel.navigateTo(MainScreenTab.STORAGE_ANALYZER)
+                    } else if (targetTabStr == "QUICK_CLEANUP") {
+                        viewModel.openQuickCleanup()
+                    }
                 }
             }
         }
@@ -173,7 +260,8 @@ fun MainApp(viewModel: CleanerViewModel = viewModel()) {
                         viewModel = viewModel,
                         isWideScreen = isWideScreen,
                         isTv = isTv,
-                        innerPadding = PaddingValues(0.dp)
+                        innerPadding = PaddingValues(0.dp),
+                        onOpenPermissionGuide = { showPermissionRationale = true }
                     )
                 }
             }
@@ -204,7 +292,8 @@ fun MainApp(viewModel: CleanerViewModel = viewModel()) {
                         viewModel = viewModel,
                         isWideScreen = isWideScreen,
                         isTv = isTv,
-                        innerPadding = innerPadding
+                        innerPadding = innerPadding,
+                        onOpenPermissionGuide = { showPermissionRationale = true }
                     )
                 }
             }
@@ -274,6 +363,7 @@ fun MainContentArea(
     isWideScreen: Boolean,
     isTv: Boolean,
     innerPadding: PaddingValues,
+    onOpenPermissionGuide: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -293,7 +383,9 @@ fun MainContentArea(
         AnimatedContent(
             targetState = uiState.currentTab,
             transitionSpec = {
-                fadeIn(animationSpec = tween(150)) togetherWith fadeOut(animationSpec = tween(150))
+                (fadeIn(animationSpec = tween(220)) +
+                    slideInVertically(animationSpec = tween(220)) { it / 28 }) togetherWith
+                    fadeOut(animationSpec = tween(160))
             },
             label = "ScreenTransition",
             modifier = Modifier
@@ -323,6 +415,17 @@ fun MainContentArea(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
+                MainScreenTab.QUICK_CLEANUP -> {
+                    QuickCleanupScreen(
+                        uiState = uiState,
+                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onRefresh = { viewModel.refreshAll() },
+                        onExecuteQuickCleanup = { includeCache, largeFiles ->
+                            viewModel.executeQuickCleanup(includeCache, largeFiles)
+                        },
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
                 MainScreenTab.DUPLICATES -> {
                     DuplicatesScreen(
                         uiState = uiState,
@@ -331,6 +434,8 @@ fun MainContentArea(
                         onToggleGroup = { groupId, selectAll -> viewModel.selectAllDuplicatesInGroup(groupId, selectAll) },
                         onSelectAllDuplicates = { viewModel.selectAllDuplicatesEverywhere() },
                         onDeleteSelected = { viewModel.deleteSelectedDuplicates() },
+                        onRunBackgroundScan = { viewModel.triggerBackgroundDuplicateScan() },
+                        onMarkFlaggedReviewed = { viewModel.markFlaggedDuplicatesReviewed() },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -354,6 +459,7 @@ fun MainContentArea(
                         onToggleItem = { viewModel.toggleCompressibleItem(it) },
                         onStartCompression = { viewModel.startBatchCompression() },
                         onSelectAll = { selectAll -> viewModel.selectAllCompressibleItems(selectAll) },
+                        onOpenPermissionGuide = onOpenPermissionGuide,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -362,6 +468,21 @@ fun MainContentArea(
                         uiState = uiState,
                         onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
                         onDeleteLargeFiles = { viewModel.deleteLargeFiles(it) },
+                        initialExtensionFilter = uiState.storageExplorerExtensionFilter,
+                        onOpenStorageAnalyzer = { viewModel.navigateTo(MainScreenTab.STORAGE_ANALYZER) },
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
+                MainScreenTab.STORAGE_ANALYZER -> {
+                    StorageAnalyzerScreen(
+                        uiState = uiState,
+                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onRefresh = { viewModel.refreshAll() },
+                        onOpenDuplicates = { viewModel.navigateTo(MainScreenTab.DUPLICATES) },
+                        onOpenCompressor = { viewModel.navigateTo(MainScreenTab.COMPRESSOR) },
+                        onOpenAppCache = { viewModel.navigateTo(MainScreenTab.APP_CACHE) },
+                        onOpenStorageExplorer = { ext -> viewModel.openStorageExplorer(ext) },
+                        onOpenQuickCleanup = { viewModel.openQuickCleanup() },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -396,6 +517,7 @@ fun MainContentArea(
                         onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
                         onNavigateToAppCache = { viewModel.navigateTo(MainScreenTab.APP_CACHE) },
                         onNavigateToSmartClean = { viewModel.navigateTo(MainScreenTab.SMART_CLEAN) },
+                        onSetThemeMode = { viewModel.setThemeMode(it) },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -423,6 +545,33 @@ fun MainContentArea(
                         onQueryChange = { viewModel.setAiQueryText(it) },
                         onGenerateInsights = { viewModel.generateAiRoutines(it) },
                         onExecuteRoutine = { viewModel.executeAiRoutine(it) },
+                        onToggleEcoLite = { viewModel.setEcoLiteMode(it) },
+                        onClaimGraceCredits = { viewModel.claimAiGraceCredits() },
+                        onRetryEcoLite = { viewModel.generateAiRoutines(customQuery = it, forceEcoLite = true, bypassCache = true) },
+                        onRunLocalAi = { viewModel.generateAiRoutines(customQuery = it, forceLocal = true, bypassCache = true) },
+                        onOpenAiSettings = { viewModel.navigateTo(MainScreenTab.SETTINGS) },
+                        onOpenSmartRecommendations = { viewModel.openSmartRecommendations() },
+                        onRescanScreenshots = { viewModel.rescanScreenshotsOnDevice() },
+                        onDeleteSafeScreenshots = { viewModel.deleteSafeScreenshotsOnly() },
+                        onProtectReceiptsToVault = { viewModel.protectReceiptsToVault() },
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
+                MainScreenTab.SMART_RECOMMENDATIONS -> {
+                    SmartRecommendationsScreen(
+                        uiState = uiState,
+                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onAnalyzeWithGemini = { viewModel.analyzeSmartRecommendations(bypassCache = true) },
+                        onRetryEcoLite = { viewModel.analyzeSmartRecommendations(forceEcoLite = true, bypassCache = true) },
+                        onRunLocalAnalysis = { viewModel.analyzeSmartRecommendations(forceLocal = true, bypassCache = true) },
+                        onToggleEcoLite = { viewModel.setEcoLiteMode(it) },
+                        onClaimGraceCredits = { viewModel.claimAiGraceCredits() },
+                        onOpenAiSettings = { viewModel.navigateTo(MainScreenTab.SETTINGS) },
+                        onApplyRecommendation = { rec, selectedIds ->
+                            viewModel.applySmartRecommendation(rec, selectedIds)
+                        },
+                        onDismissRecommendation = { viewModel.dismissSmartRecommendation(it) },
+                        onDismissError = { viewModel.dismissRecommendationsError() },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -435,6 +584,9 @@ fun MainContentArea(
                         onTestNotification = { viewModel.triggerLowStorageNotificationTest() },
                         onSetSmartExpiryDays = { viewModel.setSmartExpiryDays(it) },
                         onTogglePauseCleaning = { viewModel.togglePauseCleaning() },
+                        onSetEcoLiteMode = { viewModel.setEcoLiteMode(it) },
+                        onTestAndSaveByokKey = { viewModel.testAndSaveByokApiKey(it) },
+                        onClearByokKey = { viewModel.clearByokApiKey() },
                         onReopenOnboarding = { viewModel.reopenOnboarding() },
                         onRateApp = { viewModel.triggerManualRateApp() },
                         onShareApp = { viewModel.triggerManualShareApp() },
