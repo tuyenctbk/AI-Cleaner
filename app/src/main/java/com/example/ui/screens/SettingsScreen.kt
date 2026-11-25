@@ -1,5 +1,6 @@
 package com.example.ui.screens
 
+import android.webkit.WebView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,8 +23,12 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.example.ui.theme.*
 import com.example.ui.viewmodel.CleanerUiState
 
@@ -46,10 +51,12 @@ fun SettingsScreen(
     onReopenOnboarding: () -> Unit = {},
     onRateApp: () -> Unit = {},
     onShareApp: () -> Unit = {},
+    onOpenPermissionGuide: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current
     val currentTheme = uiState.themeMode
+    var showPrivacyPolicyDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -218,10 +225,10 @@ fun SettingsScreen(
                                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                         onSetSmartExpiryDays(days)
                                     },
-                                    label = { Text(label, fontWeight = FontWeight.Bold) },
+                                    label = { Text(label, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                                     colors = FilterChipDefaults.filterChipColors(
                                         selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                        selectedLabelColor = Color.White
+                                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                                     ),
                                     modifier = Modifier.weight(1f)
                                 )
@@ -431,7 +438,10 @@ fun SettingsScreen(
                                     onTestNotification()
                                 },
                                 shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                ),
                                 modifier = Modifier.testTag("test_low_storage_alert_button")
                             ) {
                                 Text(stringResource(R.string.btn_test_alert), fontWeight = FontWeight.Bold)
@@ -666,6 +676,120 @@ fun SettingsScreen(
                 }
             }
 
+            // App Permissions Management Row
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(20.dp))
+                        .clickable { onOpenPermissionGuide() }
+                        .testTag("settings_permissions_row"),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        val permTint = if (uiState.permissionGranted) EmeraldGreen else WarningAmber
+                        Box(
+                            modifier = Modifier
+                                .size(44.dp)
+                                .clip(CircleShape)
+                                .background(permTint.copy(alpha = 0.15f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = if (uiState.permissionGranted) Icons.Default.VerifiedUser else Icons.Default.GppMaybe,
+                                contentDescription = null,
+                                tint = permTint,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.settings_permissions_title),
+                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                            Text(
+                                text = stringResource(
+                                    if (uiState.permissionGranted) R.string.settings_permissions_granted
+                                    else R.string.settings_permissions_limited
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (uiState.permissionGranted) EmeraldGreen else WarningAmber
+                            )
+                        }
+
+                        Icon(
+                            imageVector = Icons.Default.ChevronRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            // In-App Privacy Policy Viewer Row
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(20.dp))
+                        .clickable { showPrivacyPolicyDialog = true }
+                        .testTag("settings_privacy_policy_row"),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(44.dp)
+                                .clip(CircleShape)
+                                .background(EmeraldGreen.copy(alpha = 0.15f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Policy,
+                                contentDescription = null,
+                                tint = EmeraldGreen,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.settings_privacy_policy_title),
+                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                            Text(
+                                text = stringResource(R.string.settings_privacy_policy_sub),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
+                        Icon(
+                            imageVector = Icons.Default.ChevronRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
             // About & Privacy Footer
             item {
                 Card(
@@ -702,6 +826,60 @@ fun SettingsScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
+                }
+            }
+        }
+    }
+
+    if (showPrivacyPolicyDialog) {
+        Dialog(
+            onDismissRequest = { showPrivacyPolicyDialog = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.84f)
+                    .padding(16.dp),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            ) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 14.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(imageVector = Icons.Default.Policy, contentDescription = null, tint = EmeraldGreen)
+                            Text(
+                                text = stringResource(R.string.settings_privacy_policy_title),
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                        TextButton(onClick = { showPrivacyPolicyDialog = false }) {
+                            Text(stringResource(R.string.btn_close), fontWeight = FontWeight.Bold)
+                        }
+                    }
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                    AndroidView(
+                        factory = { ctx ->
+                            WebView(ctx).apply {
+                                settings.javaScriptEnabled = false
+                                settings.allowFileAccess = true
+                                loadUrl("file:///android_asset/privacy_policy.html")
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
                 }
             }
         }

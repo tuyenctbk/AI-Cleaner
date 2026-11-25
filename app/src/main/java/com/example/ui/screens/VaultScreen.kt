@@ -96,10 +96,11 @@ fun VaultScreen(
                 },
                 actions = {
                     if (vaultedList.isNotEmpty()) {
+                        val allVaultSelected = selectedItemsList.size == vaultedList.size
                         TextButton(
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                selectedItemIds = if (selectedItemIds.size == vaultedList.size) {
+                                selectedItemIds = if (allVaultSelected) {
                                     emptySet()
                                 } else {
                                     vaultedList.map { it.id }.toSet()
@@ -108,7 +109,7 @@ fun VaultScreen(
                             modifier = Modifier.testTag("vault_select_all_button")
                         ) {
                             Text(
-                                text = stringResource(if (selectedItemIds.size == vaultedList.size) R.string.btn_deselect_all else R.string.btn_select_all),
+                                text = stringResource(if (allVaultSelected) R.string.btn_deselect_all else R.string.btn_select_all),
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -161,7 +162,10 @@ fun VaultScreen(
                                 .height(50.dp)
                                 .testTag("vault_delete_button"),
                             shape = RoundedCornerShape(25.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = CoralRed)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = CoralRed,
+                                contentColor = Color.White
+                            )
                         ) {
                             Icon(imageVector = Icons.Default.DeleteForever, contentDescription = null, tint = Color.White)
                             Spacer(modifier = Modifier.width(6.dp))
@@ -247,7 +251,10 @@ fun VaultScreen(
                                 .height(46.dp)
                                 .testTag("auto_sort_vault_button"),
                             shape = RoundedCornerShape(23.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8E24AA))
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = VividViolet,
+                                contentColor = Color.White
+                            )
                         ) {
                             Icon(imageVector = Icons.Default.AutoAwesome, contentDescription = null, tint = Color.White)
                             Spacer(modifier = Modifier.width(8.dp))
@@ -364,7 +371,7 @@ private fun VaultItemRow(
                     maxLines = 1
                 )
                 Text(
-                    text = stringResource(R.string.vault_item_path_fmt, media.formattedSize),
+                    text = stringResource(R.string.vault_item_protected_fmt, media.formattedSize),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1

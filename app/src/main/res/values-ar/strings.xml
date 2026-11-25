@@ -866,4 +866,24 @@
     <string name="format_resolution">%1$d × %2$d</string>
     <string name="format_percentage">%1$d%%</string>
     <string name="storage_delta_plus_fmt">+%1$s</string>
+
+    <string name="cloud_provider_local_old">التخزين المحلي (&gt;30 يومًا)</string>
+    <string name="cloud_backup_unverified_status">تحقق من النسخة الاحتياطية قبل الحذف</string>
+    <string name="cloud_photos_unverified_warning">الصور المحلية القديمة غير محددة افتراضيًا. تأكد من نسخها احتياطيًا على السحابة قبل الحذف.</string>
+    <string name="cloud_badge_verify_backup">تحقق من النسخ</string>
+    <string name="settings_permissions_title">أذونات التطبيق</string>
+    <string name="settings_permissions_granted">تم منح الوصول للوسائط • الفحص الكامل نشط</string>
+    <string name="settings_permissions_limited">الوضع المحدود • انقر لمنح الوصول</string>
+    <string name="settings_privacy_policy_title">سياسة الخصوصية</string>
+    <string name="settings_privacy_policy_sub">اقرأ سياسة الخصوصية المحلية 100% على الجهاز</string>
+    <string name="btn_add_widget">إضافة إلى الشاشة الرئيسية</string>
+    <string name="widget_pin_requested">تم فتح نافذة تثبيت الأداة</string>
+    <string name="widget_pin_unsupported">اضغط مطولًا على الشاشة الرئيسية ← الأدوات ← AI Cleaner.</string>
+    <string name="badge_paused">متوقف مؤقتًا</string>
+    <string name="vault_item_protected_fmt">%1$s • محمي في الخزنة المحلية</string>
+    <string name="trends_freed_label">تم تحريره</string>
+    <string name="trends_delta_minus_fmt">-%1$s</string>
+    <string name="compressor_saved_copies_title">تم حفظ النسخ المضغوطة</string>
+    <string name="duplicates_more_count_fmt">+%1$d المزيد</string>
+    <string name="btn_close">إغلاق</string>
 </resources>

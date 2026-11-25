@@ -975,4 +975,25 @@
     <string name="format_resolution">%1$d × %2$d</string>
     <string name="format_percentage">%1$d%%</string>
     <string name="storage_delta_plus_fmt">+%1$s</string>
+
+    <!-- Honest Cloud Backup, Privacy Policy, Permissions, Widget & Polish Strings -->
+    <string name="cloud_provider_local_old">Local Storage (&gt;30 Days)</string>
+    <string name="cloud_backup_unverified_status">Verify Backup Before Deleting</string>
+    <string name="cloud_photos_unverified_warning">Older local photos are unchecked by default. Confirm they are backed up in your cloud app before deleting.</string>
+    <string name="cloud_badge_verify_backup">Verify Backup</string>
+    <string name="settings_permissions_title">App Permissions</string>
+    <string name="settings_permissions_granted">Media access granted • Full scan active</string>
+    <string name="settings_permissions_limited">Limited Mode • Tap to grant media access</string>
+    <string name="settings_privacy_policy_title">Privacy Policy</string>
+    <string name="settings_privacy_policy_sub">Read our 100% on-device data &amp; privacy policy</string>
+    <string name="btn_add_widget">Add to Home Screen</string>
+    <string name="widget_pin_requested">Widget pin dialog opened</string>
+    <string name="widget_pin_unsupported">Long-press your Home Screen → Widgets → AI Cleaner to add.</string>
+    <string name="badge_paused">Paused</string>
+    <string name="vault_item_protected_fmt">%1$s • Protected in Local Vault</string>
+    <string name="trends_freed_label">Freed</string>
+    <string name="trends_delta_minus_fmt">-%1$s</string>
+    <string name="compressor_saved_copies_title">Compressed Copies Saved</string>
+    <string name="duplicates_more_count_fmt">+%1$d more</string>
+    <string name="btn_close">Close</string>
 </resources>

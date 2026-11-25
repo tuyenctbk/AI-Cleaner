@@ -40,6 +40,12 @@ fun SettingsAiEngineCard(
     var apiKeyInput by remember { mutableStateOf("") }
     var showKeyPlaintext by remember { mutableStateOf(false) }
 
+    LaunchedEffect(uiState.byokValidationStatus) {
+        if (uiState.byokValidationStatus == ApiKeyValidationStatus.VALID) {
+            apiKeyInput = ""
+        }
+    }
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -230,11 +236,13 @@ fun SettingsAiEngineCard(
                         onClick = {
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             onTestAndSaveByokKey(apiKeyInput)
-                            apiKeyInput = ""
                         },
                         enabled = apiKeyInput.isNotBlank() && uiState.byokValidationStatus != ApiKeyValidationStatus.TESTING,
                         shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = VividViolet),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = VividViolet,
+                            contentColor = Color.White
+                        ),
                         modifier = Modifier
                             .weight(1f)
                             .testTag("settings_byok_save_button")

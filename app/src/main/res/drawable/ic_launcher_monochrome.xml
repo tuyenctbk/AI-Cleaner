@@ -4,14 +4,20 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Shield outline -->
+    <!-- Interlocking Purification Shield Silhouette -->
     <path
-        android:pathData="M54,28 L76,37 V53 C76,66.5 66.5,77.5 54,82 C41.5,77.5 32,66.5 32,53 V37 Z"
+        android:pathData="M54,25 L79,34.5 V53.5 C79,68 68,79.5 54,84.5 C40,79.5 29,68 29,53.5 V34.5 Z"
         android:strokeColor="#FFFFFF"
-        android:strokeWidth="4.5"
+        android:strokeWidth="4.2"
         android:strokeLineJoin="round" />
-    <!-- Center 4-point AI Sparkle -->
+    <!-- Inner Orbital Lens Arc -->
+    <path
+        android:pathData="M54,32 C66.5,35.5 73.5,45.5 72.5,56.5 C71.5,67 64,74.5 54,77.5 C44,74.5 36.5,67 35.5,56.5 C34.5,45.5 41.5,35.5 54,32 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2.6"
+        android:strokeAlpha="0.85" />
+    <!-- Center 4-Point AI Sparkle Star -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M54,41 L57.5,51.5 L68,55 L57.5,58.5 L54,69 L50.5,58.5 L40,55 L50.5,51.5 Z" />
+        android:pathData="M54,41.5 L57.2,51.3 L67,54.5 L57.2,57.7 L54,67.5 L50.8,57.7 L41,54.5 L50.8,51.3 Z" />
 </vector>

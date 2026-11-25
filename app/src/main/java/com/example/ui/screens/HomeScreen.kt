@@ -1,15 +1,25 @@
 package com.example.ui.screens
 
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
+import android.os.Build
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.AddToHomeScreen
 import androidx.compose.material.icons.automirrored.filled.ShowChart
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CleaningServices
+import androidx.compose.material.icons.filled.CloudDone
+import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.PauseCircle
+import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.material.icons.filled.Widgets
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,32 +28,26 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.res.stringResource
 import com.example.R
 import com.example.data.model.formatFileSize
+import com.example.ui.components.CleanupTipsSection
 import com.example.ui.components.MascotHeader
+import com.example.ui.components.PermissionNoticeCard
 import com.example.ui.components.QuickActionGrid
 import com.example.ui.components.StorageOverviewCard
 import com.example.ui.theme.*
 import com.example.ui.viewmodel.CleanerUiState
 import com.example.ui.viewmodel.MainScreenTab
-
-import com.example.ui.components.CleanupTipsSection
-
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.Widgets
-import androidx.compose.material.icons.filled.FlashOn
-import androidx.compose.material.icons.filled.CloudDone
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-
-import androidx.compose.material.icons.filled.PauseCircle
-import androidx.compose.material.icons.filled.PlayCircle
+import com.example.widget.StorageAppWidgetProvider
 
 @Composable
 fun HomeScreen(
@@ -52,11 +56,14 @@ fun HomeScreen(
     onSmartClean: () -> Unit,
     onGlobalQuickClean: () -> Unit,
     onDismissTip: (String) -> Unit,
-    onTestLowStorageNotification: () -> Unit,
+    onTestLowStorageNotification: () -> Unit = {},
     onTogglePauseCleaning: () -> Unit,
+    onOpenPermissionGuide: () -> Unit = {},
+    onOpenStorageExplorerWithFilter: (String) -> Unit = { onNavigate(MainScreenTab.STORAGE_EXPLORER) },
     modifier: Modifier = Modifier
 ) {
     val haptic = LocalHapticFeedback.current
+    val context = LocalContext.current
 
     val quickSummary = androidx.compose.runtime.remember(
         uiState.allMedia,
@@ -89,6 +96,16 @@ fun HomeScreen(
             MascotHeader(onOpenSettings = { onNavigate(MainScreenTab.SETTINGS) })
         }
 
+        // Limited Mode Permission Banner (1-tap recovery when media access not yet granted)
+        if (!uiState.permissionGranted) {
+            item {
+                PermissionNoticeCard(
+                    onGrantClick = onOpenPermissionGuide,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+        }
+
         // Pause Cleaning Alert Banner (shown only if background cleaning is paused)
         if (uiState.isCleaningPaused) {
             item {
@@ -112,6 +129,7 @@ fun HomeScreen(
                         StorageOverviewCard(
                             stats = uiState.storageStats,
                             isScanning = uiState.isScanning,
+                            reclaimableBytes = uiState.totalReclaimableBytes,
                             onSmartCleanClick = onSmartClean,
                             onOpenStorageAnalyzer = { onNavigate(MainScreenTab.STORAGE_ANALYZER) },
                             modifier = Modifier.fillMaxWidth()
@@ -144,6 +162,7 @@ fun HomeScreen(
                 StorageOverviewCard(
                     stats = uiState.storageStats,
                     isScanning = uiState.isScanning,
+                    reclaimableBytes = uiState.totalReclaimableBytes,
                     onSmartCleanClick = onSmartClean,
                     onOpenStorageAnalyzer = { onNavigate(MainScreenTab.STORAGE_ANALYZER) }
                 )
@@ -205,15 +224,17 @@ fun HomeScreen(
                 onOpenDuplicates = { onNavigate(MainScreenTab.DUPLICATES) },
                 onOpenSwipeClean = { onNavigate(MainScreenTab.SWIPE_CLEAN) },
                 onOpenCompressor = { onNavigate(MainScreenTab.COMPRESSOR) },
-                onOpenStorageExplorer = { onNavigate(MainScreenTab.STORAGE_EXPLORER) },
+                onOpenStorageExplorer = { onOpenStorageExplorerWithFilter("All") },
                 onOpenAppCache = { onNavigate(MainScreenTab.APP_CACHE) },
                 onOpenSmartScheduler = { onNavigate(MainScreenTab.SMART_SCHEDULER) },
                 onOpenBatteryPerformance = { onNavigate(MainScreenTab.BATTERY_PERFORMANCE) },
-                onOpenVault = { onNavigate(MainScreenTab.VAULT) }
+                onOpenVault = { onNavigate(MainScreenTab.VAULT) },
+                isSchedulerActive = uiState.smartScheduleSettings.isEnabled && !uiState.isCleaningPaused,
+                onOpenVideos = { onOpenStorageExplorerWithFilter(".mp4") }
             )
         }
 
-        // Home Screen Widget & Observer Test Card
+        // Home Screen Widget Preview + 1-Tap Pin Widget CTA
         item {
             HomeScreenWidgetCard(
                 stats = uiState.storageStats,
@@ -221,19 +242,38 @@ fun HomeScreen(
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     onGlobalQuickClean()
                 },
-                onTestLowStorageNotification = {
+                onAddWidget = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onTestLowStorageNotification()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        val mgr = AppWidgetManager.getInstance(context)
+                        val provider = ComponentName(context, StorageAppWidgetProvider::class.java)
+                        if (mgr.isRequestPinAppWidgetSupported) {
+                            val requested = mgr.requestPinAppWidget(provider, null, null)
+                            Toast.makeText(
+                                context,
+                                context.getString(
+                                    if (requested) R.string.widget_pin_requested else R.string.widget_pin_unsupported
+                                ),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Toast.makeText(context, context.getString(R.string.widget_pin_unsupported), Toast.LENGTH_LONG).show()
+                        }
+                    } else {
+                        Toast.makeText(context, context.getString(R.string.widget_pin_unsupported), Toast.LENGTH_LONG).show()
+                    }
                 }
             )
         }
 
         // Clean History & Lifetime Saved Banner
-        if (uiState.cleanHistory.isNotEmpty()) {
+        val lifetimeFreed = maxOf(uiState.totalBytesFreed, uiState.cleanHistory.sumOf { it.freedBytes })
+        val lifetimeOps = maxOf(uiState.cleanCount, uiState.cleanHistory.size)
+        if (lifetimeOps > 0 || uiState.cleanHistory.isNotEmpty()) {
             item {
                 CleanHistoryBanner(
-                    totalCleaned = formatFileSize(uiState.cleanHistory.sumOf { it.freedBytes }),
-                    recordsCount = uiState.cleanHistory.size,
+                    totalCleaned = formatFileSize(lifetimeFreed),
+                    recordsCount = lifetimeOps,
                     onClick = { onNavigate(MainScreenTab.CLEANUP_HISTORY) }
                 )
             }
@@ -313,7 +353,7 @@ private fun CleanHistoryBanner(
 private fun HomeScreenWidgetCard(
     stats: com.example.data.model.StorageStats,
     onQuickClean: () -> Unit,
-    onTestLowStorageNotification: () -> Unit
+    onAddWidget: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -341,7 +381,7 @@ private fun HomeScreenWidgetCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Icon(imageVector = Icons.Default.Widgets, contentDescription = null, tint = ElectricBlue)
+                    Icon(imageVector = Icons.Default.Widgets, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Text(
                         text = stringResource(R.string.widget_preview_title),
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
@@ -351,23 +391,23 @@ private fun HomeScreenWidgetCard(
 
                 Surface(
                     shape = RoundedCornerShape(8.dp),
-                    color = ElectricBlue.copy(alpha = 0.12f)
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)
                 ) {
                     Text(
                         text = stringResource(R.string.badge_active),
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                        color = ElectricBlue,
+                        color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
             }
 
-            // Live Widget Simulation Card Box
+            // Live Widget Preview Box
             Surface(
                 shape = RoundedCornerShape(16.dp),
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 border = CardDefaults.outlinedCardBorder().copy(
-                    brush = androidx.compose.ui.graphics.SolidColor(ElectricBlue.copy(alpha = 0.3f))
+                    brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -390,7 +430,7 @@ private fun HomeScreenWidgetCard(
                         Text(
                             text = stringResource(R.string.stat_used_percent, stats.usedPercent),
                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                            color = ElectricBlue
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
 
@@ -400,7 +440,7 @@ private fun HomeScreenWidgetCard(
                             .fillMaxWidth()
                             .height(8.dp)
                             .clip(RoundedCornerShape(4.dp)),
-                        color = ElectricBlue,
+                        color = MaterialTheme.colorScheme.primary,
                         trackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
                     )
 
@@ -419,7 +459,10 @@ private fun HomeScreenWidgetCard(
                             onClick = onQuickClean,
                             shape = RoundedCornerShape(12.dp),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
                         ) {
                             Icon(imageVector = Icons.Default.FlashOn, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
@@ -429,18 +472,19 @@ private fun HomeScreenWidgetCard(
                 }
             }
 
-            // Low Storage Observer Notification Test Trigger
+            // 1-Tap Pin Widget to Home Screen CTA
             OutlinedButton(
-                onClick = onTestLowStorageNotification,
+                onClick = onAddWidget,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag("test_low_storage_notification_button"),
+                    .defaultMinSize(minHeight = 44.dp)
+                    .testTag("pin_home_widget_button"),
                 shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = CoralRed)
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary)
             ) {
-                Icon(imageVector = Icons.Default.NotificationsActive, contentDescription = null, tint = CoralRed)
+                Icon(imageVector = Icons.AutoMirrored.Filled.AddToHomeScreen, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.btn_test_low_storage), style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold))
+                Text(stringResource(R.string.btn_add_widget), style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold))
             }
         }
     }
@@ -564,11 +608,19 @@ private fun GlobalQuickActionCard(
                             .defaultMinSize(minHeight = 48.dp)
                             .testTag("open_quick_cleanup_button"),
                         shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen)
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = EmeraldGreen,
+                            contentColor = Color.White
+                        )
                     ) {
                         Icon(imageVector = Icons.Default.CleaningServices, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text(stringResource(R.string.title_quick_cleanup), fontWeight = FontWeight.Bold)
+                        Text(
+                            stringResource(R.string.title_quick_cleanup),
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     }
 
                     OutlinedButton(

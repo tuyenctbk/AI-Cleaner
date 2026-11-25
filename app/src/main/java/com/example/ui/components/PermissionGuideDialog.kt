@@ -197,7 +197,10 @@ fun PermissionGuideDialog(
                                 .height(52.dp)
                                 .testTag("btn_open_app_settings"),
                             shape = RoundedCornerShape(26.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
@@ -220,7 +223,10 @@ fun PermissionGuideDialog(
                                 .height(52.dp)
                                 .testTag("btn_grant_storage_permission"),
                             shape = RoundedCornerShape(26.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
                         ) {
                             Icon(
                                 imageVector = Icons.Default.CheckCircle,
@@ -367,7 +373,10 @@ fun PermissionNoticeCard(
             Button(
                 onClick = onGrantClick,
                 shape = RoundedCornerShape(18.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ),
                 contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
             ) {
                 Text(

@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -43,8 +44,8 @@ fun CompressorScreen(
     onBack: () -> Unit,
     onQualityChange: (CompressionQuality) -> Unit,
     onToggleItem: (Long) -> Unit,
-    onStartCompression: () -> Unit,
-    onSelectAll: ((Boolean) -> Unit)? = null,
+    onStartCompression: (Set<Long>) -> Unit,
+    onSelectAll: ((Boolean, Set<Long>) -> Unit)? = null,
     onOpenPermissionGuide: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -105,8 +106,9 @@ fun CompressorScreen(
                     TextButton(
                         onClick = {
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            val visibleIds = filteredCompressibleItems.map { it.id }.toSet()
                             if (onSelectAll != null) {
-                                onSelectAll(!allSelectedInFilter)
+                                onSelectAll(!allSelectedInFilter, visibleIds)
                             } else {
                                 filteredCompressibleItems.forEach { onToggleItem(it.id) }
                             }
@@ -177,7 +179,7 @@ fun CompressorScreen(
                         Button(
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                onStartCompression()
+                                onStartCompression(selectedItems.map { it.id }.toSet())
                             },
                             enabled = selectedItems.isNotEmpty(),
                             modifier = Modifier
@@ -185,7 +187,10 @@ fun CompressorScreen(
                                 .height(54.dp)
                                 .testTag("start_compress_button"),
                             shape = RoundedCornerShape(27.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -194,7 +199,7 @@ fun CompressorScreen(
                                 Icon(
                                     imageVector = Icons.Default.Compress,
                                     contentDescription = null,
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onPrimary
                                 )
                                 Text(
                                     text = stringResource(R.string.compressor_btn_compress_fmt, formatFileSize(estimatedSavings)),
@@ -202,7 +207,7 @@ fun CompressorScreen(
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 15.sp
                                     ),
-                                    color = Color.White
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
                         }
@@ -527,8 +532,7 @@ fun CompressorScreen(
                     .padding(horizontal = 16.dp, vertical = 6.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(filteredCompressibleItems.indices.toList()) { index ->
-                    val item = filteredCompressibleItems[index]
+                itemsIndexed(filteredCompressibleItems, key = { _, item -> item.id }) { index, item ->
                     val isSelected = item.isSelected
                     val isActivePreview = activePreviewIndex == index
                     val isVideo = item.mediaItem.mimeType.startsWith("video/") || item.mediaItem.title.endsWith(".mp4", ignoreCase = true)

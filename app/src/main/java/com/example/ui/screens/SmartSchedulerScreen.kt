@@ -1,6 +1,7 @@
 package com.example.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -137,16 +138,18 @@ fun SmartSchedulerScreen(
                                 )
                             }
 
+                            val titleInk = if (settings.isEnabled) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+                            val subInk = if (settings.isEnabled) MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant
                             Column {
                                 Text(
                                     text = stringResource(R.string.scheduler_weekly_scan),
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    color = titleInk
                                 )
                                 Text(
                                     text = if (settings.isEnabled) stringResource(R.string.scheduler_weekly_scan_on, selectedDayLabel, formattedSelectedTime) else stringResource(R.string.scheduler_weekly_scan_off),
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = subInk
                                 )
                             }
                         }
@@ -313,17 +316,35 @@ fun SmartSchedulerScreen(
                         ) {
                             Text(stringResource(R.string.scheduler_scope_title), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
 
-                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .clickable { onUpdateSettings(settings.copy(scanJunk = !settings.scanJunk)) }
+                            ) {
                                 Checkbox(checked = settings.scanJunk, onCheckedChange = { onUpdateSettings(settings.copy(scanJunk = it)) })
                                 Text(stringResource(R.string.scheduler_scope_cache), style = MaterialTheme.typography.bodyMedium)
                             }
 
-                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .clickable { onUpdateSettings(settings.copy(scanDuplicates = !settings.scanDuplicates)) }
+                            ) {
                                 Checkbox(checked = settings.scanDuplicates, onCheckedChange = { onUpdateSettings(settings.copy(scanDuplicates = it)) })
                                 Text(stringResource(R.string.scheduler_scope_similar), style = MaterialTheme.typography.bodyMedium)
                             }
 
-                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .clickable { onUpdateSettings(settings.copy(scanLargeFiles = !settings.scanLargeFiles)) }
+                            ) {
                                 Checkbox(checked = settings.scanLargeFiles, onCheckedChange = { onUpdateSettings(settings.copy(scanLargeFiles = it)) })
                                 Text(stringResource(R.string.scheduler_scope_large_videos), style = MaterialTheme.typography.bodyMedium)
                             }

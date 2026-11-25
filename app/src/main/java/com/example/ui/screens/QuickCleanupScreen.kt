@@ -37,6 +37,7 @@ import com.example.data.model.formatFileSize
 import com.example.data.scanner.QuickCleanupFileFilter
 import com.example.data.scanner.QuickCleanupPlanner
 import com.example.ui.components.CommonMediaThumbnail
+import com.example.ui.components.DeleteConfirmationDialog
 import com.example.ui.theme.*
 import com.example.ui.viewmodel.CleanerUiState
 
@@ -72,6 +73,7 @@ fun QuickCleanupScreen(
         mutableStateOf(summary.largeFiles.map { it.id }.toSet())
     }
     var activeFilter by remember { mutableStateOf(QuickCleanupFileFilter.ALL) }
+    var showLargeDeleteConfirm by remember { mutableStateOf(false) }
 
     val filteredLargeFiles = remember(summary.largeFiles, activeFilter) {
         QuickCleanupPlanner.filterLargeFiles(summary.largeFiles, activeFilter)
@@ -192,7 +194,11 @@ fun QuickCleanupScreen(
                             Button(
                                 onClick = {
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    onExecuteQuickCleanup(includeCachedData, selectedLargeFiles)
+                                    if (selectedLargeFiles.isNotEmpty()) {
+                                        showLargeDeleteConfirm = true
+                                    } else {
+                                        onExecuteQuickCleanup(includeCachedData, emptyList())
+                                    }
                                 },
                                 enabled = !nothingSelected && selectedReclaimableBytes > 0L,
                                 modifier = Modifier
@@ -413,6 +419,17 @@ fun QuickCleanupScreen(
                     }
                 }
             }
+        }
+
+        if (showLargeDeleteConfirm && selectedLargeFiles.isNotEmpty()) {
+            DeleteConfirmationDialog(
+                selectedItems = selectedLargeFiles,
+                onConfirmDelete = {
+                    showLargeDeleteConfirm = false
+                    onExecuteQuickCleanup(includeCachedData, selectedLargeFiles)
+                },
+                onDismiss = { showLargeDeleteConfirm = false }
+            )
         }
     }
 }

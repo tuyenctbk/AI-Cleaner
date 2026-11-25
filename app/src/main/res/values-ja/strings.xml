@@ -866,4 +866,24 @@
     <string name="format_resolution">%1$d × %2$d</string>
     <string name="format_percentage">%1$d%%</string>
     <string name="storage_delta_plus_fmt">+%1$s</string>
+
+    <string name="cloud_provider_local_old">端末ストレージ（30日以上前）</string>
+    <string name="cloud_backup_unverified_status">削除前にバックアップを確認</string>
+    <string name="cloud_photos_unverified_warning">古い端末内の写真はデフォルトで選択解除されています。削除前にクラウドバックアップを確認してください。</string>
+    <string name="cloud_badge_verify_backup">バックアップ確認</string>
+    <string name="settings_permissions_title">アプリの権限</string>
+    <string name="settings_permissions_granted">メディアアクセス許可済み • フルスキャン有効</string>
+    <string name="settings_permissions_limited">制限モード • タップしてアクセスを許可</string>
+    <string name="settings_privacy_policy_title">プライバシーポリシー</string>
+    <string name="settings_privacy_policy_sub">100%端末内処理のプライバシー方針を確認</string>
+    <string name="btn_add_widget">ホーム画面に追加</string>
+    <string name="widget_pin_requested">ウィジェット追加ダイアログを開きました</string>
+    <string name="widget_pin_unsupported">ホーム画面を長押し → ウィジェット → AI Cleaner から追加してください。</string>
+    <string name="badge_paused">一時停止中</string>
+    <string name="vault_item_protected_fmt">%1$s • ローカル保管庫で保護中</string>
+    <string name="trends_freed_label">解放済み</string>
+    <string name="trends_delta_minus_fmt">-%1$s</string>
+    <string name="compressor_saved_copies_title">圧縮コピーを保存しました</string>
+    <string name="duplicates_more_count_fmt">他 +%1$d 件</string>
+    <string name="btn_close">閉じる</string>
 </resources>

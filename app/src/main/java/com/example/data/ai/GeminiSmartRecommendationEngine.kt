@@ -145,7 +145,6 @@ class GeminiSmartRecommendationEngine(
 
         var hitRateLimit = false
         var cascadedToLite = false
-        var cloudError: String? = null
 
         try {
             if (!startWithLite) {
@@ -176,7 +175,9 @@ class GeminiSmartRecommendationEngine(
                     )
                 }
                 if (primaryOutcome.httpCode == 429) hitRateLimit = true
-                cloudError = primaryOutcome.errorMessage
+                if (!primaryOutcome.errorMessage.isNullOrBlank()) {
+                    Log.w(TAG, "Primary cloud model fallback: ${primaryOutcome.errorMessage}")
+                }
                 cascadedToLite = true
                 quotaManager.recordFallbackCascade()
             }
@@ -211,16 +212,16 @@ class GeminiSmartRecommendationEngine(
                 )
             }
             if (liteOutcome.httpCode == 429) hitRateLimit = true
-            cloudError = liteOutcome.errorMessage ?: cloudError
+            if (!liteOutcome.errorMessage.isNullOrBlank()) {
+                Log.w(TAG, "Economy lite model fallback: ${liteOutcome.errorMessage}")
+            }
         } catch (e: TimeoutCancellationException) {
             Log.e(TAG, "Smart recommendations timed out", e)
-            cloudError = null
         } catch (e: CancellationException) {
             quotaManager.refundCloudCredit()
             throw e
         } catch (e: Exception) {
             Log.e(TAG, "Smart recommendations cloud analysis failed", e)
-            cloudError = null
         }
 
         // Atomic Refund on cloud failure + seamless Tier 3 On-Device Fallback

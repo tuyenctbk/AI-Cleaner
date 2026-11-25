@@ -867,4 +867,24 @@
     <string name="format_resolution">%1$d × %2$d</string>
     <string name="format_percentage">%1$d%%</string>
     <string name="storage_delta_plus_fmt">+%1$s</string>
+
+    <string name="cloud_provider_local_old">Локальная память (&gt;30 дней)</string>
+    <string name="cloud_backup_unverified_status">Проверьте резервную копию перед удалением</string>
+    <string name="cloud_photos_unverified_warning">Старые локальные фото по умолчанию не выбраны. Убедитесь, что они сохранены в облаке, перед удалением.</string>
+    <string name="cloud_badge_verify_backup">Проверить копию</string>
+    <string name="settings_permissions_title">Разрешения приложения</string>
+    <string name="settings_permissions_granted">Доступ к медиа разрешён • Полное сканирование</string>
+    <string name="settings_permissions_limited">Ограниченный режим • Нажмите для доступа</string>
+    <string name="settings_privacy_policy_title">Политика конфиденциальности</string>
+    <string name="settings_privacy_policy_sub">Политика 100% локальной обработки на устройстве</string>
+    <string name="btn_add_widget">Добавить на главный экран</string>
+    <string name="widget_pin_requested">Открыто окно закрепления виджета</string>
+    <string name="widget_pin_unsupported">Удерживайте главный экран → Виджеты → AI Cleaner.</string>
+    <string name="badge_paused">Пауза</string>
+    <string name="vault_item_protected_fmt">%1$s • Защищено в локальном хранилище</string>
+    <string name="trends_freed_label">Освобождено</string>
+    <string name="trends_delta_minus_fmt">-%1$s</string>
+    <string name="compressor_saved_copies_title">Сжатые копии сохранены</string>
+    <string name="duplicates_more_count_fmt">ещё +%1$d</string>
+    <string name="btn_close">Закрыть</string>
 </resources>

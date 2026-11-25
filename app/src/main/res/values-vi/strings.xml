@@ -866,4 +866,24 @@
     <string name="format_resolution">%1$d × %2$d</string>
     <string name="format_percentage">%1$d%%</string>
     <string name="storage_delta_plus_fmt">+%1$s</string>
+
+    <string name="cloud_provider_local_old">Bộ nhớ máy (&gt;30 ngày)</string>
+    <string name="cloud_backup_unverified_status">Kiểm tra sao lưu trước khi xóa</string>
+    <string name="cloud_photos_unverified_warning">Ảnh cũ trên máy được bỏ chọn mặc định. Hãy xác nhận đã sao lưu lên đám mây trước khi xóa.</string>
+    <string name="cloud_badge_verify_backup">Kiểm tra sao lưu</string>
+    <string name="settings_permissions_title">Quyền ứng dụng</string>
+    <string name="settings_permissions_granted">Đã cấp quyền đa phương tiện • Quét đầy đủ</string>
+    <string name="settings_permissions_limited">Chế độ giới hạn • Chạm để cấp quyền</string>
+    <string name="settings_privacy_policy_title">Chính sách bảo mật</string>
+    <string name="settings_privacy_policy_sub">Xem chính sách quyền riêng tư 100% trên thiết bị</string>
+    <string name="btn_add_widget">Thêm vào Màn hình chính</string>
+    <string name="widget_pin_requested">Đã mở hộp thoại ghim tiện ích</string>
+    <string name="widget_pin_unsupported">Nhấn giữ Màn hình chính → Tiện ích → AI Cleaner để thêm.</string>
+    <string name="badge_paused">Tạm dừng</string>
+    <string name="vault_item_protected_fmt">%1$s • Được bảo vệ trong Két cục bộ</string>
+    <string name="trends_freed_label">Đã giải phóng</string>
+    <string name="trends_delta_minus_fmt">-%1$s</string>
+    <string name="compressor_saved_copies_title">Đã lưu bản sao đã nén</string>
+    <string name="duplicates_more_count_fmt">+%1$d ảnh nữa</string>
+    <string name="btn_close">Đóng</string>
 </resources>

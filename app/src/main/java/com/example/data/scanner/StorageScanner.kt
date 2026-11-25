@@ -1,6 +1,7 @@
 package com.example.data.scanner
 
 import android.content.ContentUris
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -18,7 +19,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.util.Locale
+
+data class MediaCompressionOutcome(
+    val succeeded: Boolean,
+    val originalBytes: Long,
+    val compressedBytes: Long,
+    val savedBytes: Long,
+    val savedCopyUriString: String = ""
+)
 
 class StorageScanner(private val context: Context) {
 
@@ -278,7 +288,10 @@ class StorageScanner(private val context: Context) {
         }
     }
 
-    suspend fun scanJunkFiles(onProgress: (Float, String) -> Unit): List<JunkCategory> = withContext(Dispatchers.IO) {
+    suspend fun scanJunkFiles(
+        simulateProgressDelay: Boolean = true,
+        onProgress: (Float, String) -> Unit
+    ): List<JunkCategory> = withContext(Dispatchers.IO) {
         val steps = listOf(
             context.getString(R.string.scan_step_app_cache) to 0.20f,
             context.getString(R.string.scan_step_temp_files) to 0.40f,
@@ -289,26 +302,33 @@ class StorageScanner(private val context: Context) {
 
         for ((step, progress) in steps) {
             onProgress(progress, step)
-            delay(120)
+            if (simulateProgressDelay) {
+                delay(110)
+            }
         }
 
         val categories = mutableListOf<JunkCategory>()
 
-        // 1. App Cache Category (Real files from app internal & external cache)
+        // 1. App Cache Category (Real files from app internal & external cache, excluding dedicated temp & image_cache dirs)
         val cacheItems = mutableListOf<JunkFileItem>()
         var appCacheSize = 0L
 
-        fun collectCache(dir: File?) {
+        fun collectCache(dir: File?, excludedChildNames: Set<String> = emptySet()) {
             if (dir == null || !dir.exists()) return
             dir.listFiles()?.forEach { file ->
-                val size = if (file.isDirectory) file.walkTopDown().sumOf { it.length() } else file.length()
+                if (file.name in excludedChildNames) return@forEach
+                val size = if (file.isDirectory) {
+                    file.walkTopDown().filter { it.isFile }.sumOf { it.length() }
+                } else {
+                    file.length()
+                }
                 if (size > 0) {
                     appCacheSize += size
                     cacheItems.add(JunkFileItem(file.name, file.absolutePath, size, JunkType.APP_CACHE))
                 }
             }
         }
-        collectCache(context.cacheDir)
+        collectCache(context.cacheDir, excludedChildNames = setOf("temp", "image_cache"))
         collectCache(context.codeCacheDir)
         context.externalCacheDirs?.forEach { collectCache(it) }
 
@@ -451,16 +471,30 @@ class StorageScanner(private val context: Context) {
             realItems.addAll(duplicateScanner.scanImagesFromMediaStore())
 
             // 2. Query Videos
-            val videoProjection = arrayOf(
-                MediaStore.Video.Media._ID,
-                MediaStore.Video.Media.DISPLAY_NAME,
-                MediaStore.Video.Media.DATA,
-                MediaStore.Video.Media.SIZE,
-                MediaStore.Video.Media.DATE_MODIFIED,
-                MediaStore.Video.Media.MIME_TYPE,
-                MediaStore.Video.Media.WIDTH,
-                MediaStore.Video.Media.HEIGHT
-            )
+            val videoProjection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                arrayOf(
+                    MediaStore.Video.Media._ID,
+                    MediaStore.Video.Media.DISPLAY_NAME,
+                    MediaStore.Video.Media.DATA,
+                    MediaStore.Video.Media.RELATIVE_PATH,
+                    MediaStore.Video.Media.SIZE,
+                    MediaStore.Video.Media.DATE_MODIFIED,
+                    MediaStore.Video.Media.MIME_TYPE,
+                    MediaStore.Video.Media.WIDTH,
+                    MediaStore.Video.Media.HEIGHT
+                )
+            } else {
+                arrayOf(
+                    MediaStore.Video.Media._ID,
+                    MediaStore.Video.Media.DISPLAY_NAME,
+                    MediaStore.Video.Media.DATA,
+                    MediaStore.Video.Media.SIZE,
+                    MediaStore.Video.Media.DATE_MODIFIED,
+                    MediaStore.Video.Media.MIME_TYPE,
+                    MediaStore.Video.Media.WIDTH,
+                    MediaStore.Video.Media.HEIGHT
+                )
+            }
 
             context.contentResolver.query(
                 MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
@@ -472,6 +506,9 @@ class StorageScanner(private val context: Context) {
                 val idCol = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
                 val nameCol = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
                 val pathCol = cursor.getColumnIndex(MediaStore.Video.Media.DATA)
+                val relPathCol = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    cursor.getColumnIndex(MediaStore.Video.Media.RELATIVE_PATH)
+                } else -1
                 val sizeCol = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)
                 val dateCol = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATE_MODIFIED)
                 val mimeCol = cursor.getColumnIndex(MediaStore.Video.Media.MIME_TYPE)
@@ -482,7 +519,9 @@ class StorageScanner(private val context: Context) {
                 while (cursor.moveToNext() && count < 120) {
                     val id = cursor.getLong(idCol)
                     val name = cursor.getString(nameCol) ?: "VID_$id.mp4"
-                    val path = if (pathCol != -1) cursor.getString(pathCol) ?: "" else ""
+                    val rawPath = if (pathCol != -1) cursor.getString(pathCol) ?: "" else ""
+                    val relPath = if (relPathCol != -1) cursor.getString(relPathCol) ?: "" else ""
+                    val path = rawPath.ifBlank { if (relPath.isNotBlank()) "$relPath$name" else "" }
                     val size = cursor.getLong(sizeCol).coerceAtLeast(0L)
                     val date = cursor.getLong(dateCol) * 1000L
                     val mime = if (mimeCol != -1) cursor.getString(mimeCol) ?: "video/mp4" else "video/mp4"
@@ -575,22 +614,41 @@ class StorageScanner(private val context: Context) {
         quality: CompressionQuality,
         onProgress: (Float) -> Unit = {}
     ): Long {
+        val outcome = compressMediaDetailed(mediaItem, quality, onProgress)
+        return if (outcome.succeeded) outcome.savedBytes else 0L
+    }
+
+    suspend fun compressMediaDetailed(
+        mediaItem: MediaItem,
+        quality: CompressionQuality,
+        onProgress: (Float) -> Unit = {}
+    ): MediaCompressionOutcome {
         return if (mediaItem.mimeType.startsWith("video/", ignoreCase = true)) {
             val result = videoCompressor.compressVideo(mediaItem, quality, onProgress)
-            if (result.succeeded) {
-                result.savedBytes
-            } else {
-                0L
-            }
+            MediaCompressionOutcome(
+                succeeded = result.succeeded,
+                originalBytes = mediaItem.sizeBytes,
+                compressedBytes = if (result.outputSizeBytes > 0L) result.outputSizeBytes else mediaItem.sizeBytes,
+                savedBytes = if (result.succeeded) result.savedBytes else 0L,
+                savedCopyUriString = result.savedCopyUriString
+            )
         } else {
             onProgress(0.3f)
-            val saved = compressImage(mediaItem, quality)
+            val outcome = compressImageDetailed(mediaItem, quality)
             onProgress(1f)
-            saved
+            outcome
         }
     }
 
-    suspend fun compressImage(mediaItem: MediaItem, quality: CompressionQuality): Long = withContext(Dispatchers.IO) {
+    suspend fun compressImage(mediaItem: MediaItem, quality: CompressionQuality): Long {
+        val outcome = compressImageDetailed(mediaItem, quality)
+        return if (outcome.succeeded) outcome.savedBytes else 0L
+    }
+
+    suspend fun compressImageDetailed(
+        mediaItem: MediaItem,
+        quality: CompressionQuality
+    ): MediaCompressionOutcome = withContext(Dispatchers.IO) {
         try {
             val uri = if (mediaItem.uriString.isNotBlank()) Uri.parse(mediaItem.uriString) else null
             val boundsOptions = BitmapFactory.Options().apply { inJustDecodeBounds = true }
@@ -604,10 +662,14 @@ class StorageScanner(private val context: Context) {
 
             if (boundsOptions.outWidth > 0 && boundsOptions.outHeight > 0) {
                 val maxDim = maxOf(boundsOptions.outWidth, boundsOptions.outHeight)
-                val sampleSize = when {
-                    maxDim > 4096 -> 4
-                    maxDim > 2048 -> 2
-                    else -> 1
+                val targetMaxDim = when (quality) {
+                    CompressionQuality.HIGH -> 3072
+                    CompressionQuality.MEDIUM -> 2048
+                    CompressionQuality.MAX_SAVINGS -> 1440
+                }
+                var sampleSize = 1
+                while (maxDim / (sampleSize * 2) >= targetMaxDim) {
+                    sampleSize *= 2
                 }
                 val decodeOptions = BitmapFactory.Options().apply { inSampleSize = sampleSize }
                 val bitmap = if (uri != null) {
@@ -621,14 +683,26 @@ class StorageScanner(private val context: Context) {
                 if (bitmap != null) {
                     try {
                         val qualityPercent = when (quality) {
-                            CompressionQuality.HIGH -> 75
-                            CompressionQuality.MEDIUM -> 50
-                            CompressionQuality.MAX_SAVINGS -> 30
+                            CompressionQuality.HIGH -> 80
+                            CompressionQuality.MEDIUM -> 62
+                            CompressionQuality.MAX_SAVINGS -> 42
                         }
                         val bos = ByteArrayOutputStream()
                         bitmap.compress(Bitmap.CompressFormat.JPEG, qualityPercent, bos)
                         val newBytes = bos.toByteArray()
-                        return@withContext (mediaItem.sizeBytes - newBytes.size).coerceAtLeast(0L)
+                        val saved = (mediaItem.sizeBytes - newBytes.size.toLong()).coerceAtLeast(0L)
+                        if (saved > 0L && newBytes.isNotEmpty()) {
+                            val savedUri = saveCompressedImageToMediaStore(mediaItem.title, newBytes)
+                            if (savedUri.isNotBlank()) {
+                                return@withContext MediaCompressionOutcome(
+                                    succeeded = true,
+                                    originalBytes = mediaItem.sizeBytes,
+                                    compressedBytes = newBytes.size.toLong(),
+                                    savedBytes = saved,
+                                    savedCopyUriString = savedUri
+                                )
+                            }
+                        }
                     } finally {
                         bitmap.recycle()
                     }
@@ -637,7 +711,59 @@ class StorageScanner(private val context: Context) {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        0L
+        MediaCompressionOutcome(
+            succeeded = false,
+            originalBytes = mediaItem.sizeBytes,
+            compressedBytes = mediaItem.sizeBytes,
+            savedBytes = 0L
+        )
+    }
+
+    private fun saveCompressedImageToMediaStore(originalTitle: String, jpegBytes: ByteArray): String {
+        val baseName = originalTitle.substringBeforeLast(".").ifBlank { "photo_${System.currentTimeMillis()}" }
+        val displayName = "${baseName}_compressed_${System.currentTimeMillis() % 10000}.jpg"
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val values = ContentValues().apply {
+                    put(MediaStore.Images.Media.DISPLAY_NAME, displayName)
+                    put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+                    put(MediaStore.Images.Media.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/AI Cleaner")
+                    put(MediaStore.Images.Media.IS_PENDING, 1)
+                }
+                val resolver = context.contentResolver
+                val destUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                    ?: return ""
+                try {
+                    resolver.openOutputStream(destUri)?.use { out ->
+                        out.write(jpegBytes)
+                        out.flush()
+                    } ?: run {
+                        resolver.delete(destUri, null, null)
+                        return ""
+                    }
+                    values.clear()
+                    values.put(MediaStore.Images.Media.IS_PENDING, 0)
+                    resolver.update(destUri, values, null, null)
+                    destUri.toString()
+                } catch (_: Exception) {
+                    resolver.delete(destUri, null, null)
+                    ""
+                }
+            } else {
+                val outDir = File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                    "AI Cleaner"
+                ).apply { mkdirs() }
+                val destFile = File(outDir, displayName)
+                FileOutputStream(destFile).use { out ->
+                    out.write(jpegBytes)
+                    out.flush()
+                }
+                Uri.fromFile(destFile).toString()
+            }
+        } catch (_: Exception) {
+            ""
+        }
     }
 
     suspend fun scanCloudSyncedPhotos(preloadedMedia: List<MediaItem>? = null): List<CloudPhotoItem> = withContext(Dispatchers.IO) {
@@ -645,18 +771,27 @@ class StorageScanner(private val context: Context) {
         val now = System.currentTimeMillis()
         val thirtyDaysAgo = now - (30L * 24 * 60 * 60 * 1000L)
 
-        // Identify photos in Cloud sync directories or photos older than 30 days
+        // Identify photos in recognized cloud sync folders vs older (>30d) local photos
         val cloudCandidates = media.filter { item ->
             item.mimeType.startsWith("image/") && (
-                    item.path.contains("Google Photos", ignoreCase = true) ||
-                            item.path.contains("cloud", ignoreCase = true) ||
-                            item.dateModified < thirtyDaysAgo
-                    )
+                isCloudSyncPath(item.path) || item.dateModified < thirtyDaysAgo
+            )
         }
 
-        val providerLabel = context.getString(R.string.cloud_provider_google_photos)
-        val backupStatusLabel = context.getString(R.string.cloud_backup_safe_status)
+        val googlePhotosLabel = context.getString(R.string.cloud_provider_google_photos)
+        val localOldLabel = context.getString(R.string.cloud_provider_local_old)
+        val safeStatusLabel = context.getString(R.string.cloud_backup_safe_status)
+        val unverifiedStatusLabel = context.getString(R.string.cloud_backup_unverified_status)
+
         cloudCandidates.map { item ->
+            val verified = isCloudSyncPath(item.path)
+            val provider = when {
+                item.path.contains("OneDrive", ignoreCase = true) -> "OneDrive"
+                item.path.contains("Dropbox", ignoreCase = true) -> "Dropbox"
+                item.path.contains("Google Drive", ignoreCase = true) -> "Google Drive"
+                verified -> googlePhotosLabel
+                else -> localOldLabel
+            }
             CloudPhotoItem(
                 id = item.id,
                 title = item.title,
@@ -664,11 +799,21 @@ class StorageScanner(private val context: Context) {
                 uriString = item.uriString,
                 sizeBytes = item.sizeBytes,
                 dateModified = item.dateModified,
-                cloudProvider = providerLabel,
-                cloudBackupDate = backupStatusLabel,
-                isSelected = true
+                cloudProvider = provider,
+                cloudBackupDate = if (verified) safeStatusLabel else unverifiedStatusLabel,
+                isVerifiedCloudBackup = verified,
+                isSelected = verified
             )
-        }
+        }.sortedWith(compareByDescending<CloudPhotoItem> { it.isVerifiedCloudBackup }.thenByDescending { it.sizeBytes })
+    }
+
+    private fun isCloudSyncPath(path: String): Boolean {
+        if (path.isBlank()) return false
+        return path.contains("Google Photos", ignoreCase = true) ||
+            path.contains("OneDrive", ignoreCase = true) ||
+            path.contains("Dropbox", ignoreCase = true) ||
+            path.contains("Google Drive", ignoreCase = true) ||
+            path.contains("/cloud", ignoreCase = true)
     }
 
     suspend fun get30DayStorageTrends(
@@ -973,11 +1118,18 @@ class StorageScanner(private val context: Context) {
                 try {
                     val file = File(item.path)
                     if (file.exists()) {
-                        if (file.isDirectory) file.deleteRecursively() else file.delete()
+                        val sizeBefore = if (file.isDirectory) {
+                            file.walkTopDown().filter { it.isFile }.sumOf { it.length() }
+                        } else {
+                            file.length()
+                        }
+                        val removed = if (file.isDirectory) file.deleteRecursively() else file.delete()
+                        if (removed) {
+                            freed += sizeBefore.coerceAtLeast(item.sizeBytes)
+                        }
                     }
                 } catch (_: Exception) {}
             }
-            freed += cat.sizeBytes
         }
         freed
     }

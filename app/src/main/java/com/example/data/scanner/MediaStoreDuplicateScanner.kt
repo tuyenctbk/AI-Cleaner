@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import com.example.R
 import com.example.data.ai.AiQuotaManager
@@ -379,17 +380,32 @@ class MediaStoreDuplicateScanner(private val context: Context) {
      */
     suspend fun scanImagesFromMediaStore(): List<MediaItem> = withContext(Dispatchers.IO) {
         val rawImages = mutableListOf<MediaItem>()
-        val projection = arrayOf(
-            MediaStore.Images.Media._ID,
-            MediaStore.Images.Media.DISPLAY_NAME,
-            MediaStore.Images.Media.DATA,
-            MediaStore.Images.Media.SIZE,
-            MediaStore.Images.Media.DATE_MODIFIED,
-            MediaStore.Images.Media.MIME_TYPE,
-            MediaStore.Images.Media.WIDTH,
-            MediaStore.Images.Media.HEIGHT,
-            MediaStore.Images.Media.ORIENTATION
-        )
+        val projection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            arrayOf(
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DISPLAY_NAME,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media.RELATIVE_PATH,
+                MediaStore.Images.Media.SIZE,
+                MediaStore.Images.Media.DATE_MODIFIED,
+                MediaStore.Images.Media.MIME_TYPE,
+                MediaStore.Images.Media.WIDTH,
+                MediaStore.Images.Media.HEIGHT,
+                MediaStore.Images.Media.ORIENTATION
+            )
+        } else {
+            arrayOf(
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DISPLAY_NAME,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media.SIZE,
+                MediaStore.Images.Media.DATE_MODIFIED,
+                MediaStore.Images.Media.MIME_TYPE,
+                MediaStore.Images.Media.WIDTH,
+                MediaStore.Images.Media.HEIGHT,
+                MediaStore.Images.Media.ORIENTATION
+            )
+        }
 
         try {
             context.contentResolver.query(
@@ -402,6 +418,9 @@ class MediaStoreDuplicateScanner(private val context: Context) {
                 val idCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
                 val nameCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)
                 val pathCol = cursor.getColumnIndex(MediaStore.Images.Media.DATA)
+                val relPathCol = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    cursor.getColumnIndex(MediaStore.Images.Media.RELATIVE_PATH)
+                } else -1
                 val sizeCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE)
                 val dateCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_MODIFIED)
                 val mimeCol = cursor.getColumnIndex(MediaStore.Images.Media.MIME_TYPE)
@@ -413,7 +432,11 @@ class MediaStoreDuplicateScanner(private val context: Context) {
                 while (cursor.moveToNext() && count < MAX_IMAGES_TO_SCAN) {
                     val id = cursor.getLong(idCol)
                     val name = cursor.getString(nameCol) ?: "IMG_$id.jpg"
-                    val path = if (pathCol != -1) cursor.getString(pathCol) ?: "" else ""
+                    val rawDataPath = if (pathCol != -1) cursor.getString(pathCol) ?: "" else ""
+                    val relPath = if (relPathCol != -1) cursor.getString(relPathCol) ?: "" else ""
+                    val path = rawDataPath.ifBlank {
+                        if (relPath.isNotBlank()) "$relPath$name" else ""
+                    }
                     val size = cursor.getLong(sizeCol).coerceAtLeast(0L)
                     val date = cursor.getLong(dateCol) * 1000L
                     val mime = if (mimeCol != -1) cursor.getString(mimeCol) ?: "image/jpeg" else "image/jpeg"

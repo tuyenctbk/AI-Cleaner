@@ -120,7 +120,10 @@ fun SwipeCleanScreen(
                                 .height(52.dp)
                                 .testTag("empty_trash_swipe_button"),
                             shape = RoundedCornerShape(26.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = CoralRed)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = CoralRed,
+                                contentColor = Color.White
+                            )
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,

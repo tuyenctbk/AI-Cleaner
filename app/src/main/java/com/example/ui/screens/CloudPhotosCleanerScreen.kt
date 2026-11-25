@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -109,7 +110,10 @@ fun CloudPhotosCleanerScreen(
                             },
                             enabled = selectedPhotos.isNotEmpty(),
                             shape = RoundedCornerShape(14.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = EmeraldGreen,
+                                contentColor = Color.White
+                            ),
                             modifier = Modifier.testTag("delete_cloud_photos_button")
                         ) {
                             Icon(imageVector = Icons.Default.CloudDone, contentDescription = null)
@@ -175,6 +179,35 @@ fun CloudPhotosCleanerScreen(
                                 text = stringResource(R.string.cloud_photos_verified_desc),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Honest Safety Notice when older unverified local photos are present
+            if (photos.any { !it.isVerifiedCloudBackup }) {
+                item {
+                    Surface(
+                        shape = RoundedCornerShape(14.dp),
+                        color = WarningAmber.copy(alpha = 0.12f),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = null,
+                                tint = WarningAmber,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = stringResource(R.string.cloud_photos_unverified_warning),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -280,7 +313,10 @@ fun CloudPhotosCleanerScreen(
                         showConfirmDialog = false
                         onDeleteSelected()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = EmeraldGreen,
+                        contentColor = Color.White
+                    )
                 ) {
                     Text(stringResource(R.string.confirm_1click_delete))
                 }
@@ -367,18 +403,19 @@ private fun CloudPhotoRowItem(
                     maxLines = 1
                 )
                 Spacer(modifier = Modifier.height(2.dp))
+                val statusTint = if (photo.isVerifiedCloudBackup) EmeraldGreen else WarningAmber
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Default.CloudQueue,
+                        imageVector = if (photo.isVerifiedCloudBackup) Icons.Default.CloudDone else Icons.AutoMirrored.Filled.HelpOutline,
                         contentDescription = null,
-                        tint = EmeraldGreen,
+                        tint = statusTint,
                         modifier = Modifier.size(14.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = stringResource(R.string.cloud_photos_provider_date_fmt, photo.cloudProvider, photo.cloudBackupDate),
                         style = MaterialTheme.typography.labelSmall,
-                        color = EmeraldGreen
+                        color = statusTint
                     )
                 }
             }

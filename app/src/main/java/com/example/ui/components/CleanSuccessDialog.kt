@@ -1,14 +1,15 @@
 package com.example.ui.components
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,10 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -44,15 +46,15 @@ fun CleanSuccessDialog(
 
     LaunchedEffect(Unit) {
         entered = true
-        burstAnim.animateTo(1f, tween(850, easing = FastOutSlowInEasing))
+        burstAnim.animateTo(1f, tween(900, easing = FastOutSlowInEasing))
     }
     LaunchedEffect(freedBytes) {
         countAnim.snapTo(0f)
-        countAnim.animateTo(1f, tween(750, easing = FastOutSlowInEasing))
+        countAnim.animateTo(1f, tween(780, easing = FastOutSlowInEasing))
     }
 
     val badgeScale by animateFloatAsState(
-        targetValue = if (entered) 1f else 0.55f,
+        targetValue = if (entered) 1f else 0.50f,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessMediumLow
@@ -67,11 +69,12 @@ fun CleanSuccessDialog(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp)
+                .padding(8.dp)
                 .testTag("clean_success_dialog"),
             shape = RoundedCornerShape(32.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -80,25 +83,34 @@ fun CleanSuccessDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(18.dp)
             ) {
-                // Celebratory Clean Illustration with Sparkle Burst Ring
+                // Bespoke Luminous Shield-Check Celebration Emblem with Confetti Ring
                 Box(
-                    modifier = Modifier.size(124.dp),
+                    modifier = Modifier.size(132.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Canvas(modifier = Modifier.fillMaxSize()) {
                         val center = Offset(size.width / 2f, size.height / 2f)
-                        val maxR = size.minDimension * 0.48f
+                        val maxR = size.minDimension * 0.49f
                         val p = burstAnim.value
-                        val particleColors = listOf(EmeraldGreen, primaryColor, AmberGolden, VividViolet)
-                        for (i in 0 until 10) {
-                            val angle = Math.toRadians(i * 36.0)
-                            val dist = (maxR * 0.55f) + (maxR * 0.45f * p)
+                        val particleColors = listOf(EmeraldGreen, NeonCyan, primaryColor, AmberGolden, VividViolet)
+
+                        // Expanding celebratory ripple ring
+                        drawCircle(
+                            color = EmeraldGreen.copy(alpha = (1f - p) * 0.35f),
+                            radius = (maxR * 0.62f) + (maxR * 0.36f * p),
+                            center = center,
+                            style = Stroke(width = (3f - 2f * p).coerceAtLeast(0.8f).dp.toPx(), cap = StrokeCap.Round)
+                        )
+
+                        for (i in 0 until 12) {
+                            val angle = Math.toRadians(i * 30.0)
+                            val dist = (maxR * 0.56f) + (maxR * 0.44f * p)
                             val px = center.x + dist * cos(angle).toFloat()
                             val py = center.y + dist * sin(angle).toFloat()
-                            val alpha = (1f - p * 0.65f).coerceIn(0.15f, 1f)
+                            val alpha = (1f - p * 0.55f).coerceIn(0.2f, 1f)
                             drawCircle(
                                 color = particleColors[i % particleColors.size].copy(alpha = alpha),
-                                radius = (4.5f - p * 1.5f).dp.toPx(),
+                                radius = (4.8f - p * 1.6f).dp.toPx(),
                                 center = Offset(px, py)
                             )
                         }
@@ -106,24 +118,34 @@ fun CleanSuccessDialog(
 
                     Box(
                         modifier = Modifier
-                            .size(96.dp)
+                            .size(92.dp)
                             .scale(badgeScale)
                             .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primaryContainer),
+                            .background(
+                                Brush.linearGradient(
+                                    colors = listOf(EmeraldGreen, NeonCyan, primaryColor)
+                                )
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.img_cleaning_trash_1787907390869),
-                            contentDescription = null,
+                        Box(
                             modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape),
-                            contentScale = ContentScale.Crop
-                        )
+                                .size(78.dp)
+                                .clip(CircleShape)
+                                .background(Color.White.copy(alpha = 0.16f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.VerifiedUser,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(44.dp)
+                            )
+                        }
                     }
                 }
 
-                // Text details with animated count-up
+                // Text details with smooth animated count-up
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -148,14 +170,14 @@ fun CleanSuccessDialog(
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 36.sp
                         ),
-                        color = MaterialTheme.colorScheme.primary
+                        color = EmeraldGreen
                     )
                 }
 
                 // Performance status pill
                 Surface(
                     shape = RoundedCornerShape(14.dp),
-                    color = EmeraldGreen.copy(alpha = 0.12f),
+                    color = EmeraldGreen.copy(alpha = 0.14f),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
@@ -199,15 +221,17 @@ fun CleanSuccessDialog(
                         .height(52.dp)
                         .testTag("dismiss_success_button"),
                     shape = RoundedCornerShape(26.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
                 ) {
                     Text(
                         text = stringResource(R.string.btn_done),
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
-                        ),
-                        color = Color.White
+                        )
                     )
                 }
             }

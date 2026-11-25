@@ -38,8 +38,8 @@ fun CleanupHistoryScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val totalFreedBytes = uiState.cleanHistory.sumOf { it.freedBytes }
-    val totalRecords = uiState.cleanHistory.size
+    val totalFreedBytes = maxOf(uiState.totalBytesFreed, uiState.cleanHistory.sumOf { it.freedBytes })
+    val totalRecords = maxOf(uiState.cleanCount, uiState.cleanHistory.size)
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -220,7 +220,7 @@ fun CleanupHistoryScreen(
                     }
                 }
             } else {
-                items(uiState.cleanHistory, key = { it.id }) { record ->
+                items(uiState.cleanHistory, key = { "${it.id}_${it.timestamp}_${it.freedBytes}" }) { record ->
                     HistoryRecordRowCard(record = record)
                 }
             }

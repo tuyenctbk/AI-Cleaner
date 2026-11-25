@@ -251,14 +251,18 @@ fun ShareAppDialog(
                 // Primary Share via Intent Button
                 Button(
                     onClick = {
-                        val sendIntent: Intent = Intent().apply {
-                            action = Intent.ACTION_SEND
-                            putExtra(Intent.EXTRA_TEXT, "$shareText https://play.google.com/store/apps/details?id=${context.packageName}")
-                            type = "text/plain"
+                        try {
+                            val sendIntent: Intent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                putExtra(Intent.EXTRA_TEXT, "$shareText https://play.google.com/store/apps/details?id=${context.packageName}")
+                                type = "text/plain"
+                            }
+                            val shareIntent = Intent.createChooser(sendIntent, null)
+                            context.startActivity(shareIntent)
+                            onShared()
+                        } catch (_: Exception) {
+                            Toast.makeText(context, context.getString(R.string.share_link_copied), Toast.LENGTH_SHORT).show()
                         }
-                        val shareIntent = Intent.createChooser(sendIntent, null)
-                        context.startActivity(shareIntent)
-                        onShared()
                     },
                     modifier = Modifier
                         .fillMaxWidth()

@@ -51,7 +51,7 @@ object StorageNotificationManager {
         } else 0
 
         val intent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra("EXTRA_START_SCAN", true)
             putExtra("EXTRA_TARGET_TAB", "SMART_CLEAN")
         }
@@ -64,7 +64,7 @@ object StorageNotificationManager {
         )
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.stat_sys_warning)
+            .setSmallIcon(R.drawable.ic_launcher_monochrome)
             .setContentTitle(context.getString(R.string.notification_low_storage_title, freePercentage))
             .setContentText(context.getString(R.string.notification_low_storage_text, formatFileSize(freeBytes)))
             .setStyle(
@@ -91,7 +91,7 @@ object StorageNotificationManager {
         createNotificationChannel(context)
 
         val intent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra("EXTRA_TARGET_TAB", "SMART_CLEAN")
         }
 
@@ -104,7 +104,7 @@ object StorageNotificationManager {
 
         val formattedSize = formatFileSize(reclaimableBytes)
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_menu_manage)
+            .setSmallIcon(R.drawable.ic_launcher_monochrome)
             .setContentTitle(context.getString(R.string.notification_scheduled_scan_title, formattedSize))
             .setContentText(context.getString(R.string.notification_scheduled_scan_text, formattedSize))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -132,7 +132,7 @@ object StorageNotificationManager {
         createNotificationChannel(context)
 
         val intent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra("EXTRA_TARGET_TAB", "DUPLICATES")
         }
 
@@ -145,7 +145,7 @@ object StorageNotificationManager {
 
         val formattedSize = formatFileSize(reclaimableBytes)
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_menu_gallery)
+            .setSmallIcon(R.drawable.ic_launcher_monochrome)
             .setContentTitle(context.getString(R.string.notification_duplicate_review_title, flaggedCount))
             .setContentText(context.getString(R.string.notification_duplicate_review_text, groupCount, formattedSize))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

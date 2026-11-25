@@ -291,7 +291,10 @@ fun AiInsightsScreen(
                                 .fillMaxWidth()
                                 .testTag("ai_generate_insights_button"),
                             shape = RoundedCornerShape(14.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = VividViolet)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = VividViolet,
+                                contentColor = Color.White
+                            )
                         ) {
                             if (uiState.isGeneratingAiInsights) {
                                 CircularProgressIndicator(color = Color.White, modifier = Modifier.size(18.dp))
@@ -441,7 +444,10 @@ private fun AiRoutineCardItem(
                     Button(
                         onClick = onExecute,
                         shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = VividViolet),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = VividViolet,
+                            contentColor = Color.White
+                        ),
                         modifier = Modifier.testTag("execute_ai_routine_button_${routine.id}")
                     ) {
                         Icon(imageVector = Icons.Default.PlayArrow, contentDescription = null)

@@ -39,7 +39,8 @@ class VideoCompressor(private val context: Context) {
     data class VideoCompressionResult(
         val savedBytes: Long,
         val outputSizeBytes: Long,
-        val succeeded: Boolean
+        val succeeded: Boolean,
+        val savedCopyUriString: String = ""
     )
 
     @OptIn(UnstableApi::class)
@@ -53,10 +54,16 @@ class VideoCompressor(private val context: Context) {
         }
 
         val inputUri = Uri.parse(mediaItem.uriString)
-        val targetHeight = when (quality) {
+        val presetHeight = when (quality) {
             CompressionQuality.HIGH -> 1080
             CompressionQuality.MEDIUM -> 720
             CompressionQuality.MAX_SAVINGS -> 480
+        }
+        // Never upscale videos whose source height is already smaller than the target preset
+        val targetHeight: Int? = if (mediaItem.height > 0 && mediaItem.height <= presetHeight) {
+            null
+        } else {
+            presetHeight
         }
 
         val tempDir = File(context.cacheDir, "compressed_videos").apply { mkdirs() }
@@ -90,16 +97,19 @@ class VideoCompressor(private val context: Context) {
                 val compressedBytes = outputFile.length()
                 val savedBytes = (mediaItem.sizeBytes - compressedBytes).coerceAtLeast(0L)
 
-                // Publish compressed video to MediaStore when it genuinely saves space
-                if (savedBytes > 0L) {
+                // Publish compressed video to MediaStore only when it genuinely saves space
+                val savedUri = if (savedBytes > 0L) {
                     withContext(Dispatchers.IO) {
                         saveCompressedVideoToMediaStore(outputFile, "${baseName}_compressed.mp4")
                     }
+                } else {
+                    ""
                 }
                 VideoCompressionResult(
-                    savedBytes = savedBytes,
-                    outputSizeBytes = compressedBytes,
-                    succeeded = true
+                    savedBytes = if (savedUri.isNotEmpty()) savedBytes else 0L,
+                    outputSizeBytes = if (savedUri.isNotEmpty()) compressedBytes else mediaItem.sizeBytes,
+                    succeeded = savedUri.isNotEmpty(),
+                    savedCopyUriString = savedUri
                 )
             } else {
                 VideoCompressionResult(0L, mediaItem.sizeBytes, false)
@@ -119,18 +129,20 @@ class VideoCompressor(private val context: Context) {
     private suspend fun runMedia3Transform(
         inputUri: Uri,
         outputFile: File,
-        targetHeight: Int,
+        targetHeight: Int?,
         videoMimeType: String,
         onProgress: (Float) -> Unit
     ): Boolean = withContext(Dispatchers.Main) {
         suspendCancellableCoroutine { continuation ->
             var finished = false
+            var progressJob: kotlinx.coroutines.Job? = null
             val transformer = Transformer.Builder(context)
                 .setVideoMimeType(videoMimeType)
                 .addListener(object : Transformer.Listener {
                     override fun onCompleted(composition: Composition, exportResult: ExportResult) {
                         if (!finished) {
                             finished = true
+                            progressJob?.cancel()
                             onProgress(1f)
                             if (continuation.isActive) continuation.resume(true)
                         }
@@ -143,18 +155,23 @@ class VideoCompressor(private val context: Context) {
                     ) {
                         if (!finished) {
                             finished = true
+                            progressJob?.cancel()
                             if (continuation.isActive) continuation.resume(false)
                         }
                     }
                 })
                 .build()
 
-            val videoEffects = listOf(Presentation.createForHeight(targetHeight))
+            val videoEffects = if (targetHeight != null) {
+                listOf(Presentation.createForHeight(targetHeight))
+            } else {
+                emptyList()
+            }
             val editedMediaItem = EditedMediaItem.Builder(Media3Item.fromUri(inputUri))
                 .setEffects(Effects(/* audioProcessors = */ emptyList(), videoEffects))
                 .build()
 
-            val progressJob = launch(Dispatchers.Main) {
+            progressJob = launch(Dispatchers.Main) {
                 val holder = ProgressHolder()
                 while (isActive && !finished) {
                     val state = transformer.getProgress(holder)
@@ -167,7 +184,7 @@ class VideoCompressor(private val context: Context) {
 
             continuation.invokeOnCancellation {
                 finished = true
-                progressJob.cancel()
+                progressJob?.cancel()
                 try {
                     transformer.cancel()
                 } catch (_: Exception) {}
@@ -177,14 +194,14 @@ class VideoCompressor(private val context: Context) {
                 transformer.start(editedMediaItem, outputFile.absolutePath)
             } catch (_: Exception) {
                 finished = true
-                progressJob.cancel()
+                progressJob?.cancel()
                 if (continuation.isActive) continuation.resume(false)
             }
         }
     }
 
-    private fun saveCompressedVideoToMediaStore(sourceFile: File, displayName: String) {
-        try {
+    private fun saveCompressedVideoToMediaStore(sourceFile: File, displayName: String): String {
+        return try {
             val values = ContentValues().apply {
                 put(MediaStore.Video.Media.DISPLAY_NAME, displayName)
                 put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
@@ -197,19 +214,20 @@ class VideoCompressor(private val context: Context) {
                 }
             }
             val resolver = context.contentResolver
-            val uri = resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values) ?: return
+            val uri = resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values) ?: return ""
             resolver.openOutputStream(uri)?.use { out ->
                 sourceFile.inputStream().use { input ->
                     input.copyTo(out)
                 }
-            }
+            } ?: return ""
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 values.clear()
                 values.put(MediaStore.Video.Media.IS_PENDING, 0)
                 resolver.update(uri, values, null, null)
             }
+            uri.toString()
         } catch (_: Exception) {
-            // Non-fatal if device storage is read-only or restricted
+            ""
         }
     }
 }

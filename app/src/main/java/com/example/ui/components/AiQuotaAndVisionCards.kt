@@ -110,7 +110,7 @@ fun DailyAiValueReceiptCard(
                 IconButton(
                     onClick = onOpenAiSettings,
                     modifier = Modifier
-                        .size(36.dp)
+                        .size(48.dp)
                         .testTag("ai_open_settings_button")
                 ) {
                     Icon(
@@ -391,7 +391,10 @@ fun AiQuotaRecoveryCard(
                 Button(
                     onClick = onClaimGraceCredits,
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = EmeraldGreen,
+                        contentColor = Color.White
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("ai_claim_grace_credits_button")
@@ -434,7 +437,10 @@ fun AiQuotaRecoveryCard(
                 Button(
                     onClick = onRunLocalAi,
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = VividViolet),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = VividViolet,
+                        contentColor = Color.White
+                    ),
                     modifier = Modifier
                         .weight(1f)
                         .testTag("ai_run_local_fallback_button")
@@ -598,7 +604,10 @@ fun SmartScreenshotOrganizerCard(
                     Button(
                         onClick = onRequestDeleteSafe,
                         shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = CoralRed),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = CoralRed,
+                            contentColor = Color.White
+                        ),
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("clean_safe_screenshots_button")

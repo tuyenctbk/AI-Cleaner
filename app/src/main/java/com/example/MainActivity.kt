@@ -7,43 +7,68 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.compose.BackHandler
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.R
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.R
 import com.example.ui.components.CleanSuccessDialog
-import com.example.ui.components.OnboardingScreen
-import com.example.ui.components.RateAppDialog
-import com.example.ui.components.ShareAppDialog
 import com.example.ui.screens.*
 import com.example.ui.theme.AICleanerTheme
-import com.example.ui.theme.ElectricBlue
+import com.example.ui.theme.AppThemeMode
 import com.example.ui.viewmodel.CleanerViewModel
 import com.example.ui.viewmodel.MainScreenTab
 
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.platform.LocalConfiguration
+private fun hasAnyMediaAccess(context: android.content.Context): Boolean {
+    val perms = buildList {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            add(Manifest.permission.READ_MEDIA_IMAGES)
+            add(Manifest.permission.READ_MEDIA_VIDEO)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                add(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
+            }
+        } else {
+            add(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+    return perms.any {
+        ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+    }
+}
 
 class MainActivity : ComponentActivity() {
     private val latestIntentState = mutableStateOf<Intent?>(null)
@@ -64,8 +89,22 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewModel: CleanerViewModel = viewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-            var showSplash by remember { mutableStateOf(!launchedFromWidgetShortcut) }
+            var showSplash by rememberSaveable { mutableStateOf(!launchedFromWidgetShortcut) }
             val activeIntent by latestIntentState
+
+            val view = LocalView.current
+            val systemDark = isSystemInDarkTheme()
+            val isDarkSurface = showSplash || when (uiState.themeMode) {
+                AppThemeMode.DARK -> true
+                AppThemeMode.LIGHT -> false
+                AppThemeMode.SYSTEM -> systemDark
+            }
+            SideEffect {
+                val window = (view.context as? Activity)?.window ?: return@SideEffect
+                val controller = WindowCompat.getInsetsController(window, view)
+                controller.isAppearanceLightStatusBars = !isDarkSurface
+                controller.isAppearanceLightNavigationBars = !isDarkSurface
+            }
 
             LaunchedEffect(activeIntent) {
                 if (activeIntent?.getBooleanExtra(
@@ -85,7 +124,7 @@ class MainActivity : ComponentActivity() {
             AICleanerTheme(themeMode = uiState.themeMode) {
                 Crossfade(
                     targetState = showSplash,
-                    animationSpec = tween(durationMillis = 380),
+                    animationSpec = tween(durationMillis = 360),
                     label = "SplashToAppCrossfade"
                 ) { splashing ->
                     if (splashing) {
@@ -118,6 +157,7 @@ fun MainApp(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     // Screen-size detection
     val isWideScreen = configuration.screenWidthDp >= 600
@@ -127,22 +167,11 @@ fun MainApp(
     }
     val useNavRail = isWideScreen || isTv
 
-    // Runtime Permission Launcher for media scanning
-    // Bug 1 fix: Separate media permission check from POST_NOTIFICATIONS.
-    // permissionGranted is only true when at least one real media permission is granted.
+    // Runtime Permission Launcher for media scanning (API 34+ partial selection supported)
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val mediaPermissions = listOf(
-            Manifest.permission.READ_MEDIA_IMAGES,
-            Manifest.permission.READ_MEDIA_VIDEO,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-        // A media permission was granted if any media-specific key is true.
-        val isMediaGranted = permissions.entries.any { (key, granted) ->
-            granted && key in mediaPermissions
-        }
-        viewModel.setPermissionGranted(isMediaGranted)
+    ) { _ ->
+        viewModel.setPermissionGranted(hasAnyMediaAccess(context))
     }
 
     // Android 11+ (API 30+) Scoped Storage Batch Delete System Sheet Launcher
@@ -161,33 +190,31 @@ fun MainApp(
         }
     }
 
-    // Track whether we have shown the rationale screen
-    var showPermissionRationale by remember { mutableStateOf(false) }
+    // Track whether we have shown the rationale screen (survives configuration changes)
+    var showPermissionRationale by rememberSaveable { mutableStateOf(false) }
+
+    // Re-check permissions on ON_RESUME so users returning from Android App Settings unlock full scan
+    DisposableEffect(lifecycleOwner, context) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                val granted = hasAnyMediaAccess(context)
+                if (granted) {
+                    showPermissionRationale = false
+                    viewModel.setPermissionGranted(true)
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     LaunchedEffect(Unit) {
-        val mediaPermissionsToCheck = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            listOf(
-                Manifest.permission.READ_MEDIA_IMAGES,
-                Manifest.permission.READ_MEDIA_VIDEO
-            )
-        } else {
-            listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
-
-        // Check if the user already granted at least one media permission in a previous session.
-        val hasMediaPermission = mediaPermissionsToCheck.any {
-            ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
-        }
-
+        val hasMediaPermission = hasAnyMediaAccess(context)
         if (hasMediaPermission) {
-            // Already granted — proceed directly without showing rationale again.
             viewModel.setPermissionGranted(true)
         } else {
-            // First launch — show the in-app rationale screen before the OS dialog.
             showPermissionRationale = true
         }
-
-        // Handle intent extras from Glance Widget or Local Notification
     }
 
     LaunchedEffect(activeIntent) {
@@ -226,8 +253,12 @@ fun MainApp(
         }
     }
 
-    BackHandler(enabled = uiState.currentTab != MainScreenTab.DASHBOARD) {
-        viewModel.navigateTo(MainScreenTab.DASHBOARD)
+    BackHandler(enabled = showPermissionRationale || uiState.currentTab != MainScreenTab.DASHBOARD) {
+        if (showPermissionRationale) {
+            showPermissionRationale = false
+        } else {
+            viewModel.navigateBack()
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -369,17 +400,18 @@ fun MainContentArea(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .then(
-                if (isWideScreen || isTv) {
-                    Modifier
-                        .widthIn(max = 1200.dp)
-                        .wrapContentWidth(Alignment.CenterHorizontally)
-                } else {
-                    Modifier
-                }
-            )
+            .background(MaterialTheme.colorScheme.background),
+        contentAlignment = Alignment.TopCenter
     ) {
+        Box(
+            modifier = if (isWideScreen || isTv) {
+                Modifier
+                    .widthIn(max = 1200.dp)
+                    .fillMaxSize()
+            } else {
+                Modifier.fillMaxSize()
+            }
+        ) {
         AnimatedContent(
             targetState = uiState.currentTab,
             transitionSpec = {
@@ -402,13 +434,15 @@ fun MainContentArea(
                         onDismissTip = { viewModel.dismissTip(it) },
                         onTestLowStorageNotification = { viewModel.triggerLowStorageNotificationTest() },
                         onTogglePauseCleaning = { viewModel.togglePauseCleaning() },
+                        onOpenPermissionGuide = onOpenPermissionGuide,
+                        onOpenStorageExplorerWithFilter = { ext -> viewModel.openStorageExplorer(ext) },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
                 MainScreenTab.SMART_CLEAN -> {
                     SmartCleanScreen(
                         uiState = uiState,
-                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onBack = { viewModel.navigateBack() },
                         onToggleCategory = { viewModel.toggleJunkCategory(it) },
                         onExecuteClean = { viewModel.executeSmartClean() },
                         onScanAgain = { viewModel.startSmartScan() },
@@ -418,8 +452,8 @@ fun MainContentArea(
                 MainScreenTab.QUICK_CLEANUP -> {
                     QuickCleanupScreen(
                         uiState = uiState,
-                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
-                        onRefresh = { viewModel.refreshAll() },
+                        onBack = { viewModel.navigateBack() },
+                        onRefresh = { viewModel.refreshAll(force = true) },
                         onExecuteQuickCleanup = { includeCache, largeFiles ->
                             viewModel.executeQuickCleanup(includeCache, largeFiles)
                         },
@@ -429,7 +463,7 @@ fun MainContentArea(
                 MainScreenTab.DUPLICATES -> {
                     DuplicatesScreen(
                         uiState = uiState,
-                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onBack = { viewModel.navigateBack() },
                         onToggleItem = { groupId, itemId -> viewModel.toggleDuplicateItem(groupId, itemId) },
                         onToggleGroup = { groupId, selectAll -> viewModel.selectAllDuplicatesInGroup(groupId, selectAll) },
                         onSelectAllDuplicates = { viewModel.selectAllDuplicatesEverywhere() },
@@ -442,7 +476,7 @@ fun MainContentArea(
                 MainScreenTab.SWIPE_CLEAN -> {
                     SwipeCleanScreen(
                         uiState = uiState,
-                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onBack = { viewModel.navigateBack() },
                         onFilterChange = { viewModel.setSwipeFilter(it) },
                         onSwipeLeftDelete = { viewModel.swipeLeftDelete(it) },
                         onSwipeRightKeep = { viewModel.swipeRightKeep(it) },
@@ -454,11 +488,11 @@ fun MainContentArea(
                 MainScreenTab.COMPRESSOR -> {
                     CompressorScreen(
                         uiState = uiState,
-                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onBack = { viewModel.navigateBack() },
                         onQualityChange = { viewModel.setCompressionQuality(it) },
                         onToggleItem = { viewModel.toggleCompressibleItem(it) },
-                        onStartCompression = { viewModel.startBatchCompression() },
-                        onSelectAll = { selectAll -> viewModel.selectAllCompressibleItems(selectAll) },
+                        onStartCompression = { ids -> viewModel.startBatchCompression(ids) },
+                        onSelectAll = { selectAll, ids -> viewModel.selectAllCompressibleItems(selectAll, ids) },
                         onOpenPermissionGuide = onOpenPermissionGuide,
                         modifier = Modifier.padding(innerPadding)
                     )
@@ -466,7 +500,7 @@ fun MainContentArea(
                 MainScreenTab.STORAGE_EXPLORER -> {
                     StorageBreakdownScreen(
                         uiState = uiState,
-                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onBack = { viewModel.navigateBack() },
                         onDeleteLargeFiles = { viewModel.deleteLargeFiles(it) },
                         initialExtensionFilter = uiState.storageExplorerExtensionFilter,
                         onOpenStorageAnalyzer = { viewModel.navigateTo(MainScreenTab.STORAGE_ANALYZER) },
@@ -476,8 +510,8 @@ fun MainContentArea(
                 MainScreenTab.STORAGE_ANALYZER -> {
                     StorageAnalyzerScreen(
                         uiState = uiState,
-                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
-                        onRefresh = { viewModel.refreshAll() },
+                        onBack = { viewModel.navigateBack() },
+                        onRefresh = { viewModel.refreshAll(force = true) },
                         onOpenDuplicates = { viewModel.navigateTo(MainScreenTab.DUPLICATES) },
                         onOpenCompressor = { viewModel.navigateTo(MainScreenTab.COMPRESSOR) },
                         onOpenAppCache = { viewModel.navigateTo(MainScreenTab.APP_CACHE) },
@@ -489,7 +523,7 @@ fun MainContentArea(
                 MainScreenTab.APP_CACHE -> {
                     AppCacheScreen(
                         uiState = uiState,
-                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onBack = { viewModel.navigateBack() },
                         onClearAppCache = { viewModel.clearAppCache(it) },
                         onClearAllAppCaches = { viewModel.clearAllAppCaches() },
                         modifier = Modifier.padding(innerPadding)
@@ -498,14 +532,14 @@ fun MainContentArea(
                 MainScreenTab.CLEANUP_HISTORY -> {
                     CleanupHistoryScreen(
                         uiState = uiState,
-                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onBack = { viewModel.navigateBack() },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
                 MainScreenTab.SMART_SCHEDULER -> {
                     SmartSchedulerScreen(
                         uiState = uiState,
-                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onBack = { viewModel.navigateBack() },
                         onUpdateSettings = { viewModel.updateSmartScheduleSettings(it) },
                         onRunTestScan = { viewModel.triggerScheduledTestScan() },
                         modifier = Modifier.padding(innerPadding)
@@ -514,17 +548,19 @@ fun MainContentArea(
                 MainScreenTab.BATTERY_PERFORMANCE -> {
                     BatteryPerformanceScreen(
                         uiState = uiState,
-                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onBack = { viewModel.navigateBack() },
                         onNavigateToAppCache = { viewModel.navigateTo(MainScreenTab.APP_CACHE) },
                         onNavigateToSmartClean = { viewModel.navigateTo(MainScreenTab.SMART_CLEAN) },
                         onSetThemeMode = { viewModel.setThemeMode(it) },
+                        onSetAdaptivePower = { viewModel.setAdaptivePowerEnabled(it) },
+                        onSetThermalGuard = { viewModel.setThermalThrottleGuard(it) },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
                 MainScreenTab.CLOUD_SYNCED_PHOTOS -> {
                     CloudPhotosCleanerScreen(
                         uiState = uiState,
-                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onBack = { viewModel.navigateBack() },
                         onTogglePhoto = { viewModel.toggleCloudPhotoSelection(it) },
                         onSelectAll = { viewModel.selectAllCloudPhotos(it) },
                         onDeleteSelected = { viewModel.deleteSelectedCloudPhotos() },
@@ -534,14 +570,14 @@ fun MainContentArea(
                 MainScreenTab.STORAGE_TRENDS -> {
                     StorageTrendsScreen(
                         uiState = uiState,
-                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onBack = { viewModel.navigateBack() },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
                 MainScreenTab.AI_INSIGHTS -> {
                     AiInsightsScreen(
                         uiState = uiState,
-                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onBack = { viewModel.navigateBack() },
                         onQueryChange = { viewModel.setAiQueryText(it) },
                         onGenerateInsights = { viewModel.generateAiRoutines(it) },
                         onExecuteRoutine = { viewModel.executeAiRoutine(it) },
@@ -560,7 +596,7 @@ fun MainContentArea(
                 MainScreenTab.SMART_RECOMMENDATIONS -> {
                     SmartRecommendationsScreen(
                         uiState = uiState,
-                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onBack = { viewModel.navigateBack() },
                         onAnalyzeWithGemini = { viewModel.analyzeSmartRecommendations(bypassCache = true) },
                         onRetryEcoLite = { viewModel.analyzeSmartRecommendations(forceEcoLite = true, bypassCache = true) },
                         onRunLocalAnalysis = { viewModel.analyzeSmartRecommendations(forceLocal = true, bypassCache = true) },
@@ -578,7 +614,7 @@ fun MainContentArea(
                 MainScreenTab.SETTINGS -> {
                     SettingsScreen(
                         uiState = uiState,
-                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onBack = { viewModel.navigateBack() },
                         onSetThemeMode = { viewModel.setThemeMode(it) },
                         onOpenSmartScheduler = { viewModel.navigateTo(MainScreenTab.SMART_SCHEDULER) },
                         onTestNotification = { viewModel.triggerLowStorageNotificationTest() },
@@ -590,22 +626,22 @@ fun MainContentArea(
                         onReopenOnboarding = { viewModel.reopenOnboarding() },
                         onRateApp = { viewModel.triggerManualRateApp() },
                         onShareApp = { viewModel.triggerManualShareApp() },
+                        onOpenPermissionGuide = onOpenPermissionGuide,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
                 MainScreenTab.VAULT -> {
                     com.example.ui.screens.VaultScreen(
                         uiState = uiState,
-                        onBack = { viewModel.navigateTo(MainScreenTab.DASHBOARD) },
+                        onBack = { viewModel.navigateBack() },
                         onAutoSort = { viewModel.autoSortToVault() },
                         onRestoreSelected = { viewModel.removeFromVault(it) },
-                        // Bug 8 fix: Use deleteVaultItems() which correctly deducts
-                        // from photoBytes or videoBytes based on MIME type.
                         onDeleteSelected = { viewModel.deleteVaultItems(it) },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
+        }
         }
     }
 }
@@ -622,11 +658,13 @@ private fun CleanerNavigationRail(
         containerColor = MaterialTheme.colorScheme.surface,
         header = {
             Spacer(Modifier.height(16.dp))
-            Icon(
-                imageVector = Icons.Default.CleaningServices,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(32.dp).padding(vertical = 4.dp)
+            Image(
+                painter = painterResource(id = R.drawable.ic_brand_emblem),
+                contentDescription = stringResource(R.string.app_name),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(38.dp)
+                    .clip(RoundedCornerShape(10.dp))
             )
         }
     ) {

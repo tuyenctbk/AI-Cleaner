@@ -866,4 +866,24 @@
     <string name="format_resolution">%1$d × %2$d</string>
     <string name="format_percentage">%1$d%%</string>
     <string name="storage_delta_plus_fmt">+%1$s</string>
+
+    <string name="cloud_provider_local_old">लोकल स्टोरेज (&gt;30 दिन)</string>
+    <string name="cloud_backup_unverified_status">हटाने से पहले बैकअप जांचें</string>
+    <string name="cloud_photos_unverified_warning">पुरानी लोकल फ़ोटो डिफ़ॉल्ट रूप से अनचेक हैं। हटाने से पहले क्लाउड बैकअप सुनिश्चित करें।</string>
+    <string name="cloud_badge_verify_backup">बैकअप जांचें</string>
+    <string name="settings_permissions_title">ऐप अनुमतियां</string>
+    <string name="settings_permissions_granted">मीडिया एक्सेस स्वीकृत • पूर्ण स्कैन सक्रिय</string>
+    <string name="settings_permissions_limited">सीमित मोड • एक्सेस देने के लिए टैप करें</string>
+    <string name="settings_privacy_policy_title">गोपनीयता नीति</string>
+    <string name="settings_privacy_policy_sub">हमारी 100% ऑन-डिवाइस गोपनीयता नीति पढ़ें</string>
+    <string name="btn_add_widget">होम स्क्रीन पर जोड़ें</string>
+    <string name="widget_pin_requested">विजेट पिन संवाद खुल गया</string>
+    <string name="widget_pin_unsupported">होम स्क्रीन दबाकर रखें → विजेट → AI Cleaner चुनें।</string>
+    <string name="badge_paused">रुका हुआ</string>
+    <string name="vault_item_protected_fmt">%1$s • लोकल वॉल्ट में सुरक्षित</string>
+    <string name="trends_freed_label">मुक्त किया गया</string>
+    <string name="trends_delta_minus_fmt">-%1$s</string>
+    <string name="compressor_saved_copies_title">कंप्रेस्ड कॉपी सहेजी गईं</string>
+    <string name="duplicates_more_count_fmt">+%1$d और</string>
+    <string name="btn_close">बंद करें</string>
 </resources>

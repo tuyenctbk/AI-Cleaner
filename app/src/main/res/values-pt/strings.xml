@@ -867,4 +867,24 @@
     <string name="format_resolution">%1$d × %2$d</string>
     <string name="format_percentage">%1$d%%</string>
     <string name="storage_delta_plus_fmt">+%1$s</string>
+
+    <string name="cloud_provider_local_old">Armazenamento local (&gt;30 dias)</string>
+    <string name="cloud_backup_unverified_status">Verificar backup antes de excluir</string>
+    <string name="cloud_photos_unverified_warning">Fotos locais antigas vêm desmarcadas por padrão. Confirme o backup na nuvem antes de excluir.</string>
+    <string name="cloud_badge_verify_backup">Verificar backup</string>
+    <string name="settings_permissions_title">Permissões do app</string>
+    <string name="settings_permissions_granted">Acesso à mídia concedido • Varredura completa</string>
+    <string name="settings_permissions_limited">Modo limitado • Toque para conceder acesso</string>
+    <string name="settings_privacy_policy_title">Política de privacidade</string>
+    <string name="settings_privacy_policy_sub">Leia nossa política 100% local no dispositivo</string>
+    <string name="btn_add_widget">Adicionar à tela inicial</string>
+    <string name="widget_pin_requested">Diálogo para fixar widget aberto</string>
+    <string name="widget_pin_unsupported">Pressione a tela inicial → Widgets → AI Cleaner.</string>
+    <string name="badge_paused">Pausado</string>
+    <string name="vault_item_protected_fmt">%1$s • Protegido no Cofre local</string>
+    <string name="trends_freed_label">Liberado</string>
+    <string name="trends_delta_minus_fmt">-%1$s</string>
+    <string name="compressor_saved_copies_title">Cópias comprimidas salvas</string>
+    <string name="duplicates_more_count_fmt">+%1$d mais</string>
+    <string name="btn_close">Fechar</string>
 </resources>

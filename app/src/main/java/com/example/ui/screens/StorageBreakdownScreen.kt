@@ -98,8 +98,11 @@ fun StorageBreakdownScreen(
     var selectedItemIds by remember { mutableStateOf(setOf<Long>()) }
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
 
-    val selectedItemsList = rawLargeFiles.filter { it.id in selectedItemIds }
+    val validLargeIds = remember(rawLargeFiles) { rawLargeFiles.map { it.id }.toSet() }
+    val activeSelectedIds = remember(selectedItemIds, validLargeIds) { selectedItemIds.intersect(validLargeIds) }
+    val selectedItemsList = remember(rawLargeFiles, activeSelectedIds) { rawLargeFiles.filter { it.id in activeSelectedIds } }
     val selectedBytes = selectedItemsList.sumOf { it.sizeBytes }
+    val allFilteredSelected = filteredLargeFiles.isNotEmpty() && filteredLargeFiles.all { it.id in activeSelectedIds }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -148,7 +151,7 @@ fun StorageBreakdownScreen(
             )
         },
         bottomBar = {
-            if (selectedItemIds.isNotEmpty()) {
+            if (selectedItemsList.isNotEmpty()) {
                 Surface(
                     color = MaterialTheme.colorScheme.surface,
                     tonalElevation = 8.dp,
@@ -224,7 +227,10 @@ fun StorageBreakdownScreen(
                                     .height(52.dp)
                                     .testTag("delete_selected_large_files_button"),
                                 shape = RoundedCornerShape(26.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = CoralRed)
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = CoralRed,
+                                    contentColor = Color.White
+                                )
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
@@ -348,15 +354,16 @@ fun StorageBreakdownScreen(
                         TextButton(
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                selectedItemIds = if (selectedItemIds.size == filteredLargeFiles.size) {
-                                    emptySet()
+                                val visibleIds = filteredLargeFiles.map { it.id }.toSet()
+                                selectedItemIds = if (allFilteredSelected) {
+                                    activeSelectedIds - visibleIds
                                 } else {
-                                    filteredLargeFiles.map { it.id }.toSet()
+                                    activeSelectedIds + visibleIds
                                 }
                             }
                         ) {
                             Text(
-                                text = if (selectedItemIds.size == filteredLargeFiles.size) {
+                                text = if (allFilteredSelected) {
                                     stringResource(R.string.btn_deselect_all)
                                 } else {
                                     stringResource(R.string.storage_select_all_count_fmt, filteredLargeFiles.size)
@@ -724,7 +731,11 @@ private fun FolderHeatmapSection(
                                     .border(1.5.dp, tileColor.copy(alpha = 0.6f), RoundedCornerShape(16.dp))
                                     .clickable {
                                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        onSelectFolder(folder.name)
+                                        val folderQuery = folder.path
+                                            .trimEnd('/')
+                                            .substringAfterLast('/')
+                                            .ifBlank { folder.name }
+                                        onSelectFolder(folderQuery)
                                     }
                                     .padding(12.dp)
                                     .testTag("heatmap_tile_${folder.id}")

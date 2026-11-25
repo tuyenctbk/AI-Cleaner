@@ -222,15 +222,17 @@ fun SimilarPhotosGroupCard(
                     }
                 }
 
-                // Duplicates 2x2 or column thumbnails
+                // Duplicates column thumbnails with +N more overflow indicator
                 Column(
                     modifier = Modifier
                         .weight(1f)
                         .height(180.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    duplicateItems.take(2).forEach { dupItem ->
+                    val hiddenCount = (duplicateItems.size - 2).coerceAtLeast(0)
+                    duplicateItems.take(2).forEachIndexed { idx, dupItem ->
                         val itemInteraction = remember(dupItem.id) { MutableInteractionSource() }
+                        val showOverflow = idx == 1 && hiddenCount > 0
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -239,7 +241,13 @@ fun SimilarPhotosGroupCard(
                                 .clickable(
                                     interactionSource = itemInteraction,
                                     indication = androidx.compose.foundation.LocalIndication.current,
-                                    onClick = { onToggleItem(dupItem.id) }
+                                    onClick = {
+                                        if (showOverflow && onCompareGroup != null) {
+                                            onCompareGroup()
+                                        } else {
+                                            onToggleItem(dupItem.id)
+                                        }
+                                    }
                                 )
                                 .dpadFocusable(itemInteraction, RoundedCornerShape(14.dp))
                         ) {
@@ -248,39 +256,55 @@ fun SimilarPhotosGroupCard(
                                 modifier = Modifier.fillMaxSize()
                             )
 
-                            // Checkbox badge
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.BottomEnd)
-                                    .padding(6.dp)
-                                    .size(22.dp)
-                                    .clip(RoundedCornerShape(5.dp))
-                                    .background(if (dupItem.isSelected) MaterialTheme.colorScheme.primary else Color.Black.copy(alpha = 0.5f))
-                                    .border(1.dp, Color.White.copy(alpha = 0.8f), RoundedCornerShape(5.dp)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (dupItem.isSelected) {
-                                    Icon(
-                                        imageVector = Icons.Default.Check,
-                                        contentDescription = null,
-                                        tint = Color.White,
-                                        modifier = Modifier.size(14.dp)
+                            if (showOverflow) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(Color.Black.copy(alpha = 0.52f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.duplicates_more_count_fmt, hiddenCount),
+                                        color = Color.White,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontSize = 14.sp
                                     )
                                 }
-                            }
+                            } else {
+                                // Checkbox badge
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.BottomEnd)
+                                        .padding(6.dp)
+                                        .size(22.dp)
+                                        .clip(RoundedCornerShape(5.dp))
+                                        .background(if (dupItem.isSelected) MaterialTheme.colorScheme.primary else Color.Black.copy(alpha = 0.5f))
+                                        .border(1.dp, Color.White.copy(alpha = 0.8f), RoundedCornerShape(5.dp)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (dupItem.isSelected) {
+                                        Icon(
+                                            imageVector = Icons.Default.Check,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.onPrimary,
+                                            modifier = Modifier.size(14.dp)
+                                        )
+                                    }
+                                }
 
-                            // Size Tag
-                            Text(
-                                text = dupItem.formattedSize,
-                                color = Color.White,
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier
-                                    .align(Alignment.TopStart)
-                                    .padding(4.dp)
-                                    .background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(4.dp))
-                                    .padding(horizontal = 4.dp, vertical = 2.dp)
-                            )
+                                // Size Tag
+                                Text(
+                                    text = dupItem.formattedSize,
+                                    color = Color.White,
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier
+                                        .align(Alignment.TopStart)
+                                        .padding(4.dp)
+                                        .background(Color.Black.copy(alpha = 0.55f), RoundedCornerShape(4.dp))
+                                        .padding(horizontal = 4.dp, vertical = 2.dp)
+                                )
+                            }
                         }
                     }
                 }

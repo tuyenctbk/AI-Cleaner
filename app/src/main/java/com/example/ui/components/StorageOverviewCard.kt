@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 fun StorageOverviewCard(
     stats: StorageStats,
     isScanning: Boolean = false,
+    reclaimableBytes: Long = stats.junkBytes,
     onSmartCleanClick: () -> Unit = {},
     onOpenStorageAnalyzer: (() -> Unit)? = null,
     modifier: Modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 6.dp)
@@ -207,7 +208,7 @@ fun StorageOverviewCard(
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .weight(otherRatio)
-                                .background(MaterialTheme.colorScheme.outline)
+                                .background(ColorSystem.copy(alpha = 0.65f))
                         )
                     }
                     if (freeRatio > 0.001f) {
@@ -220,7 +221,7 @@ fun StorageOverviewCard(
                     }
                 }
 
-                // Storage Segment Legend Row
+                // Storage Segment Legend Row (matches exact bar segment colors)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -228,11 +229,17 @@ fun StorageOverviewCard(
                     StorageLegendItem(color = MaterialTheme.colorScheme.primary, label = stringResource(R.string.storage_donut_photos), size = stats.photoBytes)
                     StorageLegendItem(color = ColorVideos, label = stringResource(R.string.storage_donut_videos), size = stats.videoBytes)
                     StorageLegendItem(color = ColorJunk, label = stringResource(R.string.storage_donut_junk), size = stats.junkBytes)
-                    StorageLegendItem(color = MaterialTheme.colorScheme.outline, label = stringResource(R.string.storage_donut_free), size = stats.freeBytes)
+                    StorageLegendItem(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        label = stringResource(R.string.storage_donut_free),
+                        size = stats.freeBytes,
+                        borderColor = MaterialTheme.colorScheme.outline
+                    )
                 }
             }
 
             // Summary text badge
+            val displayedReclaimable = maxOf(reclaimableBytes, stats.junkBytes)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -252,7 +259,7 @@ fun StorageOverviewCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = stringResource(R.string.stat_can_be_freed, stats.formattedJunk),
+                    text = stringResource(R.string.stat_can_be_freed, formatFileSize(displayedReclaimable)),
                     style = MaterialTheme.typography.bodySmall.copy(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
@@ -260,7 +267,7 @@ fun StorageOverviewCard(
                 )
             }
 
-            // AI Smart Clean Action Button (Solid Polish Primary with full rounded corners)
+            // AI Smart Clean Action Button (Solid Primary with accessible onPrimary text)
             Button(
                 onClick = onSmartCleanClick,
                 enabled = !isScanning,
@@ -271,7 +278,7 @@ fun StorageOverviewCard(
                 shape = RoundedCornerShape(28.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.White
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Row(
@@ -281,7 +288,7 @@ fun StorageOverviewCard(
                     Icon(
                         imageVector = Icons.Default.AutoAwesome,
                         contentDescription = null,
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
@@ -291,7 +298,7 @@ fun StorageOverviewCard(
                             fontSize = 16.sp,
                             letterSpacing = 0.2.sp
                         ),
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
@@ -330,7 +337,8 @@ fun StorageOverviewCard(
 private fun StorageLegendItem(
     color: Color,
     label: String,
-    size: Long
+    size: Long,
+    borderColor: Color? = null
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -341,6 +349,9 @@ private fun StorageLegendItem(
                 .size(8.dp)
                 .clip(CircleShape)
                 .background(color)
+                .then(
+                    if (borderColor != null) Modifier.border(1.dp, borderColor, CircleShape) else Modifier
+                )
         )
         Text(
             text = label,

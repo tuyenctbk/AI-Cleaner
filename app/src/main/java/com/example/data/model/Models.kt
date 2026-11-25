@@ -188,8 +188,10 @@ data class CompressibleMedia(
         get() = (mediaItem.sizeBytes * quality.factor).toLong()
 }
 
+private val cleanRecordIdCounter = java.util.concurrent.atomic.AtomicLong(System.currentTimeMillis() * 1000L)
+
 data class CleanRecord(
-    val id: Long = System.currentTimeMillis(),
+    val id: Long = cleanRecordIdCounter.incrementAndGet(),
     val timestamp: Long = System.currentTimeMillis(),
     val freedBytes: Long,
     val itemsCount: Int,
@@ -262,7 +264,8 @@ data class CloudPhotoItem(
     val dateModified: Long,
     val cloudProvider: String = "",
     val cloudBackupDate: String = "",
-    val isSelected: Boolean = true
+    val isVerifiedCloudBackup: Boolean = false,
+    val isSelected: Boolean = false
 ) {
     val formattedSize: String
         get() = formatFileSize(sizeBytes)

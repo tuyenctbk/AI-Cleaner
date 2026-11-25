@@ -1,7 +1,12 @@
 package com.example.ui.components
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,17 +14,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import com.example.ui.components.dpadFocusable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.StorageStats
@@ -40,6 +47,8 @@ fun QuickActionGrid(
     onOpenSmartScheduler: () -> Unit,
     onOpenBatteryPerformance: () -> Unit,
     onOpenVault: () -> Unit,
+    isSchedulerActive: Boolean = true,
+    onOpenVideos: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -174,10 +183,10 @@ fun QuickActionGrid(
                 ToolFeatureCard(
                     title = stringResource(R.string.card_auto_scan),
                     subtitle = stringResource(R.string.card_auto_scan_sub),
-                    badgeText = stringResource(R.string.badge_active),
-                    badgeColor = ElectricBlue,
+                    badgeText = if (isSchedulerActive) stringResource(R.string.badge_active) else stringResource(R.string.badge_paused),
+                    badgeColor = if (isSchedulerActive) MaterialTheme.colorScheme.primary else WarningAmber,
                     icon = Icons.Default.Schedule,
-                    iconTint = ElectricBlue,
+                    iconTint = if (isSchedulerActive) MaterialTheme.colorScheme.primary else WarningAmber,
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
                     onClick = onOpenSmartScheduler,
@@ -307,10 +316,10 @@ fun QuickActionGrid(
             ToolFeatureCard(
                 title = stringResource(R.string.card_auto_scan),
                 subtitle = stringResource(R.string.card_auto_scan_sub),
-                badgeText = stringResource(R.string.badge_active),
-                badgeColor = ElectricBlue,
+                badgeText = if (isSchedulerActive) stringResource(R.string.badge_active) else stringResource(R.string.badge_paused),
+                badgeColor = if (isSchedulerActive) MaterialTheme.colorScheme.primary else WarningAmber,
                 icon = Icons.Default.Schedule,
-                iconTint = ElectricBlue,
+                iconTint = if (isSchedulerActive) MaterialTheme.colorScheme.primary else WarningAmber,
                 containerColor = MaterialTheme.colorScheme.surfaceVariant,
                 borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
                 onClick = onOpenSmartScheduler,
@@ -328,7 +337,7 @@ fun QuickActionGrid(
             videoCount = stats.videoCount,
             videoSize = formatFileSize(stats.videoBytes),
             onPhotosClick = onOpenDuplicates,
-            onVideosClick = onOpenStorageExplorer
+            onVideosClick = onOpenVideos ?: onOpenStorageExplorer
         )
     }
 }
@@ -347,9 +356,16 @@ fun ToolFeatureCard(
     modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val pressScale by animateFloatAsState(
+        targetValue = if (isPressed) 0.96f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        label = "ToolCardPressScale"
+    )
     Card(
         modifier = modifier
             .height(144.dp)
+            .scale(pressScale)
             .shadow(2.dp, RoundedCornerShape(24.dp), ambientColor = Color.Black.copy(alpha = 0.03f))
             .clickable(
                 interactionSource = interactionSource,
@@ -366,7 +382,7 @@ fun ToolFeatureCard(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(14.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
@@ -374,10 +390,9 @@ fun ToolFeatureCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
             ) {
-                // White rounded-xl icon container with soft shadow
                 Box(
                     modifier = Modifier
-                        .size(44.dp)
+                        .size(42.dp)
                         .shadow(2.dp, RoundedCornerShape(14.dp), ambientColor = Color.Black.copy(alpha = 0.05f))
                         .clip(RoundedCornerShape(14.dp))
                         .background(MaterialTheme.colorScheme.surface),
@@ -387,14 +402,16 @@ fun ToolFeatureCard(
                         imageVector = icon,
                         contentDescription = null,
                         tint = iconTint,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(22.dp)
                     )
                 }
 
-                // Badge Pill
+                Spacer(modifier = Modifier.width(6.dp))
+
+                // Badge Pill (ellipsized safely for long locales)
                 Surface(
                     shape = RoundedCornerShape(8.dp),
-                    color = badgeColor.copy(alpha = 0.15f),
+                    color = badgeColor.copy(alpha = 0.16f),
                     modifier = Modifier.padding(top = 2.dp)
                 ) {
                     Text(
@@ -402,6 +419,8 @@ fun ToolFeatureCard(
                         color = badgeColor,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp)
                     )
                 }
@@ -414,14 +433,18 @@ fun ToolFeatureCard(
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp
                     ),
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall.copy(
                         fontSize = 12.sp
                     ),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }

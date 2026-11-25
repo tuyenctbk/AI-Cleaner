@@ -1,6 +1,8 @@
 package com.example.ui.components
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -15,12 +17,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.testTag
@@ -33,6 +38,7 @@ import com.example.R
 import com.example.data.model.MediaItem
 import com.example.ui.theme.*
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @Composable
@@ -117,9 +123,34 @@ fun SwipeCardDeck(
 
     val topItem = items.first()
     val nextItem = items.getOrNull(1)
+    val screenHeightDp = LocalConfiguration.current.screenHeightDp
+    val deckHeight = (screenHeightDp * 0.44f).dp.coerceIn(250.dp, 405.dp)
 
     val offsetX = remember { Animatable(0f) }
     val offsetY = remember { Animatable(0f) }
+    var isAnimatingOut by remember { mutableStateOf(false) }
+
+    LaunchedEffect(topItem.id) {
+        offsetX.snapTo(0f)
+        offsetY.snapTo(0f)
+        isAnimatingOut = false
+    }
+
+    fun triggerSwipeOut(keep: Boolean) {
+        if (isAnimatingOut) return
+        isAnimatingOut = true
+        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+        coroutineScope.launch {
+            try {
+                offsetX.animateTo(if (keep) 850f else -850f, tween(185))
+                if (keep) onSwipeRightKeep(topItem) else onSwipeLeftDelete(topItem)
+                offsetX.snapTo(0f)
+                offsetY.snapTo(0f)
+            } finally {
+                isAnimatingOut = false
+            }
+        }
+    }
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -129,16 +160,21 @@ fun SwipeCardDeck(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp)
+                .height(deckHeight)
                 .padding(horizontal = 24.dp),
             contentAlignment = Alignment.Center
         ) {
-            // Next item in background
+            // Next item in background rises dynamically as top card is dragged
             if (nextItem != null) {
+                val dragProgress = (abs(offsetX.value) / 220f).coerceIn(0f, 1f)
+                val nextScale = 0.94f + (0.06f * dragProgress)
+                val nextAlpha = 0.78f + (0.22f * dragProgress)
                 Card(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 16.dp, start = 12.dp, end = 12.dp),
+                        .padding(top = (14 * (1f - dragProgress)).dp)
+                        .scale(nextScale)
+                        .alpha(nextAlpha),
                     shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
@@ -163,30 +199,36 @@ fun SwipeCardDeck(
                     .pointerInput(topItem.id) {
                         detectDragGestures(
                             onDragEnd = {
+                                if (isAnimatingOut) return@detectDragGestures
                                 if (offsetX.value > 180f) {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    coroutineScope.launch {
-                                        offsetX.animateTo(800f, tween(180))
-                                        onSwipeRightKeep(topItem)
-                                        offsetX.snapTo(0f)
-                                        offsetY.snapTo(0f)
-                                    }
+                                    triggerSwipeOut(keep = true)
                                 } else if (offsetX.value < -180f) {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    coroutineScope.launch {
-                                        offsetX.animateTo(-800f, tween(180))
-                                        onSwipeLeftDelete(topItem)
-                                        offsetX.snapTo(0f)
-                                        offsetY.snapTo(0f)
-                                    }
+                                    triggerSwipeOut(keep = false)
                                 } else {
                                     coroutineScope.launch {
-                                        offsetX.animateTo(0f, tween(150))
-                                        offsetY.animateTo(0f, tween(150))
+                                        launch {
+                                            offsetX.animateTo(
+                                                0f,
+                                                spring(
+                                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                                    stiffness = Spring.StiffnessMedium
+                                                )
+                                            )
+                                        }
+                                        launch {
+                                            offsetY.animateTo(
+                                                0f,
+                                                spring(
+                                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                                    stiffness = Spring.StiffnessMedium
+                                                )
+                                            )
+                                        }
                                     }
                                 }
                             },
                             onDrag = { change, dragAmount ->
+                                if (isAnimatingOut) return@detectDragGestures
                                 change.consume()
                                 coroutineScope.launch {
                                     offsetX.snapTo(offsetX.value + dragAmount.x)
@@ -340,22 +382,15 @@ fun SwipeCardDeck(
         ) {
             // Left Button: Delete
             Button(
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    coroutineScope.launch {
-                        offsetX.animateTo(-800f, tween(200))
-                        onSwipeLeftDelete(topItem)
-                        offsetX.snapTo(0f)
-                        offsetY.snapTo(0f)
-                    }
-                },
+                onClick = { triggerSwipeOut(keep = false) },
+                enabled = !isAnimatingOut,
                 modifier = Modifier
                     .height(52.dp)
                     .weight(1f)
                     .testTag("swipe_delete_button"),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = CoralRed.copy(alpha = 0.12f),
+                    containerColor = CoralRed.copy(alpha = 0.14f),
                     contentColor = CoralRed
                 )
             ) {
@@ -377,10 +412,12 @@ fun SwipeCardDeck(
             // Center Button: Undo
             IconButton(
                 onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onUndo()
+                    if (!isAnimatingOut) {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onUndo()
+                    }
                 },
-                enabled = canUndo,
+                enabled = canUndo && !isAnimatingOut,
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
@@ -397,22 +434,15 @@ fun SwipeCardDeck(
 
             // Right Button: Keep
             Button(
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    coroutineScope.launch {
-                        offsetX.animateTo(800f, tween(200))
-                        onSwipeRightKeep(topItem)
-                        offsetX.snapTo(0f)
-                        offsetY.snapTo(0f)
-                    }
-                },
+                onClick = { triggerSwipeOut(keep = true) },
+                enabled = !isAnimatingOut,
                 modifier = Modifier
                     .height(52.dp)
                     .weight(1f)
                     .testTag("swipe_keep_button"),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = EmeraldGreen.copy(alpha = 0.15f),
+                    containerColor = EmeraldGreen.copy(alpha = 0.16f),
                     contentColor = EmeraldGreen
                 )
             ) {

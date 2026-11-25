@@ -16,6 +16,7 @@ import com.example.data.scanner.StorageScanner
 import com.example.notification.StorageNotificationManager
 import com.example.widget.StorageAppWidgetProvider
 import com.example.worker.WorkScheduler
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -122,8 +123,25 @@ data class CleanerUiState(
     val recommendationsLastTier: com.example.data.ai.AiExecutionTier = com.example.data.ai.AiExecutionTier.ON_DEVICE_LOCAL,
     val recommendationsFromCache: Boolean = false,
     val recommendationsCascadedToLite: Boolean = false,
-    val recommendationsError: String? = null
-)
+    val recommendationsError: String? = null,
+    // Persisted Battery & Performance optimization preferences
+    val adaptivePowerEnabled: Boolean = true,
+    val thermalThrottleGuard: Boolean = true
+) {
+    val totalReclaimableBytes: Long
+        get() {
+            val dupIds = duplicateGroups
+                .flatMap { g -> g.items.filter { !it.isBestShot }.map { it.id } }
+                .toSet()
+            val dupBytes = duplicateGroups
+                .sumOf { g -> g.items.filter { !it.isBestShot }.sumOf { it.sizeBytes } }
+            val safeShotBytes = screenshotSummary.safeCleanableItems
+                .filter { it.id !in dupIds }
+                .sumOf { it.sizeBytes }
+            val junk = maxOf(storageStats.junkBytes, junkCategories.sumOf { it.sizeBytes })
+            return junk + dupBytes + safeShotBytes
+        }
+}
 
 class CleanerViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -153,6 +171,10 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
 
     // Tracks actual swipe order: Pair(item, wasTrashed) so Undo always reverts the exact last swipe
     private val swipeHistory = ArrayDeque<Pair<MediaItem, Boolean>>()
+    // Navigation backstack for multi-screen journeys
+    private val navBackStack = ArrayDeque<MainScreenTab>()
+    // Single-flight guard for concurrent refreshAll() invocations
+    private var refreshJob: Job? = null
     // Queues Rate/Share prompt so it appears cleanly AFTER CleanSuccessDialog is dismissed
     private var pendingPostCleanPrompt: String? = null
     private var persistedVaultIds: Set<Long> = emptySet()
@@ -210,6 +232,8 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
             val schedLarge = prefs.getBoolean("KEY_SCHED_LARGE", true)
             val schedCharging = prefs.getBoolean("KEY_SCHED_REQUIRES_CHARGING", true)
             val schedLastDate = prefs.getLong("KEY_SCHED_LAST_DATE", 0L)
+            val adaptivePower = prefs.getBoolean("KEY_ADAPTIVE_POWER", true)
+            val thermalGuard = prefs.getBoolean("KEY_THERMAL_GUARD", true)
             val vaultStr = prefs.getString("KEY_VAULT_IDS", "") ?: ""
             persistedVaultIds = vaultStr.split(",").mapNotNull { it.trim().toLongOrNull() }.toSet()
 
@@ -217,6 +241,8 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
                 it.copy(
                     smartExpiryDays = expiryDays,
                     isCleaningPaused = paused,
+                    adaptivePowerEnabled = adaptivePower,
+                    thermalThrottleGuard = thermalGuard,
                     smartScheduleSettings = SmartScheduleSettings(
                         isEnabled = schedEnabled,
                         dayOfWeek = schedDay,
@@ -282,8 +308,17 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
         if (pending == null) return
 
         if (approved) {
-            val allFreed = pending.requestedItems.sumOf { it.sizeBytes }
-            pending.onCommitted(pending.requestedItems, allFreed)
+            val pendingUris = pending.initialResult.pendingSystemDeleteUris.toSet()
+            val committedItems = pending.requestedItems.filter { item ->
+                item.id in pending.initialResult.deletedIds ||
+                    (item.uriString.isNotBlank() && item.uriString in pendingUris)
+            }
+            val allFreed = committedItems.sumOf { it.sizeBytes }
+            if (committedItems.isNotEmpty()) {
+                pending.onCommitted(committedItems, allFreed)
+            } else {
+                pending.onCancelled?.invoke()
+            }
         } else {
             // User declined OS sheet -> only reflect items already deleted prior to the prompt (if any)
             val alreadyDeleted = pending.requestedItems.filter { it.id in pending.initialResult.deletedIds }
@@ -451,15 +486,53 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun setPermissionGranted(granted: Boolean) {
+        val changed = _uiState.value.permissionGranted != granted
         _uiState.update { it.copy(permissionGranted = granted) }
-        refreshAll()
+        if (changed || (granted && _uiState.value.allMedia.isEmpty() && refreshJob?.isActive != true)) {
+            refreshAll(force = changed && granted)
+        }
+    }
+
+    fun setAdaptivePowerEnabled(enabled: Boolean) {
+        _uiState.update { it.copy(adaptivePowerEnabled = enabled) }
+        try {
+            val prefs = getApplication<Application>().getSharedPreferences("ai_cleaner_prefs", android.content.Context.MODE_PRIVATE)
+            prefs.edit().putBoolean("KEY_ADAPTIVE_POWER", enabled).apply()
+        } catch (_: Exception) {}
+    }
+
+    fun setThermalThrottleGuard(enabled: Boolean) {
+        _uiState.update { it.copy(thermalThrottleGuard = enabled) }
+        try {
+            val prefs = getApplication<Application>().getSharedPreferences("ai_cleaner_prefs", android.content.Context.MODE_PRIVATE)
+            prefs.edit().putBoolean("KEY_THERMAL_GUARD", enabled).apply()
+        } catch (_: Exception) {}
     }
 
     fun navigateTo(tab: MainScreenTab) {
+        val current = _uiState.value.currentTab
+        if (current == tab) return
+        if (tab == MainScreenTab.DASHBOARD) {
+            navBackStack.clear()
+        } else {
+            if (navBackStack.lastOrNull() != current) {
+                navBackStack.addLast(current)
+                while (navBackStack.size > 16) navBackStack.removeFirst()
+            }
+        }
         _uiState.update { it.copy(currentTab = tab) }
     }
 
+    fun navigateBack() {
+        val previous = navBackStack.removeLastOrNull() ?: MainScreenTab.DASHBOARD
+        _uiState.update { it.copy(currentTab = previous) }
+    }
+
     fun openStorageExplorer(extensionFilter: String = "All") {
+        val current = _uiState.value.currentTab
+        if (current != MainScreenTab.STORAGE_EXPLORER && navBackStack.lastOrNull() != current) {
+            navBackStack.addLast(current)
+        }
         _uiState.update {
             it.copy(
                 currentTab = MainScreenTab.STORAGE_EXPLORER,
@@ -468,8 +541,17 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun refreshAll() {
-        viewModelScope.launch {
+    private fun buildFilteredSwipeQueue(media: List<MediaItem>, filter: SwipeFilter): List<MediaItem> =
+        when (filter) {
+            SwipeFilter.ALL -> media.filter { !it.isLarge }
+            SwipeFilter.BLURRY -> media.filter { it.isBlurry }
+            SwipeFilter.SCREENSHOTS -> media.filter { it.isScreenshot }
+        }
+
+    fun refreshAll(force: Boolean = false) {
+        if (!force && refreshJob?.isActive == true) return
+        if (force) refreshJob?.cancel()
+        refreshJob = viewModelScope.launch {
             // Single-pass MediaStore query reused across stats, duplicates, cloud photos, and trends
             val rawMedia = scanner.getMediaItems()
             val vaulted = rawMedia.filter { it.id in persistedVaultIds }
@@ -479,6 +561,7 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
             val screenshotSummary = buildScreenshotSummary(activeMedia, isAnalyzing = false, hasRun = true)
             val duplicates = scanner.getDuplicateGroups(activeMedia)
             val stats = scanner.getDeviceStorageStats(preloadedMedia = activeMedia, preloadedDuplicates = duplicates)
+            val junkCategories = scanner.scanJunkFiles(simulateProgressDelay = false) { _, _ -> }
             try {
                 snapshotRepository.recordSnapshot(stats)
             } catch (_: Exception) {}
@@ -494,14 +577,14 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
             )
             val folderHeatmap = scanner.getFolderHeatmapData()
             val appCaches = scanner.scanAppCaches()
-            val cloudBytes = cloudPhotos.sumOf { it.sizeBytes }
+            val cloudBytes = cloudPhotos.filter { it.isVerifiedCloudBackup }.sumOf { it.sizeBytes }
             val duplicateBytes = duplicates.sumOf { it.selectableSizeBytes }
             val screenshotBytes = activeMedia.filter { it.isScreenshot }.sumOf { it.sizeBytes }
             val largeMediaBytes = activeMedia.filter { it.isLarge }.sumOf { it.sizeBytes }
             // Use zero-cost local analyzer on background refresh so startup never drains cloud quota
             val aiResult = geminiService.generateStorageRoutines(
                 stats = stats,
-                cloudPhotosCount = cloudPhotos.size,
+                cloudPhotosCount = cloudPhotos.count { it.isVerifiedCloudBackup },
                 cloudPhotosBytes = cloudBytes,
                 duplicateBytes = duplicateBytes,
                 screenshotBytes = screenshotBytes,
@@ -523,13 +606,14 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
             }
 
             swipeHistory.clear()
-            _uiState.update {
-                it.copy(
+            _uiState.update { state ->
+                state.copy(
                     storageStats = stats,
+                    junkCategories = junkCategories,
                     allMedia = activeMedia,
                     vaultItems = vaulted,
                     duplicateGroups = duplicates,
-                    swipeQueue = activeMedia.filter { m -> !m.isLarge },
+                    swipeQueue = buildFilteredSwipeQueue(activeMedia, state.swipeFilter),
                     swipeTrashItems = emptyList(),
                     swipeKeepItems = emptyList(),
                     compressibleItems = compressibles,
@@ -559,6 +643,115 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
             // Update Jetpack Glance home screen widget
             com.example.widget.StorageGlanceWidget.updateAllWidgets(getApplication())
         }
+    }
+
+    /**
+     * Unified post-deletion state synchronizer so every deletion path consistently prunes
+     * allMedia, duplicateGroups, cloudSyncedPhotos, smartRecommendations, swipeQueue/Trash,
+     * compressibleItems, screenshotSummary, Room duplicate flags, and StorageStats.
+     */
+    private fun commitDeletedMediaState(
+        deletedItems: List<MediaItem>,
+        mediaFreedBytes: Long,
+        recordDescription: String,
+        successTitle: String,
+        healthBonus: Int = 5,
+        extraFreedBytesForRecord: Long = 0L,
+        extraItemCountForRecord: Int = 0,
+        extraStateTransform: (CleanerUiState) -> CleanerUiState = { it }
+    ) {
+        val deletedIds = deletedItems.map { it.id }.toSet()
+        val photoFreed = deletedItems.filter { it.mimeType.startsWith("image/", ignoreCase = true) }.sumOf { it.sizeBytes }
+        val videoFreed = deletedItems.filter { it.mimeType.startsWith("video/", ignoreCase = true) }.sumOf { it.sizeBytes }
+        val photoCountDelta = deletedItems.count { it.mimeType.startsWith("image/", ignoreCase = true) }
+        val videoCountDelta = deletedItems.count { it.mimeType.startsWith("video/", ignoreCase = true) }
+        val blurryDelta = deletedItems.count { it.isBlurry }
+        val screenshotDelta = deletedItems.count { it.isScreenshot }
+        val largeDelta = deletedItems.count { it.isLarge }
+
+        val totalFreed = mediaFreedBytes + extraFreedBytesForRecord
+        val totalItems = deletedItems.size + extraItemCountForRecord
+        val record = CleanRecord(
+            freedBytes = totalFreed,
+            itemsCount = totalItems,
+            description = recordDescription
+        )
+        saveCleanRecord(record)
+
+        if (deletedIds.isNotEmpty()) {
+            swipeHistory.removeAll { it.first.id in deletedIds }
+        }
+
+        var persistedStats: StorageStats? = null
+        _uiState.update { state ->
+            val updatedMedia = if (deletedIds.isEmpty()) state.allMedia else state.allMedia.filter { it.id !in deletedIds }
+            val updatedDuplicates = if (deletedIds.isEmpty()) state.duplicateGroups else state.duplicateGroups.mapNotNull { group ->
+                val remaining = group.items.filter { it.id !in deletedIds }
+                if (remaining.size > 1) group.copy(items = remaining) else null
+            }
+            val updatedCloud = if (deletedIds.isEmpty()) state.cloudSyncedPhotos else state.cloudSyncedPhotos.filter { it.id !in deletedIds }
+            val updatedRecs = if (deletedIds.isEmpty()) state.smartRecommendations else state.smartRecommendations.map { rec ->
+                if (rec.targetMediaIds.any { it in deletedIds }) {
+                    val remainingIds = rec.targetMediaIds.filter { it !in deletedIds }
+                    rec.copy(
+                        targetMediaIds = remainingIds,
+                        itemCount = remainingIds.size,
+                        reclaimableBytes = updatedMedia.filter { it.id in remainingIds }.sumOf { it.sizeBytes },
+                        isApplied = remainingIds.isEmpty()
+                    )
+                } else {
+                    rec
+                }
+            }
+            val updatedSummary = buildScreenshotSummary(updatedMedia, isAnalyzing = false, hasRun = state.screenshotSummary.hasRun)
+            val newDupCount = updatedDuplicates.sumOf { g -> g.items.count { !it.isBestShot } }
+
+            val curStats = state.storageStats
+            val newStats = curStats.copy(
+                usedBytes = (curStats.usedBytes - mediaFreedBytes).coerceAtLeast(0L),
+                freeBytes = curStats.freeBytes + mediaFreedBytes,
+                photoBytes = (curStats.photoBytes - photoFreed).coerceAtLeast(0L),
+                videoBytes = (curStats.videoBytes - videoFreed).coerceAtLeast(0L),
+                photoCount = (curStats.photoCount - photoCountDelta).coerceAtLeast(0),
+                videoCount = (curStats.videoCount - videoCountDelta).coerceAtLeast(0),
+                duplicateCount = newDupCount,
+                blurryCount = (curStats.blurryCount - blurryDelta).coerceAtLeast(0),
+                screenshotCount = (curStats.screenshotCount - screenshotDelta).coerceAtLeast(0),
+                largeFileCount = (curStats.largeFileCount - largeDelta).coerceAtLeast(0),
+                healthScore = (curStats.healthScore + healthBonus).coerceAtMost(100)
+            )
+            persistedStats = newStats
+
+            val updatedTips = generateDynamicCleanupTips(newStats, updatedMedia, updatedDuplicates, updatedCloud, state.appCacheItems)
+
+            val baseNext = state.copy(
+                allMedia = updatedMedia,
+                duplicateGroups = updatedDuplicates,
+                cloudSyncedPhotos = updatedCloud,
+                smartRecommendations = updatedRecs,
+                swipeQueue = if (deletedIds.isEmpty()) state.swipeQueue else state.swipeQueue.filter { it.id !in deletedIds },
+                swipeTrashItems = if (deletedIds.isEmpty()) state.swipeTrashItems else state.swipeTrashItems.filter { it.id !in deletedIds },
+                compressibleItems = if (deletedIds.isEmpty()) state.compressibleItems else state.compressibleItems.filter { it.id !in deletedIds },
+                screenshotSummary = updatedSummary,
+                storageStats = newStats,
+                cleanupTips = updatedTips,
+                cleanHistory = listOf(record) + state.cleanHistory,
+                lastFreedBytes = totalFreed,
+                lastCleanTitle = successTitle,
+                showCleanSuccessDialog = true
+            )
+            extraStateTransform(baseNext)
+        }
+
+        if (deletedIds.isNotEmpty()) {
+            viewModelScope.launch {
+                try {
+                    flaggedDuplicateRepository.deleteByMediaIds(deletedIds.toList())
+                } catch (_: Exception) {}
+            }
+        }
+        persistedStats?.let { persistStorageSnapshotAsync(it) }
+        onCleaningOperationCompleted(totalFreed, totalItems)
     }
 
     // --- Global Quick Action (Safe Quick Clean) ---
@@ -638,8 +831,8 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun openQuickCleanup() {
-        _uiState.update { it.copy(currentTab = MainScreenTab.QUICK_CLEANUP) }
-        if (_uiState.value.junkCategories.isEmpty() || _uiState.value.appCacheItems.isEmpty()) {
+        navigateTo(MainScreenTab.QUICK_CLEANUP)
+        if (_uiState.value.junkCategories.isEmpty() && _uiState.value.appCacheItems.isEmpty()) {
             refreshAll()
         }
     }
@@ -671,30 +864,38 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
                 )
                 for (bucket in summary.cachedBuckets) {
                     val freed = scanner.clearAppCacheBucket(bucket.id)
-                    cacheFreedBytes += if (freed > 0L) freed else bucket.cacheSizeBytes
-                    cacheClearedCount++
+                    if (freed > 0L) {
+                        cacheFreedBytes += freed
+                        cacheClearedCount++
+                    }
                 }
                 if (summary.extraJunkCategories.isNotEmpty()) {
-                    cacheFreedBytes += scanner.deleteJunkCategories(summary.extraJunkCategories)
-                    cacheClearedCount += summary.extraJunkCategories.sumOf { it.itemCount.coerceAtLeast(1) }
+                    val junkFreed = scanner.deleteJunkCategories(summary.extraJunkCategories)
+                    cacheFreedBytes += junkFreed
+                    if (junkFreed > 0L) {
+                        cacheClearedCount += summary.extraJunkCategories.sumOf { it.itemCount.coerceAtLeast(1) }
+                    }
                 } else if (summary.cachedBuckets.isEmpty() && _uiState.value.junkCategories.isNotEmpty()) {
-                    cacheFreedBytes += scanner.deleteJunkCategories(_uiState.value.junkCategories)
-                    cacheClearedCount += _uiState.value.junkCategories.sumOf { it.itemCount.coerceAtLeast(1) }
+                    val junkFreed = scanner.deleteJunkCategories(_uiState.value.junkCategories)
+                    cacheFreedBytes += junkFreed
+                    if (junkFreed > 0L) {
+                        cacheClearedCount += _uiState.value.junkCategories.sumOf { it.itemCount.coerceAtLeast(1) }
+                    }
                 }
 
                 // Update cache buckets & stats immediately on device
-                val updatedCaches = _uiState.value.appCacheItems.map { it.copy(isCleared = true, cacheSizeBytes = 0L) }
-                val remainingJunk = emptyList<JunkCategory>()
+                val refreshedCaches = scanner.scanAppCaches()
+                val remainingJunk = scanner.scanJunkFiles(simulateProgressDelay = false) { _, _ -> }
                 val curStats = _uiState.value.storageStats
                 val cacheUpdatedStats = curStats.copy(
                     usedBytes = (curStats.usedBytes - cacheFreedBytes).coerceAtLeast(0L),
                     freeBytes = curStats.freeBytes + cacheFreedBytes,
-                    junkBytes = 0L,
+                    junkBytes = remainingJunk.sumOf { it.sizeBytes },
                     healthScore = (curStats.healthScore + if (cacheFreedBytes > 0L) 4 else 0).coerceAtMost(100)
                 )
                 _uiState.update { state ->
                     state.copy(
-                        appCacheItems = updatedCaches,
+                        appCacheItems = refreshedCaches,
                         junkCategories = remainingJunk,
                         storageStats = cacheUpdatedStats,
                         quickCleanupProgress = 0.55f,
@@ -720,61 +921,26 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
                     return
                 }
 
-                val itemIds = deletedLargeItems.map { it.id }.toSet()
-                val photoFreed = deletedLargeItems.filter { it.mimeType.startsWith("image/") }.sumOf { it.sizeBytes }
-                val videoFreed = deletedLargeItems.filter { it.mimeType.startsWith("video/") }.sumOf { it.sizeBytes }
-                val photoDeletedCount = deletedLargeItems.count { it.mimeType.startsWith("image/") }
-                val videoDeletedCount = deletedLargeItems.count { it.mimeType.startsWith("video/") }
-
-                val curStats = _uiState.value.storageStats
-                val finalStats = curStats.copy(
-                    usedBytes = (curStats.usedBytes - mediaFreedBytes).coerceAtLeast(0L),
-                    freeBytes = curStats.freeBytes + mediaFreedBytes,
-                    photoBytes = (curStats.photoBytes - photoFreed).coerceAtLeast(0L),
-                    videoBytes = (curStats.videoBytes - videoFreed).coerceAtLeast(0L),
-                    photoCount = (curStats.photoCount - photoDeletedCount).coerceAtLeast(0),
-                    videoCount = (curStats.videoCount - videoDeletedCount).coerceAtLeast(0),
-                    largeFileCount = (curStats.largeFileCount - deletedLargeItems.size).coerceAtLeast(0),
-                    healthScore = (curStats.healthScore + 6).coerceAtMost(100)
-                )
-
-                val record = CleanRecord(
-                    freedBytes = totalFreed,
-                    itemsCount = totalItemsCount,
-                    description = app.getString(
+                commitDeletedMediaState(
+                    deletedItems = deletedLargeItems,
+                    mediaFreedBytes = mediaFreedBytes,
+                    recordDescription = app.getString(
                         R.string.clean_desc_quick_cleanup_fmt,
                         deletedLargeItems.size,
                         formatFileSize(totalFreed)
-                    )
+                    ),
+                    successTitle = app.getString(R.string.clean_title_quick_complete),
+                    healthBonus = 6,
+                    extraFreedBytesForRecord = cacheFreedBytes,
+                    extraItemCountForRecord = cacheClearedCount,
+                    extraStateTransform = { st ->
+                        st.copy(
+                            isExecutingQuickCleanup = false,
+                            quickCleanupProgress = 1f,
+                            quickCleanupStepText = ""
+                        )
+                    }
                 )
-                saveCleanRecord(record)
-
-                _uiState.update { state ->
-                    val updatedMedia = if (itemIds.isEmpty()) state.allMedia else state.allMedia.filter { it.id !in itemIds }
-                    val updatedTips = generateDynamicCleanupTips(
-                        finalStats,
-                        updatedMedia,
-                        state.duplicateGroups,
-                        state.cloudSyncedPhotos,
-                        state.appCacheItems
-                    )
-                    state.copy(
-                        isExecutingQuickCleanup = false,
-                        quickCleanupProgress = 1f,
-                        quickCleanupStepText = "",
-                        allMedia = updatedMedia,
-                        swipeQueue = if (itemIds.isEmpty()) state.swipeQueue else state.swipeQueue.filter { it.id !in itemIds },
-                        compressibleItems = if (itemIds.isEmpty()) state.compressibleItems else state.compressibleItems.filter { it.id !in itemIds },
-                        storageStats = finalStats,
-                        cleanupTips = updatedTips,
-                        cleanHistory = listOf(record) + state.cleanHistory,
-                        lastFreedBytes = totalFreed,
-                        lastCleanTitle = app.getString(R.string.clean_title_quick_complete),
-                        showCleanSuccessDialog = true
-                    )
-                }
-                persistStorageSnapshotAsync(finalStats)
-                onCleaningOperationCompleted(totalFreed, totalItemsCount)
             }
 
             if (selectedLargeFiles.isEmpty()) {
@@ -816,7 +982,7 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
         _uiState.update { it.copy(cloudSyncedPhotos = updated) }
     }
 
-    fun deleteSelectedCloudPhotos() {
+    fun deleteSelectedCloudPhotos(onCommittedExtra: (() -> Unit)? = null) {
         viewModelScope.launch {
             val selected = _uiState.value.cloudSyncedPhotos.filter { it.isSelected }
             if (selected.isEmpty()) return@launch
@@ -838,43 +1004,15 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
             }
 
             requestScopedMediaDeletion(mediaToDelete) { deletedItems, freedBytes ->
-                val deletedIds = deletedItems.map { it.id }.toSet()
-                val remaining = _uiState.value.cloudSyncedPhotos.filter { it.id !in deletedIds }
-
-                val currentStats = _uiState.value.storageStats
-                val newStats = currentStats.copy(
-                    usedBytes = (currentStats.usedBytes - freedBytes).coerceAtLeast(0L),
-                    freeBytes = currentStats.freeBytes + freedBytes,
-                    photoBytes = (currentStats.photoBytes - freedBytes).coerceAtLeast(0L),
-                    photoCount = (currentStats.photoCount - deletedItems.size).coerceAtLeast(0)
-                )
-
                 val app = getApplication<Application>()
-                val record = CleanRecord(
-                    freedBytes = freedBytes,
-                    itemsCount = deletedItems.size,
-                    description = app.getString(R.string.clean_desc_cloud_photos)
+                commitDeletedMediaState(
+                    deletedItems = deletedItems,
+                    mediaFreedBytes = freedBytes,
+                    recordDescription = app.getString(R.string.clean_desc_cloud_photos),
+                    successTitle = app.getString(R.string.clean_title_cloud_purged_fmt, deletedItems.size),
+                    healthBonus = 5
                 )
-                saveCleanRecord(record)
-
-                _uiState.update { state ->
-                    val updatedMedia = state.allMedia.filter { it.id !in deletedIds }
-                    val updatedTips = generateDynamicCleanupTips(newStats, updatedMedia, state.duplicateGroups, remaining, state.appCacheItems)
-                    state.copy(
-                        cloudSyncedPhotos = remaining,
-                        allMedia = updatedMedia,
-                        swipeQueue = state.swipeQueue.filter { it.id !in deletedIds },
-                        compressibleItems = state.compressibleItems.filter { it.id !in deletedIds },
-                        storageStats = newStats,
-                        cleanupTips = updatedTips,
-                        cleanHistory = listOf(record) + state.cleanHistory,
-                        lastFreedBytes = freedBytes,
-                        lastCleanTitle = app.getString(R.string.clean_title_cloud_purged_fmt, deletedItems.size),
-                        showCleanSuccessDialog = true
-                    )
-                }
-                persistStorageSnapshotAsync(newStats)
-                onCleaningOperationCompleted(freedBytes, deletedItems.size)
+                onCommittedExtra?.invoke()
             }
         }
     }
@@ -993,19 +1131,7 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
     fun protectReceiptsToVault() {
         val receipts = _uiState.value.screenshotSummary.receiptDocItems
         if (receipts.isEmpty()) return
-        val newVaultIds = persistedVaultIds + receipts.map { it.id }
-        saveVaultIds(newVaultIds)
-        _uiState.update { state ->
-            val receiptIds = receipts.map { it.id }.toSet()
-            val updatedMedia = state.allMedia.filter { it.id !in receiptIds }
-            val updatedSummary = buildScreenshotSummary(updatedMedia, isAnalyzing = false, hasRun = state.screenshotSummary.hasRun)
-            state.copy(
-                allMedia = updatedMedia,
-                vaultItems = (state.vaultItems + receipts).distinctBy { it.id },
-                swipeQueue = state.swipeQueue.filter { it.id !in receiptIds },
-                screenshotSummary = updatedSummary
-            )
-        }
+        moveToVault(receipts)
     }
 
     fun generateAiRoutines(
@@ -1046,101 +1172,118 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    private suspend fun executeScreenshotDeletion(screenshots: List<MediaItem>, isSafeSubset: Boolean) {
+    private suspend fun executeScreenshotDeletion(
+        screenshots: List<MediaItem>,
+        isSafeSubset: Boolean,
+        onCommittedExtra: (() -> Unit)? = null
+    ) {
         if (screenshots.isEmpty()) return
         requestScopedMediaDeletion(screenshots) { deletedItems, freed ->
-            val deletedIds = deletedItems.map { it.id }.toSet()
             val count = deletedItems.size
-            val currentStats = _uiState.value.storageStats
-            val newStats = currentStats.copy(
-                usedBytes = (currentStats.usedBytes - freed).coerceAtLeast(0L),
-                freeBytes = currentStats.freeBytes + freed,
-                photoBytes = (currentStats.photoBytes - freed).coerceAtLeast(0L),
-                photoCount = (currentStats.photoCount - count).coerceAtLeast(0),
-                screenshotCount = (currentStats.screenshotCount - count).coerceAtLeast(0)
-            )
             val app = getApplication<Application>()
-            val record = CleanRecord(
-                freedBytes = freed,
-                itemsCount = count,
-                description = app.getString(
+            commitDeletedMediaState(
+                deletedItems = deletedItems,
+                mediaFreedBytes = freed,
+                recordDescription = app.getString(
                     if (isSafeSubset) R.string.clean_desc_ai_safe_screenshots_fmt else R.string.clean_desc_ai_screenshots_fmt,
                     count,
                     formatFileSize(freed)
-                )
+                ),
+                successTitle = app.getString(R.string.clean_title_ai_screenshots),
+                healthBonus = 5
             )
-            saveCleanRecord(record)
-            _uiState.update { state ->
-                val updatedMedia = state.allMedia.filter { it.id !in deletedIds }
-                val updatedTips = generateDynamicCleanupTips(newStats, updatedMedia, state.duplicateGroups, state.cloudSyncedPhotos, state.appCacheItems)
-                val updatedSummary = buildScreenshotSummary(updatedMedia, isAnalyzing = false, hasRun = state.screenshotSummary.hasRun)
-                state.copy(
-                    allMedia = updatedMedia,
-                    swipeQueue = state.swipeQueue.filter { it.id !in deletedIds },
-                    compressibleItems = state.compressibleItems.filter { it.id !in deletedIds },
-                    screenshotSummary = updatedSummary,
-                    storageStats = newStats,
-                    cleanupTips = updatedTips,
-                    cleanHistory = listOf(record) + state.cleanHistory,
-                    lastFreedBytes = freed,
-                    lastCleanTitle = app.getString(R.string.clean_title_ai_screenshots),
-                    showCleanSuccessDialog = true
-                )
-            }
-            persistStorageSnapshotAsync(newStats)
-            onCleaningOperationCompleted(freed, count)
+            onCommittedExtra?.invoke()
+        }
+    }
+
+    private fun markRoutineExecuted(routineId: String) {
+        _uiState.update { state ->
+            state.copy(
+                aiRoutines = state.aiRoutines.map {
+                    if (it.id == routineId) it.copy(isExecuted = true) else it
+                }
+            )
         }
     }
 
     fun executeAiRoutine(routine: AiInsightRoutine) {
         viewModelScope.launch {
-            val updatedRoutines = _uiState.value.aiRoutines.map {
-                if (it.id == routine.id) it.copy(isExecuted = true) else it
-            }
-            _uiState.update { it.copy(aiRoutines = updatedRoutines) }
-
             when (routine.actionType) {
-                AiRoutineAction.DELETE_CLOUD_BACKUPS -> deleteSelectedCloudPhotos()
+                AiRoutineAction.DELETE_CLOUD_BACKUPS -> {
+                    val hasSelected = _uiState.value.cloudSyncedPhotos.any { it.isSelected }
+                    if (!hasSelected) {
+                        val verified = _uiState.value.cloudSyncedPhotos.filter { it.isVerifiedCloudBackup }
+                        if (verified.isNotEmpty()) {
+                            _uiState.update { st ->
+                                st.copy(cloudSyncedPhotos = st.cloudSyncedPhotos.map { it.copy(isSelected = it.isVerifiedCloudBackup) })
+                            }
+                        } else {
+                            navigateTo(MainScreenTab.CLOUD_SYNCED_PHOTOS)
+                            return@launch
+                        }
+                    }
+                    deleteSelectedCloudPhotos { markRoutineExecuted(routine.id) }
+                }
                 AiRoutineAction.DELETE_DUPLICATES -> {
                     selectAllDuplicatesEverywhere()
-                    deleteSelectedDuplicates()
+                    deleteSelectedDuplicates { markRoutineExecuted(routine.id) }
                 }
-                AiRoutineAction.SAFE_QUICK_CLEAN -> executeGlobalQuickClean()
+                AiRoutineAction.SAFE_QUICK_CLEAN -> {
+                    markRoutineExecuted(routine.id)
+                    executeGlobalQuickClean()
+                }
                 AiRoutineAction.COMPRESS_4K_VIDEOS -> {
-                    startBatchCompression()
+                    val videoIds = _uiState.value.compressibleItems
+                        .filter { it.mediaItem.mimeType.startsWith("video/", ignoreCase = true) && (it.mediaItem.isLarge || it.mediaItem.sizeBytes > 10 * 1024 * 1024L) }
+                        .map { it.id }
+                        .toSet()
+                    if (videoIds.isNotEmpty()) {
+                        _uiState.update { st ->
+                            st.copy(compressibleItems = st.compressibleItems.map { it.copy(isSelected = it.id in videoIds) })
+                        }
+                        markRoutineExecuted(routine.id)
+                        navigateTo(MainScreenTab.COMPRESSOR)
+                        startBatchCompression(targetIds = videoIds)
+                    } else {
+                        navigateTo(MainScreenTab.COMPRESSOR)
+                    }
                 }
                 AiRoutineAction.DELETE_SAFE_SCREENSHOTS -> {
                     val safeShots = _uiState.value.screenshotSummary.safeCleanableItems
                         .ifEmpty { _uiState.value.allMedia.filter { it.isScreenshot } }
-                    executeScreenshotDeletion(safeShots, isSafeSubset = true)
+                    executeScreenshotDeletion(safeShots, isSafeSubset = true) { markRoutineExecuted(routine.id) }
                 }
                 AiRoutineAction.DELETE_SCREENSHOTS -> {
                     val screenshots = _uiState.value.allMedia.filter { it.isScreenshot }
-                    executeScreenshotDeletion(screenshots, isSafeSubset = false)
+                    executeScreenshotDeletion(screenshots, isSafeSubset = false) { markRoutineExecuted(routine.id) }
                 }
                 AiRoutineAction.CLEAR_WHATSAPP_CACHE -> {
                     val junkCategories = _uiState.value.junkCategories.ifEmpty {
-                        scanner.scanJunkFiles { _, _ -> }
+                        scanner.scanJunkFiles(simulateProgressDelay = false) { _, _ -> }
                     }
                     val freed = scanner.deleteJunkCategories(junkCategories)
+                    val refreshedJunk = scanner.scanJunkFiles(simulateProgressDelay = false) { _, _ -> }
+                    val refreshedCaches = scanner.scanAppCaches()
                     val currentStats = _uiState.value.storageStats
                     val newStats = currentStats.copy(
                         usedBytes = (currentStats.usedBytes - freed).coerceAtLeast(0L),
                         freeBytes = currentStats.freeBytes + freed,
-                        junkBytes = (currentStats.junkBytes - freed).coerceAtLeast(0L)
+                        junkBytes = refreshedJunk.sumOf { it.sizeBytes }
                     )
                     val app = getApplication<Application>()
                     val record = CleanRecord(
                         freedBytes = freed,
-                        itemsCount = junkCategories.sumOf { it.itemCount }.coerceAtLeast(1),
+                        itemsCount = junkCategories.sumOf { it.itemCount }.coerceAtLeast(if (freed > 0L) 1 else 0),
                         description = app.getString(R.string.clean_desc_ai_cache_fmt, formatFileSize(freed))
                     )
                     saveCleanRecord(record)
+                    markRoutineExecuted(routine.id)
                     _uiState.update { state ->
-                        val updatedTips = generateDynamicCleanupTips(newStats, state.allMedia, state.duplicateGroups, state.cloudSyncedPhotos, state.appCacheItems)
+                        val updatedTips = generateDynamicCleanupTips(newStats, state.allMedia, state.duplicateGroups, state.cloudSyncedPhotos, refreshedCaches)
                         state.copy(
                             storageStats = newStats,
-                            junkCategories = emptyList(),
+                            junkCategories = refreshedJunk,
+                            appCacheItems = refreshedCaches,
                             cleanupTips = updatedTips,
                             cleanHistory = listOf(record) + state.cleanHistory,
                             lastFreedBytes = freed,
@@ -1156,7 +1299,7 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun openSmartRecommendations() {
-        _uiState.update { it.copy(currentTab = MainScreenTab.SMART_RECOMMENDATIONS) }
+        navigateTo(MainScreenTab.SMART_RECOMMENDATIONS)
         if (_uiState.value.smartRecommendations.isEmpty() && _uiState.value.allMedia.isNotEmpty()) {
             analyzeSmartRecommendations(forceLocal = true)
         }
@@ -1245,84 +1388,18 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
             if (targetItems.isEmpty()) return@launch
 
             requestScopedMediaDeletion(targetItems) { deletedItems, freedBytes ->
-                val deletedIds = deletedItems.map { it.id }.toSet()
-                val deletedVideosBytes = deletedItems
-                    .filter { it.mimeType.startsWith("video/", ignoreCase = true) }
-                    .sumOf { it.sizeBytes }
-                val deletedPhotosBytes = (freedBytes - deletedVideosBytes).coerceAtLeast(0L)
-                val deletedPhotoCount = deletedItems.count { it.mimeType.startsWith("image/", ignoreCase = true) }
-                val deletedVideoCount = deletedItems.count { it.mimeType.startsWith("video/", ignoreCase = true) }
-                val deletedBlurryCount = deletedItems.count { it.isBlurry }
-                val deletedShotCount = deletedItems.count { it.isScreenshot }
-
-                val currentStats = _uiState.value.storageStats
-                val newStats = currentStats.copy(
-                    usedBytes = (currentStats.usedBytes - freedBytes).coerceAtLeast(0L),
-                    freeBytes = currentStats.freeBytes + freedBytes,
-                    photoBytes = (currentStats.photoBytes - deletedPhotosBytes).coerceAtLeast(0L),
-                    videoBytes = (currentStats.videoBytes - deletedVideosBytes).coerceAtLeast(0L),
-                    photoCount = (currentStats.photoCount - deletedPhotoCount).coerceAtLeast(0),
-                    videoCount = (currentStats.videoCount - deletedVideoCount).coerceAtLeast(0),
-                    blurryCount = (currentStats.blurryCount - deletedBlurryCount).coerceAtLeast(0),
-                    screenshotCount = (currentStats.screenshotCount - deletedShotCount).coerceAtLeast(0),
-                    healthScore = (currentStats.healthScore + 5).coerceAtMost(100)
-                )
-
                 val app = getApplication<Application>()
-                val record = CleanRecord(
-                    freedBytes = freedBytes,
-                    itemsCount = deletedItems.size,
-                    description = app.getString(
+                commitDeletedMediaState(
+                    deletedItems = deletedItems,
+                    mediaFreedBytes = freedBytes,
+                    recordDescription = app.getString(
                         R.string.clean_desc_smart_recommendation_fmt,
                         deletedItems.size,
                         formatFileSize(freedBytes)
-                    )
+                    ),
+                    successTitle = app.getString(R.string.clean_title_smart_recommendation),
+                    healthBonus = 5
                 )
-                saveCleanRecord(record)
-
-                _uiState.update { state ->
-                    val updatedMedia = state.allMedia.filter { it.id !in deletedIds }
-                    val updatedTips = generateDynamicCleanupTips(
-                        newStats,
-                        updatedMedia,
-                        state.duplicateGroups,
-                        state.cloudSyncedPhotos,
-                        state.appCacheItems
-                    )
-                    val updatedSummary = buildScreenshotSummary(
-                        updatedMedia,
-                        isAnalyzing = false,
-                        hasRun = state.screenshotSummary.hasRun
-                    )
-                    val updatedRecs = state.smartRecommendations.map { rec ->
-                        if (rec.id == recommendation.id) {
-                            val remainingIds = rec.targetMediaIds.filter { it !in deletedIds }
-                            rec.copy(
-                                targetMediaIds = remainingIds,
-                                itemCount = remainingIds.size,
-                                reclaimableBytes = updatedMedia.filter { it.id in remainingIds }.sumOf { it.sizeBytes },
-                                isApplied = remainingIds.isEmpty() || rec.id == recommendation.id
-                            )
-                        } else {
-                            rec
-                        }
-                    }
-                    state.copy(
-                        allMedia = updatedMedia,
-                        swipeQueue = state.swipeQueue.filter { it.id !in deletedIds },
-                        compressibleItems = state.compressibleItems.filter { it.id !in deletedIds },
-                        screenshotSummary = updatedSummary,
-                        storageStats = newStats,
-                        cleanupTips = updatedTips,
-                        smartRecommendations = updatedRecs,
-                        cleanHistory = listOf(record) + state.cleanHistory,
-                        lastFreedBytes = freedBytes,
-                        lastCleanTitle = app.getString(R.string.clean_title_smart_recommendation),
-                        showCleanSuccessDialog = true
-                    )
-                }
-                persistStorageSnapshotAsync(newStats)
-                onCleaningOperationCompleted(freedBytes, deletedItems.size)
             }
         }
     }
@@ -1504,42 +1581,42 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
             val appItem = _uiState.value.appCacheItems.find { it.id == appId } ?: return@launch
             if (appItem.isCleared) return@launch
 
-            val actualFreed = scanner.clearAppCacheBucket(appItem.id)
-            val freedBytes = if (actualFreed > 0L) actualFreed else appItem.cacheSizeBytes
-            val updatedList = _uiState.value.appCacheItems.map {
-                if (it.id == appId) it.copy(isCleared = true, cacheSizeBytes = 0L) else it
-            }
+            val freedBytes = scanner.clearAppCacheBucket(appItem.id)
+            val refreshedList = scanner.scanAppCaches()
+            val refreshedJunk = scanner.scanJunkFiles(simulateProgressDelay = false) { _, _ -> }
 
             val currentStats = _uiState.value.storageStats
             val newStats = currentStats.copy(
                 usedBytes = (currentStats.usedBytes - freedBytes).coerceAtLeast(0L),
                 freeBytes = currentStats.freeBytes + freedBytes,
-                appBytes = (currentStats.appBytes - freedBytes).coerceAtLeast(0L),
-                junkBytes = (currentStats.junkBytes - freedBytes).coerceAtLeast(0L)
+                junkBytes = refreshedJunk.sumOf { it.sizeBytes }
             )
 
             val appCtx = getApplication<Application>()
             val record = CleanRecord(
                 freedBytes = freedBytes,
-                itemsCount = 1,
+                itemsCount = if (freedBytes > 0L) 1 else 0,
                 description = appCtx.getString(R.string.clean_desc_clear_cache_fmt, appItem.appName, formatFileSize(freedBytes))
             )
-            saveCleanRecord(record)
+            if (freedBytes > 0L) saveCleanRecord(record)
 
             _uiState.update { state ->
-                val updatedTips = generateDynamicCleanupTips(newStats, state.allMedia, state.duplicateGroups, state.cloudSyncedPhotos, updatedList)
+                val updatedTips = generateDynamicCleanupTips(newStats, state.allMedia, state.duplicateGroups, state.cloudSyncedPhotos, refreshedList)
                 state.copy(
-                    appCacheItems = updatedList,
+                    appCacheItems = refreshedList,
+                    junkCategories = refreshedJunk,
                     storageStats = newStats,
                     cleanupTips = updatedTips,
-                    cleanHistory = listOf(record) + state.cleanHistory,
+                    cleanHistory = if (freedBytes > 0L) listOf(record) + state.cleanHistory else state.cleanHistory,
                     lastFreedBytes = freedBytes,
                     lastCleanTitle = appCtx.getString(R.string.clean_title_cache_cleared_fmt, appItem.appName),
-                    showCleanSuccessDialog = true
+                    showCleanSuccessDialog = freedBytes > 0L
                 )
             }
-            persistStorageSnapshotAsync(newStats)
-            onCleaningOperationCompleted(freedBytes, 1)
+            if (freedBytes > 0L) {
+                persistStorageSnapshotAsync(newStats)
+                onCleaningOperationCompleted(freedBytes, 1)
+            }
         }
     }
 
@@ -1548,46 +1625,51 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
             val uncleared = _uiState.value.appCacheItems.filter { !it.isCleared }
             if (uncleared.isEmpty()) return@launch
 
-            var actualFreed = 0L
+            var totalFreed = 0L
+            var clearedBuckets = 0
             for (appItem in uncleared) {
-                actualFreed += scanner.clearAppCacheBucket(appItem.id)
+                val freed = scanner.clearAppCacheBucket(appItem.id)
+                if (freed > 0L) {
+                    totalFreed += freed
+                    clearedBuckets++
+                }
             }
 
-            val totalFreed = if (actualFreed > 0L) actualFreed else uncleared.sumOf { it.cacheSizeBytes }
-            val count = uncleared.size
-
-            val updatedList = _uiState.value.appCacheItems.map { it.copy(isCleared = true, cacheSizeBytes = 0L) }
+            val refreshedList = scanner.scanAppCaches()
+            val refreshedJunk = scanner.scanJunkFiles(simulateProgressDelay = false) { _, _ -> }
 
             val currentStats = _uiState.value.storageStats
             val newStats = currentStats.copy(
                 usedBytes = (currentStats.usedBytes - totalFreed).coerceAtLeast(0L),
                 freeBytes = currentStats.freeBytes + totalFreed,
-                appBytes = (currentStats.appBytes - totalFreed).coerceAtLeast(0L),
-                junkBytes = (currentStats.junkBytes - totalFreed).coerceAtLeast(0L)
+                junkBytes = refreshedJunk.sumOf { it.sizeBytes }
             )
 
             val appCtx = getApplication<Application>()
             val record = CleanRecord(
                 freedBytes = totalFreed,
-                itemsCount = count,
-                description = appCtx.getString(R.string.clean_desc_clear_all_caches_fmt, count, formatFileSize(totalFreed))
+                itemsCount = clearedBuckets,
+                description = appCtx.getString(R.string.clean_desc_clear_all_caches_fmt, clearedBuckets, formatFileSize(totalFreed))
             )
-            saveCleanRecord(record)
+            if (totalFreed > 0L) saveCleanRecord(record)
 
             _uiState.update { state ->
-                val updatedTips = generateDynamicCleanupTips(newStats, state.allMedia, state.duplicateGroups, state.cloudSyncedPhotos, updatedList)
+                val updatedTips = generateDynamicCleanupTips(newStats, state.allMedia, state.duplicateGroups, state.cloudSyncedPhotos, refreshedList)
                 state.copy(
-                    appCacheItems = updatedList,
+                    appCacheItems = refreshedList,
+                    junkCategories = refreshedJunk,
                     storageStats = newStats,
                     cleanupTips = updatedTips,
-                    cleanHistory = listOf(record) + state.cleanHistory,
+                    cleanHistory = if (totalFreed > 0L) listOf(record) + state.cleanHistory else state.cleanHistory,
                     lastFreedBytes = totalFreed,
                     lastCleanTitle = appCtx.getString(R.string.clean_title_all_caches_cleared),
-                    showCleanSuccessDialog = true
+                    showCleanSuccessDialog = totalFreed > 0L
                 )
             }
-            persistStorageSnapshotAsync(newStats)
-            onCleaningOperationCompleted(totalFreed, count)
+            if (totalFreed > 0L) {
+                persistStorageSnapshotAsync(newStats)
+                onCleaningOperationCompleted(totalFreed, clearedBuckets)
+            }
         }
     }
 
@@ -1758,7 +1840,7 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun deleteSelectedDuplicates() {
+    fun deleteSelectedDuplicates(onCommittedExtra: (() -> Unit)? = null) {
         viewModelScope.launch {
             val itemsToDelete = _uiState.value.duplicateGroups.flatMap { group ->
                 group.items.filter { it.isSelected }
@@ -1766,53 +1848,15 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
             if (itemsToDelete.isEmpty()) return@launch
 
             requestScopedMediaDeletion(itemsToDelete) { deletedItems, totalFreed ->
-                val totalItems = deletedItems.size
-                val deletedIds = deletedItems.map { it.id }.toSet()
-
-                val remainingGroups = _uiState.value.duplicateGroups.mapNotNull { group ->
-                    val keep = group.items.filter { it.id !in deletedIds }
-                    if (keep.size > 1) group.copy(items = keep) else null
-                }
-
-                val currentStats = _uiState.value.storageStats
-                val newStats = currentStats.copy(
-                    usedBytes = (currentStats.usedBytes - totalFreed).coerceAtLeast(0L),
-                    freeBytes = currentStats.freeBytes + totalFreed,
-                    photoBytes = (currentStats.photoBytes - totalFreed).coerceAtLeast(0L),
-                    duplicateCount = (currentStats.duplicateCount - totalItems).coerceAtLeast(0)
-                )
-
                 val app = getApplication<Application>()
-                val record = CleanRecord(
-                    freedBytes = totalFreed,
-                    itemsCount = totalItems,
-                    description = app.getString(R.string.clean_desc_duplicates_fmt, totalItems)
+                commitDeletedMediaState(
+                    deletedItems = deletedItems,
+                    mediaFreedBytes = totalFreed,
+                    recordDescription = app.getString(R.string.clean_desc_duplicates_fmt, deletedItems.size),
+                    successTitle = app.getString(R.string.clean_title_duplicates_done),
+                    healthBonus = 6
                 )
-                saveCleanRecord(record)
-
-                _uiState.update { state ->
-                    val updatedMedia = state.allMedia.filter { it.id !in deletedIds }
-                    val updatedTips = generateDynamicCleanupTips(newStats, updatedMedia, remainingGroups, state.cloudSyncedPhotos, state.appCacheItems)
-                    state.copy(
-                        duplicateGroups = remainingGroups,
-                        allMedia = updatedMedia,
-                        swipeQueue = state.swipeQueue.filter { it.id !in deletedIds },
-                        compressibleItems = state.compressibleItems.filter { it.id !in deletedIds },
-                        storageStats = newStats,
-                        cleanupTips = updatedTips,
-                        cleanHistory = listOf(record) + state.cleanHistory,
-                        lastFreedBytes = totalFreed,
-                        lastCleanTitle = app.getString(R.string.clean_title_duplicates_done),
-                        showCleanSuccessDialog = true
-                    )
-                }
-                viewModelScope.launch {
-                    try {
-                        flaggedDuplicateRepository.deleteByMediaIds(deletedIds.toList())
-                    } catch (_: Exception) {}
-                }
-                persistStorageSnapshotAsync(newStats)
-                onCleaningOperationCompleted(totalFreed, totalItems)
+                onCommittedExtra?.invoke()
             }
         }
     }
@@ -1895,53 +1939,14 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
             if (trashed.isEmpty()) return@launch
 
             requestScopedMediaDeletion(trashed) { deletedItems, totalFreed ->
-                val count = deletedItems.size
-                val trashedIds = deletedItems.map { it.id }.toSet()
-
-                val currentStats = _uiState.value.storageStats
-                val newStats = currentStats.copy(
-                    usedBytes = (currentStats.usedBytes - totalFreed).coerceAtLeast(0L),
-                    freeBytes = currentStats.freeBytes + totalFreed,
-                    photoBytes = (currentStats.photoBytes - totalFreed).coerceAtLeast(0L)
-                )
-
                 val app = getApplication<Application>()
-                val record = CleanRecord(
-                    freedBytes = totalFreed,
-                    itemsCount = count,
-                    description = app.getString(R.string.clean_desc_swipe_fmt, count)
+                commitDeletedMediaState(
+                    deletedItems = deletedItems,
+                    mediaFreedBytes = totalFreed,
+                    recordDescription = app.getString(R.string.clean_desc_swipe_fmt, deletedItems.size),
+                    successTitle = app.getString(R.string.clean_title_swipe_done),
+                    healthBonus = 5
                 )
-                saveCleanRecord(record)
-
-                swipeHistory.removeAll { it.second && it.first.id in trashedIds }
-                _uiState.update { state ->
-                    val updatedMedia = state.allMedia.filter { it.id !in trashedIds }
-                    val updatedDuplicates = state.duplicateGroups.mapNotNull { group ->
-                        val remaining = group.items.filter { it.id !in trashedIds }
-                        if (remaining.size > 1) group.copy(items = remaining) else null
-                    }
-                    val updatedTips = generateDynamicCleanupTips(newStats, updatedMedia, updatedDuplicates, state.cloudSyncedPhotos, state.appCacheItems)
-                    state.copy(
-                        swipeTrashItems = state.swipeTrashItems.filter { it.id !in trashedIds },
-                        allMedia = updatedMedia,
-                        swipeQueue = state.swipeQueue.filter { it.id !in trashedIds },
-                        compressibleItems = state.compressibleItems.filter { it.id !in trashedIds },
-                        duplicateGroups = updatedDuplicates,
-                        storageStats = newStats,
-                        cleanupTips = updatedTips,
-                        cleanHistory = listOf(record) + state.cleanHistory,
-                        lastFreedBytes = totalFreed,
-                        lastCleanTitle = app.getString(R.string.clean_title_swipe_done),
-                        showCleanSuccessDialog = true
-                    )
-                }
-                viewModelScope.launch {
-                    try {
-                        flaggedDuplicateRepository.deleteByMediaIds(trashedIds.toList())
-                    } catch (_: Exception) {}
-                }
-                persistStorageSnapshotAsync(newStats)
-                onCleaningOperationCompleted(totalFreed, count)
             }
         }
     }
@@ -1963,91 +1968,150 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun selectAllCompressibleItems(selectAll: Boolean) {
+    fun selectAllCompressibleItems(selectAll: Boolean, targetIds: Set<Long>? = null) {
         _uiState.update { state ->
-            val updated = state.compressibleItems.map { it.copy(isSelected = selectAll) }
+            val updated = state.compressibleItems.map { item ->
+                if (targetIds == null || item.id in targetIds) {
+                    item.copy(isSelected = selectAll)
+                } else {
+                    item
+                }
+            }
             state.copy(compressibleItems = updated)
         }
     }
 
-    fun startBatchCompression() {
+    fun startBatchCompression(targetIds: Set<Long>? = null) {
         viewModelScope.launch {
             _uiState.update { it.copy(isCompressing = true, compressionProgress = 0f) }
-            val selected = _uiState.value.compressibleItems.filter { it.isSelected }
+            val selected = _uiState.value.compressibleItems.filter { item ->
+                item.isSelected && (targetIds == null || item.id in targetIds)
+            }
             if (selected.isEmpty()) {
                 _uiState.update { it.copy(isCompressing = false) }
                 return@launch
             }
-            var saved = 0L
-            var savedPhotos = 0L
-            var savedVideos = 0L
-            val compressedMap = mutableMapOf<Long, Long>()
+
+            val outcomesById = mutableMapOf<Long, com.example.data.scanner.MediaCompressionOutcome>()
+            val replacedOriginals = mutableListOf<MediaItem>()
 
             for (i in selected.indices) {
                 val item = selected[i]
-                val freed = scanner.compressMedia(item.mediaItem, item.quality) { itemProgress ->
+                val outcome = scanner.compressMediaDetailed(item.mediaItem, item.quality) { itemProgress ->
                     val overall = (i.toFloat() + itemProgress.coerceIn(0f, 1f)) / selected.size.toFloat()
                     _uiState.update { it.copy(compressionProgress = overall) }
                 }
-                saved += freed
-                if (item.mediaItem.mimeType.startsWith("video/", ignoreCase = true)) {
-                    savedVideos += freed
-                } else {
-                    savedPhotos += freed
+                if (outcome.succeeded && outcome.savedBytes > 0L) {
+                    outcomesById[item.id] = outcome
+                    replacedOriginals.add(item.mediaItem)
                 }
-                val newSize = (item.mediaItem.sizeBytes - freed).coerceAtLeast(1024L)
-                compressedMap[item.id] = newSize
                 val progress = (i + 1).toFloat() / selected.size.toFloat()
                 _uiState.update { it.copy(compressionProgress = progress) }
             }
 
-            val currentStats = _uiState.value.storageStats
-            val newStats = currentStats.copy(
-                usedBytes = (currentStats.usedBytes - saved).coerceAtLeast(0L),
-                freeBytes = currentStats.freeBytes + saved,
-                photoBytes = (currentStats.photoBytes - savedPhotos).coerceAtLeast(0L),
-                videoBytes = (currentStats.videoBytes - savedVideos).coerceAtLeast(0L)
-            )
-
             val app = getApplication<Application>()
             val qualityLabel = app.getString(_uiState.value.selectedCompressionQuality.labelRes)
-            val record = CleanRecord(
-                freedBytes = saved,
-                itemsCount = selected.size,
-                description = app.getString(R.string.clean_desc_compress_fmt, selected.size, qualityLabel)
-            )
-            saveCleanRecord(record)
 
-            _uiState.update { state ->
-                val updatedCompressibles = state.compressibleItems.map { comp ->
-                    val newSize = compressedMap[comp.id]
-                    if (newSize != null) {
-                        val updatedMedia = comp.mediaItem.copy(sizeBytes = newSize)
-                        comp.copy(mediaItem = updatedMedia, isSelected = false, isProcessed = true, compressedSizeBytes = newSize)
-                    } else {
-                        comp
-                    }
-                }
-                val updatedAllMedia = state.allMedia.map { media ->
-                    val newSize = compressedMap[media.id]
-                    if (newSize != null) media.copy(sizeBytes = newSize) else media
-                }
-
-                val updatedTips = generateDynamicCleanupTips(newStats, updatedAllMedia, state.duplicateGroups, state.cloudSyncedPhotos, state.appCacheItems)
-                state.copy(
-                    isCompressing = false,
-                    compressibleItems = updatedCompressibles,
-                    allMedia = updatedAllMedia,
-                    storageStats = newStats,
-                    cleanupTips = updatedTips,
-                    cleanHistory = listOf(record) + state.cleanHistory,
-                    lastFreedBytes = saved,
-                    lastCleanTitle = app.getString(R.string.clean_title_compress_done),
-                    showCleanSuccessDialog = true
-                )
+            if (replacedOriginals.isEmpty()) {
+                _uiState.update { it.copy(isCompressing = false, compressionProgress = 0f) }
+                return@launch
             }
-            persistStorageSnapshotAsync(newStats)
-            onCleaningOperationCompleted(saved, selected.size)
+
+            fun applyCompressionUiUpdate(originalsRemoved: Boolean, removedOriginals: List<MediaItem>) {
+                val removedIds = removedOriginals.map { it.id }.toSet()
+                val netSaved = if (originalsRemoved) {
+                    removedIds.sumOf { id -> outcomesById[id]?.savedBytes ?: 0L }
+                } else {
+                    0L
+                }
+                val savedPhotos = if (originalsRemoved) {
+                    removedOriginals.filter { it.mimeType.startsWith("image/", ignoreCase = true) }
+                        .sumOf { outcomesById[it.id]?.savedBytes ?: 0L }
+                } else 0L
+                val savedVideos = if (originalsRemoved) {
+                    removedOriginals.filter { it.mimeType.startsWith("video/", ignoreCase = true) }
+                        .sumOf { outcomesById[it.id]?.savedBytes ?: 0L }
+                } else 0L
+
+                val currentStats = _uiState.value.storageStats
+                val newStats = currentStats.copy(
+                    usedBytes = (currentStats.usedBytes - netSaved).coerceAtLeast(0L),
+                    freeBytes = currentStats.freeBytes + netSaved,
+                    photoBytes = (currentStats.photoBytes - savedPhotos).coerceAtLeast(0L),
+                    videoBytes = (currentStats.videoBytes - savedVideos).coerceAtLeast(0L)
+                )
+
+                val processedCount = outcomesById.size
+                val record = if (originalsRemoved && netSaved > 0L) {
+                    CleanRecord(
+                        freedBytes = netSaved,
+                        itemsCount = removedOriginals.size,
+                        description = app.getString(R.string.clean_desc_compress_fmt, removedOriginals.size, qualityLabel)
+                    ).also { saveCleanRecord(it) }
+                } else null
+
+                _uiState.update { state ->
+                    val updatedCompressibles = state.compressibleItems.map { comp ->
+                        val outcome = outcomesById[comp.id]
+                        if (outcome != null) {
+                            val newSize = outcome.compressedBytes.coerceAtLeast(1024L)
+                            val updatedUri = outcome.savedCopyUriString.ifBlank { comp.mediaItem.uriString }
+                            val updatedMedia = comp.mediaItem.copy(sizeBytes = newSize, uriString = updatedUri)
+                            comp.copy(
+                                mediaItem = updatedMedia,
+                                isSelected = false,
+                                isProcessed = true,
+                                compressedSizeBytes = newSize
+                            )
+                        } else {
+                            comp
+                        }
+                    }
+                    val updatedAllMedia = state.allMedia.map { media ->
+                        val outcome = outcomesById[media.id]
+                        if (outcome != null && media.id in removedIds) {
+                            media.copy(
+                                sizeBytes = outcome.compressedBytes.coerceAtLeast(1024L),
+                                uriString = outcome.savedCopyUriString.ifBlank { media.uriString }
+                            )
+                        } else {
+                            media
+                        }
+                    }
+                    val updatedTips = generateDynamicCleanupTips(newStats, updatedAllMedia, state.duplicateGroups, state.cloudSyncedPhotos, state.appCacheItems)
+                    state.copy(
+                        isCompressing = false,
+                        compressibleItems = updatedCompressibles,
+                        allMedia = updatedAllMedia,
+                        storageStats = newStats,
+                        cleanupTips = updatedTips,
+                        cleanHistory = if (record != null) listOf(record) + state.cleanHistory else state.cleanHistory,
+                        lastFreedBytes = if (originalsRemoved) netSaved else outcomesById.values.sumOf { it.savedBytes },
+                        lastCleanTitle = if (originalsRemoved) {
+                            app.getString(R.string.clean_title_compress_done)
+                        } else {
+                            app.getString(R.string.compressor_saved_copies_title)
+                        },
+                        showCleanSuccessDialog = processedCount > 0
+                    )
+                }
+                if (originalsRemoved && netSaved > 0L) {
+                    persistStorageSnapshotAsync(newStats)
+                    onCleaningOperationCompleted(netSaved, removedOriginals.size)
+                }
+            }
+
+            // Prompt Scoped Storage deletion of replaced heavy originals so real disk space is freed
+            requestScopedMediaDeletion(
+                items = replacedOriginals,
+                onCommitted = { deletedOriginals, _ ->
+                    applyCompressionUiUpdate(originalsRemoved = true, removedOriginals = deletedOriginals)
+                },
+                onCancelled = {
+                    // User kept originals; compressed copies were still saved cleanly to Pictures/Movies/AI Cleaner
+                    applyCompressionUiUpdate(originalsRemoved = false, removedOriginals = emptyList())
+                }
+            )
         }
     }
 
@@ -2055,55 +2119,14 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             if (items.isEmpty()) return@launch
             requestScopedMediaDeletion(items) { deletedItems, totalFreed ->
-                val count = deletedItems.size
-                val itemIds = deletedItems.map { it.id }.toSet()
-
-                val photoFreed = deletedItems.filter { it.mimeType.startsWith("image/") }.sumOf { it.sizeBytes }
-                val videoFreed = deletedItems.filter { it.mimeType.startsWith("video/") }.sumOf { it.sizeBytes }
-                val photoDeletedCount = deletedItems.count { it.mimeType.startsWith("image/") }
-                val videoDeletedCount = deletedItems.count { it.mimeType.startsWith("video/") }
-
-                val currentStats = _uiState.value.storageStats
-                val newStats = currentStats.copy(
-                    usedBytes = (currentStats.usedBytes - totalFreed).coerceAtLeast(0L),
-                    freeBytes = currentStats.freeBytes + totalFreed,
-                    photoBytes = (currentStats.photoBytes - photoFreed).coerceAtLeast(0L),
-                    videoBytes = (currentStats.videoBytes - videoFreed).coerceAtLeast(0L),
-                    photoCount = (currentStats.photoCount - photoDeletedCount).coerceAtLeast(0),
-                    videoCount = (currentStats.videoCount - videoDeletedCount).coerceAtLeast(0),
-                    largeFileCount = (currentStats.largeFileCount - count).coerceAtLeast(0)
-                )
-
                 val app = getApplication<Application>()
-                val record = CleanRecord(
-                    freedBytes = totalFreed,
-                    itemsCount = count,
-                    description = app.getString(R.string.clean_desc_large_files_fmt, count, formatFileSize(totalFreed))
+                commitDeletedMediaState(
+                    deletedItems = deletedItems,
+                    mediaFreedBytes = totalFreed,
+                    recordDescription = app.getString(R.string.clean_desc_large_files_fmt, deletedItems.size, formatFileSize(totalFreed)),
+                    successTitle = app.getString(R.string.clean_title_large_files_done),
+                    healthBonus = 6
                 )
-                saveCleanRecord(record)
-
-                _uiState.update { state ->
-                    val updatedMedia = state.allMedia.filter { it.id !in itemIds }
-                    val updatedTips = generateDynamicCleanupTips(newStats, updatedMedia, state.duplicateGroups, state.cloudSyncedPhotos, state.appCacheItems)
-                    state.copy(
-                        allMedia = updatedMedia,
-                        swipeQueue = state.swipeQueue.filter { it.id !in itemIds },
-                        compressibleItems = state.compressibleItems.filter { it.id !in itemIds },
-                        storageStats = newStats,
-                        cleanupTips = updatedTips,
-                        cleanHistory = listOf(record) + state.cleanHistory,
-                        lastFreedBytes = totalFreed,
-                        lastCleanTitle = app.getString(R.string.clean_title_large_files_done),
-                        showCleanSuccessDialog = true
-                    )
-                }
-                viewModelScope.launch {
-                    try {
-                        flaggedDuplicateRepository.deleteByMediaIds(itemIds.toList())
-                    } catch (_: Exception) {}
-                }
-                persistStorageSnapshotAsync(newStats)
-                onCleaningOperationCompleted(totalFreed, count)
             }
         }
     }
@@ -2186,20 +2209,48 @@ class CleanerViewModel(application: Application) : AndroidViewModel(application)
             val prefs = getApplication<Application>().getSharedPreferences("ai_cleaner_prefs", android.content.Context.MODE_PRIVATE)
             prefs.edit().putInt("KEY_SMART_EXPIRY_DAYS", days).apply()
         } catch (_: Exception) {}
+        if (_uiState.value.allMedia.isNotEmpty()) {
+            analyzeSmartRecommendations(forceLocal = true, bypassCache = true)
+        }
     }
 
     fun moveToVault(items: List<MediaItem>) {
         viewModelScope.launch {
             if (items.isEmpty()) return@launch
             val itemIds = items.map { it.id }.toSet()
+            swipeHistory.removeAll { it.first.id in itemIds }
             _uiState.update { state ->
                 val newVaultItems = (state.vaultItems + items).distinctBy { it.id }
                 saveVaultIds(newVaultItems.map { it.id }.toSet())
                 val updatedAllMedia = state.allMedia.filter { it.id !in itemIds }
+                val updatedDuplicates = state.duplicateGroups.mapNotNull { group ->
+                    val remaining = group.items.filter { it.id !in itemIds }
+                    if (remaining.size > 1) group.copy(items = remaining) else null
+                }
+                val updatedCloud = state.cloudSyncedPhotos.filter { it.id !in itemIds }
+                val updatedRecs = state.smartRecommendations.map { rec ->
+                    if (rec.targetMediaIds.any { it in itemIds }) {
+                        val rem = rec.targetMediaIds.filter { it !in itemIds }
+                        rec.copy(
+                            targetMediaIds = rem,
+                            itemCount = rem.size,
+                            reclaimableBytes = updatedAllMedia.filter { it.id in rem }.sumOf { it.sizeBytes },
+                            isApplied = rem.isEmpty()
+                        )
+                    } else rec
+                }
+                val updatedSummary = buildScreenshotSummary(updatedAllMedia, isAnalyzing = false, hasRun = state.screenshotSummary.hasRun)
+                val updatedTips = generateDynamicCleanupTips(state.storageStats, updatedAllMedia, updatedDuplicates, updatedCloud, state.appCacheItems)
                 state.copy(
                     vaultItems = newVaultItems,
                     allMedia = updatedAllMedia,
+                    duplicateGroups = updatedDuplicates,
+                    cloudSyncedPhotos = updatedCloud,
+                    smartRecommendations = updatedRecs,
+                    screenshotSummary = updatedSummary,
+                    cleanupTips = updatedTips,
                     swipeQueue = state.swipeQueue.filter { it.id !in itemIds },
+                    swipeTrashItems = state.swipeTrashItems.filter { it.id !in itemIds },
                     compressibleItems = state.compressibleItems.filter { it.id !in itemIds }
                 )
             }

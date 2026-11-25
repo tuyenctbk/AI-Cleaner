@@ -867,4 +867,24 @@
     <string name="format_resolution">%1$d × %2$d</string>
     <string name="format_percentage">%1$d%%</string>
     <string name="storage_delta_plus_fmt">+%1$s</string>
+
+    <string name="cloud_provider_local_old">Almacenamiento local (&gt;30 días)</string>
+    <string name="cloud_backup_unverified_status">Verificar copia antes de eliminar</string>
+    <string name="cloud_photos_unverified_warning">Las fotos locales antiguas están desmarcadas por defecto. Confirma su copia en la nube antes de eliminarlas.</string>
+    <string name="cloud_badge_verify_backup">Verificar copia</string>
+    <string name="settings_permissions_title">Permisos de la app</string>
+    <string name="settings_permissions_granted">Acceso multimedia concedido • Escaneo completo</string>
+    <string name="settings_permissions_limited">Modo limitado • Toca para conceder acceso</string>
+    <string name="settings_privacy_policy_title">Política de privacidad</string>
+    <string name="settings_privacy_policy_sub">Lee nuestra política 100% local en el dispositivo</string>
+    <string name="btn_add_widget">Añadir a la pantalla de inicio</string>
+    <string name="widget_pin_requested">Diálogo para fijar widget abierto</string>
+    <string name="widget_pin_unsupported">Mantén pulsada la pantalla de inicio → Widgets → AI Cleaner.</string>
+    <string name="badge_paused">En pausa</string>
+    <string name="vault_item_protected_fmt">%1$s • Protegido en Bóveda local</string>
+    <string name="trends_freed_label">Liberado</string>
+    <string name="trends_delta_minus_fmt">-%1$s</string>
+    <string name="compressor_saved_copies_title">Copias comprimidas guardadas</string>
+    <string name="duplicates_more_count_fmt">+%1$d más</string>
+    <string name="btn_close">Cerrar</string>
 </resources>

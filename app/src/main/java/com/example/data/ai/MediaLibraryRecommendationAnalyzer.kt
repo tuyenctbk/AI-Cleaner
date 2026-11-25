@@ -82,15 +82,24 @@ object MediaLibraryRecommendationAnalyzer {
             .sortedByDescending { it.sizeBytes }
         claimedIds.addAll(largeVideos.map { it.id })
 
-        val expiryCutoffEpochSeconds = nowEpochSeconds - (smartExpiryDays.coerceAtLeast(1) * 86_400L)
-        val oldDownloads = allMedia
-            .filter { item ->
-                item.id !in claimedIds &&
-                    item.screenshotCategory != ScreenshotCategory.RECEIPT_OR_DOC &&
-                    item.path.contains("Download", ignoreCase = true) &&
-                    item.dateModified in 1L..expiryCutoffEpochSeconds
-            }
-            .sortedBy { it.dateModified }
+        val oldDownloads = if (smartExpiryDays > 0) {
+            val expiryCutoffEpochSeconds = nowEpochSeconds - (smartExpiryDays * 86_400L)
+            allMedia
+                .filter { item ->
+                    val modifiedEpochSeconds = if (item.dateModified > 10_000_000_000L) {
+                        item.dateModified / 1000L
+                    } else {
+                        item.dateModified
+                    }
+                    item.id !in claimedIds &&
+                        item.screenshotCategory != ScreenshotCategory.RECEIPT_OR_DOC &&
+                        item.path.contains("Download", ignoreCase = true) &&
+                        modifiedEpochSeconds in 1L..expiryCutoffEpochSeconds
+                }
+                .sortedBy { it.dateModified }
+        } else {
+            emptyList()
+        }
         claimedIds.addAll(oldDownloads.map { it.id })
 
         val lowResPhotos = allMedia
@@ -437,6 +446,22 @@ object MediaLibraryRecommendationAnalyzer {
                         'n' -> sb.append('\n')
                         'r' -> sb.append('\r')
                         't' -> sb.append('\t')
+                        'b' -> sb.append('\b')
+                        'f' -> sb.append('\u000C')
+                        'u' -> {
+                            if (i + 4 < jsonObjText.length) {
+                                val hex = jsonObjText.substring(i + 1, i + 5)
+                                val codePoint = hex.toIntOrNull(16)
+                                if (codePoint != null) {
+                                    sb.append(codePoint.toChar())
+                                    i += 4
+                                } else {
+                                    sb.append('u')
+                                }
+                            } else {
+                                sb.append('u')
+                            }
+                        }
                         else -> sb.append(c)
                     }
                     escaped = false

@@ -96,7 +96,10 @@ fun SmartCleanScreen(
                                 .height(54.dp)
                                 .testTag("execute_smart_clean_button"),
                             shape = RoundedCornerShape(28.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -105,7 +108,7 @@ fun SmartCleanScreen(
                                 Icon(
                                     imageVector = Icons.Default.CleaningServices,
                                     contentDescription = null,
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onPrimary
                                 )
                                 Text(
                                     text = stringResource(R.string.btn_clean_selected, formatFileSize(totalSelectedBytes)),
@@ -113,7 +116,7 @@ fun SmartCleanScreen(
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 15.sp
                                     ),
-                                    color = Color.White
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
                         }
@@ -156,11 +159,11 @@ fun SmartCleanScreen(
                             modifier = Modifier
                                 .size(64.dp)
                                 .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primaryContainer),
+                                .background(Color(0xFF0A1328)),
                             contentAlignment = Alignment.Center
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.img_cleaning_trash_1787907390869),
+                                painter = painterResource(id = R.drawable.ic_mascot_orb),
                                 contentDescription = null,
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop
@@ -246,17 +249,20 @@ fun SmartCleanScreen(
                                         .fillMaxWidth()
                                         .height(48.dp),
                                     shape = RoundedCornerShape(24.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary
+                                    )
                                 ) {
-                                    Icon(imageVector = Icons.Default.Refresh, contentDescription = null, tint = Color.White)
+                                    Icon(imageVector = Icons.Default.Refresh, contentDescription = null)
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    Text(stringResource(R.string.btn_scan_again), fontWeight = FontWeight.Bold, color = Color.White)
+                                    Text(stringResource(R.string.btn_scan_again), fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
                     }
                 } else {
-                    items(uiState.junkCategories) { category ->
+                    items(uiState.junkCategories, key = { it.type.name }) { category ->
                         JunkCategoryRow(
                             category = category,
                             onToggle = { onToggleCategory(category.type) }

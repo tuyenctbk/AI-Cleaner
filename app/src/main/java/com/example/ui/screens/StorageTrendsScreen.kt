@@ -161,7 +161,11 @@ fun StorageTrendsScreen(
                             }
 
                             Text(
-                                text = if (timeframeDeltaBytes > 0L) stringResource(R.string.storage_delta_plus_fmt, formatFileSize(timeframeDeltaBytes)) else formatFileSize(0L),
+                                text = when {
+                                    timeframeDeltaBytes > 0L -> stringResource(R.string.storage_delta_plus_fmt, formatFileSize(timeframeDeltaBytes))
+                                    timeframeDeltaBytes < 0L -> stringResource(R.string.trends_delta_minus_fmt, formatFileSize(-timeframeDeltaBytes))
+                                    else -> formatFileSize(0L)
+                                },
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                                 color = if (timeframeDeltaBytes > 0L) CoralRed else EmeraldGreen
                             )
@@ -332,14 +336,30 @@ private fun StorageTrendCanvasChart(
         )
     }
 
+    val strokeColor = MaterialTheme.colorScheme.primary
+    val gridColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
+
     Canvas(modifier = modifier) {
         if (points.size < 2) return@Canvas
 
         val width = size.width
         val height = size.height
+        val padY = 20.dp.toPx()
+
+        // Subtle horizontal reference gridlines
+        listOf(0.2f, 0.5f, 0.8f).forEach { frac ->
+            val gy = height * frac
+            drawLine(
+                color = gridColor,
+                start = Offset(0f, gy),
+                end = Offset(width, gy),
+                strokeWidth = 1.dp.toPx()
+            )
+        }
 
         val maxVal = points.maxOf { it.usedBytes }.toFloat()
         val minVal = points.minOf { it.usedBytes }.toFloat()
+        val isFlat = (maxVal - minVal) < 1f
         val range = (maxVal - minVal).coerceAtLeast(1f)
 
         val dx = width / (points.size - 1)
@@ -347,13 +367,15 @@ private fun StorageTrendCanvasChart(
         val path = Path()
         val fillPath = Path()
 
-        val strokeColor = ElectricBlue
         val burstColor = CoralRed
+
+        fun yForPoint(usedBytes: Long): Float =
+            if (isFlat) height * 0.5f
+            else ((1f - ((usedBytes - minVal) / range)) * (height - padY * 2f)) + padY
 
         points.forEachIndexed { i, pt ->
             val x = i * dx
-            val normalizedY = 1f - ((pt.usedBytes - minVal) / range)
-            val y = (normalizedY * (height - 40.dp.toPx())) + 20.dp.toPx()
+            val y = yForPoint(pt.usedBytes)
 
             if (i == 0) {
                 path.moveTo(x, y)
@@ -361,9 +383,7 @@ private fun StorageTrendCanvasChart(
                 fillPath.lineTo(x, y)
             } else {
                 val prevX = (i - 1) * dx
-                val prevPt = points[i - 1]
-                val prevNormY = 1f - ((prevPt.usedBytes - minVal) / range)
-                val prevY = (prevNormY * (height - 40.dp.toPx())) + 20.dp.toPx()
+                val prevY = yForPoint(points[i - 1].usedBytes)
 
                 val controlX1 = prevX + (dx / 2)
                 val controlY1 = prevY
@@ -385,7 +405,7 @@ private fun StorageTrendCanvasChart(
             drawPath(
                 path = fillPath,
                 brush = Brush.verticalGradient(
-                    colors = listOf(strokeColor.copy(alpha = 0.32f), strokeColor.copy(alpha = 0.0f))
+                    colors = listOf(strokeColor.copy(alpha = 0.30f), strokeColor.copy(alpha = 0.0f))
                 )
             )
 
@@ -399,8 +419,7 @@ private fun StorageTrendCanvasChart(
             // Draw burst indicators & data points
             points.forEachIndexed { i, pt ->
                 val x = i * dx
-                val normalizedY = 1f - ((pt.usedBytes - minVal) / range)
-                val y = (normalizedY * (height - 40.dp.toPx())) + 20.dp.toPx()
+                val y = yForPoint(pt.usedBytes)
 
                 if (pt.isRapidAccumulationBurst) {
                     drawCircle(

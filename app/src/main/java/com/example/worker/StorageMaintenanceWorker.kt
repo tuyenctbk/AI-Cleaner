@@ -69,17 +69,26 @@ class StorageMaintenanceWorker(
 
                 var reclaimableBytes = 0L
                 if (scanJunk) {
-                    val junk = scanner.scanJunkFiles { _, _ -> }
+                    val junk = scanner.scanJunkFiles(simulateProgressDelay = false) { _, _ -> }
                     reclaimableBytes += junk.sumOf { it.sizeBytes }
                 }
                 if (scanDuplicates || scanLargeFiles) {
                     val media = scanner.getMediaItems()
+                    val countedMediaIds = mutableSetOf<Long>()
                     if (scanDuplicates) {
                         val duplicates = scanner.getDuplicateGroups(media)
-                        reclaimableBytes += duplicates.sumOf { it.selectableSizeBytes }
+                        duplicates.forEach { group ->
+                            group.items.filter { !it.isBestShot }.forEach { dup ->
+                                if (countedMediaIds.add(dup.id)) {
+                                    reclaimableBytes += dup.sizeBytes
+                                }
+                            }
+                        }
                     }
                     if (scanLargeFiles) {
-                        reclaimableBytes += media.filter { it.isLarge }.sumOf { it.sizeBytes }
+                        reclaimableBytes += media
+                            .filter { it.isLarge && it.id !in countedMediaIds }
+                            .sumOf { it.sizeBytes }
                     }
                 }
 
